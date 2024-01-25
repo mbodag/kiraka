@@ -6,6 +6,7 @@ export default function Page() {
     <SignIn
       appearance={{
         baseTheme: dark,
+        variables: { colorPrimary: "#90EE90" },
       }}
     />
   );
