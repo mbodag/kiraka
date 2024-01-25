@@ -28,13 +28,13 @@ export const LandingHero = () => {
           />
         </div>
       </div>
-      <div className="text-sm md:text-xl font-light text-zinc-500">
+      <div className="text-2xl font-light text-zinc-500" style={{ marginTop: '110px'}}> 
         Learn more. Read more. Understand more.
       </div>
       <div>
         <Link href={isSignedIn ? "/dashboard" : "/sign-in"}>
           <Button
-            variant="default"
+            variant="tertiary"
             className="md:text-lg p-4 md:p-6 rounded-full font-semibold"
           >
             Start Speed Learning Now
