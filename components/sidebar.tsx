@@ -40,7 +40,6 @@ const Sidebar = () => {
       <div className="px-3 py-2">
         <UserButton afterSignOutUrl="/" />
       </div>
-
       
     </div>
     
