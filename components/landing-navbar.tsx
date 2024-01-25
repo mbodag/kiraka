@@ -35,7 +35,7 @@ export const LandingNavbar = () => {
     <nav className="p-4 bg-transparent flex items-center justify-between">
       <Link href="/" className="flex items-center">
         <div className="relative h-8 w-8 mr-4">
-          <Image src="/favicon.ico" alt="logo" fill />
+          <Image src="/Kiraka_Logo.png" alt="Kiraka Logo" layout="fill" objectFit="contain" />
         </div>
         <h1 className={cn("text-2xl font-bold text-white", font.className)}>
           Kiraka.ai
