@@ -1,17 +1,24 @@
 import MobileSidebar from "./mobile-sidebar";
 import ModeToggle from "./modetoggle";
+import { Button } from "./ui/button";
 
 const Navbar = () => {
   return (
-    <div className="flex justify-between items-start py-4 px-8 w-full"
+    <div className="flex justify-between items-center py-4 px-8 w-full"
       style={{
-        background: 'linear-gradient(to bottom, rgba(0, 77, 64, 0.95), rgba(0, 77, 64, 0.9))'
+        background: 'linear-gradient(to bottom, rgba(0, 77, 35, 0.82), rgba(0, 77, 35, 0.8))'
       }}>
-      <MobileSidebar />
-      <div className="flex justify-center w-full">
+      <div className="flex-1 flex items-center"> {/* Container for left side */}
+        <MobileSidebar />
+        <Button className="ml-4 bg-green-200/30 hover:bg-green-200/50 text-white">Quiz</Button> {/* Added Quiz button */}
+      </div>
+      <div className="flex-1 flex justify-center"> {/* Centered mode buttons */}
         <ModeToggle />
       </div>
-      <div></div> {/* This empty div is used to balance the flex space-between property */}
+      <div className="flex-1 flex justify-end items-center"> {/* Container for right side */}
+        <Button className="bg-green-200/30 hover:bg-green-200/50 text-white mr-2 text-sm">▶</Button> {/* Start button */}
+        <Button className="bg-green-200/30 hover:bg-green-200/50 text-white text-lg">⏸</Button> {/* Pause button */}
+      </div>
     </div>
   );
 };

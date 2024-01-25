@@ -1,87 +1,44 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { UserButton } from "@clerk/nextjs";
-import {
-  CircleUserRoundIcon,
-  HelpCircleIcon,
-  HomeIcon,
-  Trash2Icon,
-} from "lucide-react";
-import { Montserrat } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-const montserrat = Montserrat({ weight: "600", subsets: ["latin"] });
-
-const routes = [
-  {
-    label: "My Kiraka",
-    icon: HomeIcon,
-    href: "/dashboard",
-    color: "text-slate-500",
-  },
-  {
-    label: "Account",
-    icon: CircleUserRoundIcon,
-    href: "/account",
-    color: "text-slate-500",
-  },
-  {
-    label: "Trash",
-    icon: Trash2Icon,
-    href: "/trash",
-    color: "text-slate-500",
-  },
-  {
-    label: "Support",
-    icon: HelpCircleIcon,
-    href: "/support",
-    color: "text-slate-500",
-  },
-];
+import { UserButton } from "@clerk/nextjs";
 
 const Sidebar = () => {
-  const pathname = usePathname();
   return (
-    <div className="space-y-4 py-4 flex flex-col h-full bg-gray-900 text-white">
-      <div className="px-3 py-2 flex-1">
-        <Link href="/dashboard" className="flex items-center pl-3 mb-14">
-          <div className="relative w-8 h-8 mr-4">
-          <Image src="/Kiraka_Logo.png" alt="Kiraka Logo" layout="fill" objectFit="contain" />
+    <div className="flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white">
+      {/* Logo, company name, and horizontal line */}
+      <div className="py-4 mb-2 w-full text-center">
+        <Link href="/">
+          <div className="inline-flex items-center justify-center cursor-pointer mr-8">
+            <div className="relative w-8 h-8 mr-4 inline-block">
+              <Image src="/Kiraka_Logo.png" alt="Kiraka Logo" layout="fill" objectFit="contain" />
+            </div>
+            <span className="text-2xl font-bold">Kiraka.ai</span>
           </div>
-          <h1 className={cn("text-2xl font-bold", montserrat.className)}>
-            kiraka.ai
-          </h1>
         </Link>
-        <div className="space-y-2">
-          {routes.map((route) => (
-            <Link
-              href={route.href}
-              key={route.href}
-              className={cn(
-                "text-sm group flex p-4 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition",
-                pathname === route.href
-                  ? "text-white bg-white/10"
-                  : "text-zinc-400"
-              )}
-            >
-              <div className="flex items-center flex-1">
-                <route.icon className={cn("w-6 h-6 mr-3", route.color)} />
-                {route.label}
-              </div>
-            </Link>
-          ))}
-        </div>
+        <hr className="border-t border-gray-700 mt-2" /> {/* Horizontal line */}
       </div>
-      <div></div>
-      <div className="px-3 py-2 flex flex-col justify-end">
-        <div className="flex flex-col w-full p-4 justify-start">
-          <div className="flex items-center flex-1">
-            <UserButton afterSignOutUrl="/" />
-          </div>
-        </div>
+
+      {/* Upload button aligned to the left */}
+      <div className="px-3 py-2 mb-4 bg-gray-800">
+        <button className="text-sm w-full max-w-xs p-2 font-medium rounded-lg hover:bg-gray-700 transition">
+          Upload Files
+        </button>
+      </div>
+
+      {/* Document buttons aligned to the left */}
+      <div className="flex-1 px-3 py-2 space-y-1">
+        {Array.from({ length: 5 }, (_, i) => (
+          <button key={`doc-${i+1}`} className="text-sm w-full max-w-xs p-2 font-medium rounded-lg hover:bg-gray-700 transition">
+            Document {i + 1}
+          </button>
+        ))}
+      </div>
+
+      {/* User button at the bottom */}
+      <div className="px-3 py-2">
+        <UserButton afterSignOutUrl="/" />
       </div>
     </div>
   );

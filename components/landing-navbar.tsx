@@ -37,7 +37,8 @@ export const LandingNavbar = () => {
         <div className="relative h-8 w-8 mr-4">
           <Image src="/Kiraka_Logo.png" alt="Kiraka Logo" layout="fill" objectFit="contain" />
         </div>
-        <h1 className={cn("text-2xl font-bold text-white", font.className)}>
+        <h1 className={cn("text-2xl font-bold text-white")}>
+        {/* it was: <h1 className={cn("text-2xl font-bold text-white", font.className)}></h1> */}
           Kiraka.ai
         </h1>
       </Link>
