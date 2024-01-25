@@ -1,0 +1,6 @@
+.dashboardBg {
+    min-height: 100vh;
+    /* Increase the alpha value to make the gradient more opaque, e.g., 0.8 */
+    background: linear-gradient(to bottom, rgba(0, 77, 64, 0.9), rgba(38, 166, 154, 0.6));
+  }
+  
