@@ -6,7 +6,7 @@ import { UserButton } from "@clerk/nextjs";
 
 const Sidebar = () => {
   return (
-    <div className="flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white">
+    <div className="flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-r border-gray-700">
       {/* Logo, company name, and horizontal line */}
       <div className="py-4 mb-2 w-full text-center">
         <Link href="/">
@@ -17,7 +17,7 @@ const Sidebar = () => {
             <span className="text-2xl font-bold">Kiraka.ai</span>
           </div>
         </Link>
-        <hr className="border-t border-gray-700 mt-2" /> {/* Horizontal line */}
+        <hr className="border-t border-gray-700 mt-2 w-3/4 mx-auto" /> {/* Horizontal line */}
       </div>
 
       {/* Upload button aligned to the left */}
@@ -40,7 +40,10 @@ const Sidebar = () => {
       <div className="px-3 py-2">
         <UserButton afterSignOutUrl="/" />
       </div>
+
+      
     </div>
+    
   );
 };
 
