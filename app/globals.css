@@ -81,10 +81,11 @@ body,
   }
 }
 
-.highlight-text {
-  border-bottom: 1px solid var(--border);
-  border-color: brown;
+.highlighted {
+  background-color: rgb(113, 113, 113);
+  font-weight: bold;
 }
+
 
 .transparent-text{
   color: transparent;
