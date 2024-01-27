@@ -91,3 +91,43 @@ body,
   color: transparent;
   text-shadow: 0 0 0 var(--border);
 }
+
+.fancyButton {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  margin-top: 20px;
+}
+
+.fancyButton:hover {
+  background-color: #45a049;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.3);
+}
+
+
+.centerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Align items to the top */
+  min-height: 100vh; /* Full height of the viewport */
+  padding: 20px; /* Add some padding */
+}
+
+.textAndButtonContainer {
+  width: 100%; /* Take up full width */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px; /* Space between counter and text */
+}
