@@ -23,7 +23,7 @@ const quizQuestions: QuizQuestion[] = [
   },
   {
     question: "What is a key factor in reducing work-related pressure and enjoying life both inside and outside the workplace?",
-    options: ["Regular breaks", "Time management and task prioritization", "Pursuing personal interests", "Flexible working conditions"],
+    options: ["Regular breaks", "Time management and task prioritisation", "Pursuing personal interests", "Flexible working conditions"],
     answer: "Time management and task prioritisation"
   }
 ];
