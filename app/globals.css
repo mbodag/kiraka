@@ -1,7 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* List of imports for monospaced fonts */
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap'); /* Robot Mono */
 @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700&display=swap'); /* Source Code Pro */
@@ -9,10 +5,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap'); /* Space Mono */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap'); /* JetBrains Mono */
 @import url('https://fonts.googleapis.com/css2?family=Cousine:wght@400;700&display=swap'); /* Cousine*/
-@import url('https://fonts.googleapis.com/css2?family=Oxygen+Mono&display=swap'); /* Oxygen Mono */
 @import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap'); /* Inconsolata */
 @import url('https://fonts.googleapis.com/css2?family=PT+Mono&display=swap'); /* PT Mono */
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap'); /* Ubuntu Mono */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 
  
 html,
@@ -94,12 +94,18 @@ body,
   }
 }
 
+
 .highlighted {
   background-color: rgb(165, 249, 232);
 }
 
+.keyword-highlighted {
+  background-color: rgb(200, 0, 0);
+  color: white; /* Optional: Change text color if needed */
+}
+
 .monospaced {
-  font-family: 'Roboto Mono', monospace;
+  font-family: 'Space Mono', monospace;
 }
 
 .bold {
@@ -150,4 +156,12 @@ body,
   flex-direction: column;
   align-items: center;
   margin-top: 20px; /* Space between counter and text */
+}
+
+.sidebar-button-font {
+  font-size: 15px;
+}
+
+.navbar-dashboard-font {
+  font-size: 15px
 }

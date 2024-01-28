@@ -22,7 +22,7 @@ const Sidebar = () => {
 
       {/* Upload button aligned to the left */}
       <div className="px-3 py-2 mb-4 bg-gray-800">
-        <button className="text-sm w-full max-w-xs p-2 font-medium rounded-lg hover:bg-gray-700 transition">
+        <button className="text-sm w-full max-w-xs p-2 font-medium rounded-lg hover:bg-gray-700 transition sidebar-button-font">
           Upload Files
         </button>
       </div>
@@ -30,7 +30,7 @@ const Sidebar = () => {
       {/* Document buttons aligned to the left */}
       <div className="flex-1 px-3 py-2 space-y-1">
         {Array.from({ length: 5 }, (_, i) => (
-          <button key={`doc-${i+1}`} className="text-sm w-full max-w-xs p-2 font-medium rounded-lg hover:bg-gray-700 transition">
+          <button key={`doc-${i+1}`} className="text-sm w-full max-w-xs p-2 font-medium rounded-lg hover:bg-gray-700 transition sidebar-button-font">
             Document {i + 1}
           </button>
         ))}
