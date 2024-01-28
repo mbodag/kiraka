@@ -13,52 +13,81 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
 }) => {
   const paragraphs = text
     .split("\n")
-    .filter((paragraph: string) => paragraph.trim() !== "");
-  const [paragraphIndex, setParagraphIndex] = useState(0);
-  const [wordIndex, setWordIndex] = useState(0);
+    .filter(paragraph => paragraph.trim() !== "");
+
+  const keywords = ["Deep Reinforcement Learning", "Evolutionary Algorithms", "EAs", "PGA-MAP Elites"];
+
+  // Function to break text into words and keywords
+  const breakIntoWordsAndKeywords = (paragraph: string) => {
+    const regex = new RegExp(`(${keywords.join('|')})|\\S+`, 'g');
+    return paragraph.match(regex) || [];
+  };
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [keywordsHighlighted, setKeywordsHighlighted] = useState(new Set<string>());
 
   useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === "R" || event.key === "r") {
+        setCurrentIndex(0);
+        setKeywordsHighlighted(new Set());
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+
     const intervalId = setInterval(() => {
-      setWordIndex((prevIndex) => {
-        const currentParagraph = paragraphs[paragraphIndex].split(" ");
-        if (prevIndex + 1 < currentParagraph.length) {
-          return prevIndex + 1;
-        } else {
-          // Move to the next paragraph or start over if the last paragraph is reached
-          setParagraphIndex((prevParagraphIndex) =>
-            prevParagraphIndex + 1 < paragraphs.length
-              ? prevParagraphIndex + 1
-              : 0
-          );
-          return 0;
+      setCurrentIndex(prevIndex => {
+        // Check if the current index corresponds to the end of a keyword
+        let currentText = '';
+        let wordCounter = 0;
+        for (const paragraph of paragraphs) {
+          const words = breakIntoWordsAndKeywords(paragraph);
+          for (const word of words) {
+            if (wordCounter === prevIndex && keywords.includes(word)) {
+              setKeywordsHighlighted(prevSet => new Set(prevSet.add(word)));
+            }
+            wordCounter++;
+          }
         }
+
+        return prevIndex + 1;
       });
     }, highlightInterval);
 
-    return () => clearInterval(intervalId); // Cleanup on component unmount
-  }, [paragraphs, paragraphIndex, highlightInterval]);
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [highlightInterval]);
 
   return (
     <div className="highlightable-text-container">
-      {paragraphs.map((paragraph: string, index: number) => (
-        <p
-          key={index}
-          style={{ margin: "5px 0", padding: "0", fontSize: fontSize }}
-        >
-          {paragraph.split(" ").map((word, wordIndexInParagraph) => (
-            <span
-              key={wordIndexInParagraph}
-              className={
-                paragraphIndex === index && wordIndexInParagraph === wordIndex
-                  ? "highlighted bold"
-                  : ""
-              }
-            >
-              {word}{" "}
-            </span>
-          ))}
-        </p>
-      ))}
+      {paragraphs.map((paragraph, pIndex) => {
+        const wordsAndKeywords = breakIntoWordsAndKeywords(paragraph);
+        return (
+          <p key={pIndex} style={{ margin: "5px 0", padding: "0", fontSize: fontSize }}>
+            {wordsAndKeywords.map((wordOrKeyword, wIndex) => {
+              const globalIndex = paragraphs
+                .slice(0, pIndex)
+                .flatMap(paragraph => breakIntoWordsAndKeywords(paragraph))
+                .concat(wordsAndKeywords.slice(0, wIndex)).length;
+
+              const isHighlighted = currentIndex === globalIndex;
+              const isKeyword = keywords.includes(wordOrKeyword);
+              const className = isHighlighted
+                ? isKeyword ? "highlighted keyword-highlighted" : "highlighted"
+                : keywordsHighlighted.has(wordOrKeyword) ? "keyword-highlighted" : "";
+
+              return (
+                <span key={wIndex} className={className}>
+                  {wordOrKeyword}{" "}
+                </span>
+              );
+            })}
+          </p>
+        );
+      })}
     </div>
   );
 };

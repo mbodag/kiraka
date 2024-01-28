@@ -7,7 +7,7 @@ const QuizPage: React.FC = () => {
   return (
       <div
         className={
-          styles.dashboardBg + " flex justify-center pt-16 pb-8 min-h-screen"
+          styles.dashboardBg + " flex justify-center pt-10 pb-8 min-h-screen"
         }
       >
         <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-auto p-8 my-2">
