@@ -1,8 +1,10 @@
+import React from 'react';
+import Link from "next/link";
 import MobileSidebar from "./mobile-sidebar";
 import ModeToggle from "./modetoggle";
 import { Button } from "./ui/button";
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
   return (
     <div className="flex justify-between items-center py-4 px-8 w-full"
       style={{
@@ -10,7 +12,9 @@ const Navbar = () => {
       }}>
       <div className="flex-1 flex items-center"> {/* Container for left side */}
         <MobileSidebar />
-        <Button className="ml-4 bg-green-200/30 hover:bg-green-200/50 text-white">Quiz</Button> {/* Added Quiz button */}
+        <Link href="/quiz" passHref>
+          <Button className="ml-4 bg-green-200/30 hover:bg-green-200/50 text-white">Quiz</Button>
+        </Link>
       </div>
       <div className="flex-1 flex justify-center"> {/* Centered mode buttons */}
         <ModeToggle />

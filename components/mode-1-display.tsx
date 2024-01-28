@@ -59,10 +59,18 @@ const Mode1Display = () => {
     <div className='centerContainer'>
       <CounterDisplay count={wordsPerMinute} fontSize="16px" />
       <div className='textAndButtonContainer'>
-        <HighlightableText
-          text={shortStory}
-          highlightInterval={60000 / wordsPerMinute}
-        />
+        <div className='monospaced' style={{
+          backgroundColor: 'white',
+          boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
+          padding: '20px',
+          borderRadius: '10px',
+          margin: '10px',
+        }}>
+          <HighlightableText
+            text={shortStory}
+            highlightInterval={60000 / wordsPerMinute}
+          />
+        </div>
         <button className='fancyButton' onClick={handleGetSummary}>
           Get Summary
         </button>

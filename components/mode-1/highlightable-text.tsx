@@ -50,7 +50,7 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
               key={wordIndexInParagraph}
               className={
                 paragraphIndex === index && wordIndexInParagraph === wordIndex
-                  ? "highlighted"
+                  ? "highlighted bold"
                   : ""
               }
             >

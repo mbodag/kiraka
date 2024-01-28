@@ -1,6 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* List of imports for monospaced fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap'); /* Robot Mono */
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700&display=swap'); /* Source Code Pro */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap'); /* Fira Code */
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap'); /* Space Mono */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap'); /* JetBrains Mono */
+@import url('https://fonts.googleapis.com/css2?family=Cousine:wght@400;700&display=swap'); /* Cousine*/
+@import url('https://fonts.googleapis.com/css2?family=Oxygen+Mono&display=swap'); /* Oxygen Mono */
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap'); /* Inconsolata */
+@import url('https://fonts.googleapis.com/css2?family=PT+Mono&display=swap'); /* PT Mono */
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap'); /* Ubuntu Mono */
+
  
 html,
 body,
@@ -82,7 +95,14 @@ body,
 }
 
 .highlighted {
-  background-color: rgb(113, 113, 113);
+  background-color: rgb(165, 249, 232);
+}
+
+.monospaced {
+  font-family: 'Roboto Mono', monospace;
+}
+
+.bold {
   font-weight: bold;
 }
 
