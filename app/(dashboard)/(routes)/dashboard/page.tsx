@@ -1,7 +1,7 @@
 import { UserButton } from "@clerk/nextjs";
 import styles from './DashboardPage.module.css';
 import DashboardLayout from '../layout';
-import Mode1Display from "@/components/mode-1-display";
+import Mode1Display from "@/components/mode-1/mode-1-display";
 
 const DashboardPage: React.FC = () => {
   return (

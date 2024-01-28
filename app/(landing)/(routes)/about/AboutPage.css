@@ -45,4 +45,3 @@
     opacity: 0; /* Start with the element transparent */
     animation: gradientFadeIn 3s ease forwards 1s; /* Delay should match the typewriter duration */
   }
-    

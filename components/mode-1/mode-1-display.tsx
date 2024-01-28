@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import HighlightableText from "./mode-1/highlightable-text";
+import HighlightableText from "./highlightable-text";
 import CounterDisplay from "./counter-display";
 import '@/app/globals.css';
 
