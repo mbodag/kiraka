@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import styles from '@/app/(dashboard)/(routes)/quiz/QuizDisplay.module.css';
-import Link from 'next/link';
 
 interface QuizQuestion {
   question: string;
@@ -25,37 +24,50 @@ const quizQuestions: QuizQuestion[] = [
   {
     question: "What is a key factor in reducing work-related pressure and enjoying life both inside and outside the workplace?",
     options: ["Regular breaks", "Time management and task prioritization", "Pursuing personal interests", "Flexible working conditions"],
-    answer: "Time management and task prioritization"
+    answer: "Time management and task prioritisation"
   }
 ];
 
 const QuizDisplay: React.FC = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [selectedOption, setSelectedOption] = useState<string>("");
+  const [score, setScore] = useState<number>(0);
+  const [quizCompleted, setQuizCompleted] = useState<boolean>(false);
 
   const handleOptionChange = (option: string) => {
     setSelectedOption(option);
   };
 
   const handleNextQuestion = () => {
-    // For now, it simply moves to the next question
+    if (selectedOption === quizQuestions[currentQuestionIndex].answer) {
+      setScore(score + 1);
+    }
+
     if (currentQuestionIndex < quizQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedOption("");
     } else {
-      // Handle the end of the quiz
-      console.log("Quiz completed");
+      setQuizCompleted(true);
     }
   };
 
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
-      setSelectedOption("");
+      setSelectedOption(quizQuestions[currentQuestionIndex - 1].answer);
     }
   };
 
   const question = quizQuestions[currentQuestionIndex];
+
+  if (quizCompleted) {
+    return (
+      <div className="quiz-container">
+        <h2 className="quiz-title">Quiz Completed!</h2>
+        <p className="quiz-score">Your score: {score} out of {quizQuestions.length}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="quiz-container">
