@@ -6,7 +6,7 @@ import styles from '../dashboard/DashboardPage.module.css';
 const QuizPage: React.FC = () => {
   return (
     <DashboardLayout navbarType="quiz">
-      <div className={styles.dashboardBg + " flex justify-center pt-10 pb-8 min-h-screen"}>
+      <div className={styles.dashboardBg + " flex justify-center pt-20 pb-8 min-h-screen"}>
         <div>
           <QuizDisplay />
         </div>
