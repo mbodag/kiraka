@@ -97,11 +97,17 @@ body,
 
 .highlighted {
   background-color: rgb(165, 249, 232);
+  color: black
 }
 
-.keyword-highlighted {
+/* .keyword-highlighted {
   background-color: rgb(200, 0, 0);
   color: white; /* Optional: Change text color if needed */
+/* } */
+
+.keyword-highlighted {
+  color: rgb(200, 0, 0);
+  font-weight: bold;
 }
 
 .monospaced {

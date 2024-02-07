@@ -15,11 +15,17 @@ const Mode1Display = () => {
 
   const [wordsPerMinute, setNumber] = useState(300);
   const [backgroundColor, setBackgroundColor] = useState('white'); // Initialise background color to 'white'
+  const [textColor, setTextColor] = useState('white'); // Initialise text color to 'white'
   const [summary, setSummary] = useState('');
 
   const toggleBackgroundColor = () => {
     // Toggle the background color between 'white' and 'black'
     setBackgroundColor((prevColor) => (prevColor === 'white' ? 'black' : 'white'));
+  };
+
+  const toggleTextColor = () => {
+    // Toggle the text color between 'black' and 'white'
+    setTextColor((prevColor) => (prevColor === 'white' ? 'black' : 'white'));
   };
 
   useEffect(() => {
@@ -31,6 +37,9 @@ const Mode1Display = () => {
       } else if (event.key === "b" || event.key === "B") {
         // When the "B" or "b" key is pressed, toggle the background color
         toggleBackgroundColor();
+      } else if (event.key === "t" || event.key === "T") {
+        // When the "H" or "h" key is pressed, toggle the text color
+        toggleTextColor();
       }
     };
 
@@ -76,6 +85,7 @@ const Mode1Display = () => {
         <div
           className='monospaced'
           style={{
+            color: textColor, // Apply the textColor state variable here
             backgroundColor, // Use the state variable for background color
             boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
             padding: '20px',

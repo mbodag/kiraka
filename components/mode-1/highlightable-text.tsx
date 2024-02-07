@@ -42,18 +42,25 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [highlightedKeywordIndices, setHighlightedKeywordIndices] = useState(new Set<number>());
+  const [isPaused, setIsPaused] = useState(true); // Highlighting deactivated by default
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "R" || event.key === "r") {
         setCurrentIndex(0);
         setHighlightedKeywordIndices(new Set());
-      }
-    };
+      } else if (event.key === " ") { // Listen for the spacebar
+      event.preventDefault(); // Prevent the default spacebar action (e.g., page scrolling)
+      setIsPaused(prevIsPaused => !prevIsPaused); // Toggle pause/start
+    }
+  };
 
     window.addEventListener("keydown", handleKeyPress);
 
-    const intervalId = setInterval(() => {
+    let intervalId: NodeJS.Timeout | null = null;
+
+  if (!isPaused) {
+    intervalId = setInterval(() => {
       setCurrentIndex(prevIndex => {
         let wordCounter = 0;
         paragraphs.forEach(paragraph => {
@@ -68,12 +75,15 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
         return prevIndex + 1;
       });
     }, highlightInterval);
+  } else if (intervalId) {
+    clearInterval(intervalId);
+  }
 
-    return () => {
-      clearInterval(intervalId);
-      window.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [highlightInterval]);
+  return () => {
+    if (intervalId) clearInterval(intervalId);
+    window.removeEventListener("keydown", handleKeyPress);
+  };
+}, [highlightInterval, isPaused]); // Add isPaused to the dependency array
 
   return (
     <div className="highlightable-text-container">
