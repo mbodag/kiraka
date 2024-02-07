@@ -35,7 +35,7 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
   const breakIntoWordsAndKeywords = (paragraph: string) => {
     // Extended regex (regular expression) to include common punctuation and brackets
     const regex = new RegExp(
-      `(${keywords.join('|')})(?=[.,;!?()\\[\\]{}\"'”“’‘\\s]|$)|\\S+`, 'g'
+      `(${keywords.join('|')})(?=[\\s]|$)|\\S+`, 'g'
     );
     return paragraph.match(regex) || [];
   };
@@ -102,8 +102,11 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
               globalIndex++;
 
               return (
-                <span key={wIndex} className={className}>
-                  {wordOrKeyword}{" "}
+                <span><span key={wIndex} className={className}>
+                  {wordOrKeyword}
+                </span>
+                <span>{" "}
+                </span>
                 </span>
               );
             })}
