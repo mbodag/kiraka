@@ -1,19 +1,31 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface ExtendedWindow extends Window {
   webgazer?: any; // Adjust the type based on the 'webgazer' object
 }
 
-export default function Mode2Display() {
+let extendedWindow: ExtendedWindow | undefined;
+
+if (typeof window !== "undefined") {
+  extendedWindow = window as ExtendedWindow;
+}
+
+export default function WebgazerCalibration() {
   const [webgazerInitialized, setWebgazerInitialized] = useState(false);
   const [calibrationStarted, setCalibrationStarted] = useState(false);
   const [calibrationPoints, setCalibrationPoints] = useState({});
   const [showInstructions, setShowInstructions] = useState(true);
+  const [allCalibrated, setAllCalibrated] = useState(false);
 
   const startCalibration = () => {
     setCalibrationStarted(true);
+    if (extendedWindow) {
+      extendedWindow.webgazer.showPredictionPoints(true);
+    }
     setShowInstructions(false);
   };
 
@@ -29,14 +41,25 @@ export default function Mode2Display() {
 
   const initWebgazer = async () => {
     try {
-      const webgazerModule = await require("webgazer");
-      const extendedWindow = window as ExtendedWindow;
-      extendedWindow.webgazer = webgazerModule.default;
-      extendedWindow.webgazer
-        .setGazeListener((data: any) => {
-          // gaze listener
-        })
-        .begin();
+      const webgazerModule = require("webgazer");
+
+      if (extendedWindow) {
+        extendedWindow.webgazer = webgazerModule.default
+          .setRegression("weightedRidge")
+          .setTracker("TFFacemesh")
+          .applyKalmanFilter(true)
+          .showVideo(true)
+          .showPredictionPoints(false)
+          .addMouseEventListeners()
+          .saveDataAcrossSessions(false);
+
+        extendedWindow.webgazer
+          .setGazeListener((data: any, elapsedTime: number) => {
+            // gaze listener
+            console.log(data, elapsedTime);
+          })
+          .begin();
+      }
       setWebgazerInitialized(true);
     } catch (err) {
       console.error(err);
@@ -45,23 +68,47 @@ export default function Mode2Display() {
 
   const initCalibrationPoints = () => {
     setCalibrationPoints({
-      Pt1: { x: 350, y: 50, clicks: 0 },
-      Pt2: { x: window.innerWidth - 50, y: 50, clicks: 0 },
-      Pt3: { x: window.innerWidth - 50, y: window.innerHeight - 50, clicks: 0 },
-      Pt4: { x: 50, y: window.innerHeight - 50, clicks: 0 },
+      Pt1: {
+        x: window.innerWidth / 2 - 300,
+        y: window.innerHeight / 2 + 300,
+        clicks: 0,
+      },
+      Pt2: {
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2 + 300,
+        clicks: 0,
+      },
+      Pt3: {
+        x: window.innerWidth / 2 + 300,
+        y: window.innerHeight / 2 + 300,
+        clicks: 0,
+      },
+      Pt4: {
+        x: window.innerWidth / 2 - 300,
+        y: window.innerHeight / 2,
+        clicks: 0,
+      },
       Pt5: { x: window.innerWidth / 2, y: window.innerHeight / 2, clicks: 0 },
-      Pt6: { x: (50 + window.innerWidth - 50) / 2, y: 50, clicks: 0 }, // Top-center
+      Pt6: {
+        x: window.innerWidth / 2 + 300,
+        y: window.innerHeight / 2,
+        clicks: 0,
+      }, // Top-center
       Pt7: {
-        x: window.innerWidth - 50,
-        y: (50 + window.innerHeight - 50) / 2,
+        x: window.innerWidth / 2 - 300,
+        y: window.innerHeight / 2 - 300,
         clicks: 0,
       }, // Right-center
       Pt8: {
-        x: (50 + window.innerWidth - 50) / 2,
-        y: window.innerHeight - 50,
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2 - 300,
         clicks: 0,
       }, // Bottom-center
-      Pt9: { x: 50, y: (50 + window.innerHeight - 50) / 2, clicks: 0 }, // Left-center
+      Pt9: {
+        x: window.innerWidth / 2 + 300,
+        y: window.innerHeight / 2 - 300,
+        clicks: 0,
+      }, // Left-center
     });
   };
 
@@ -79,9 +126,28 @@ export default function Mode2Display() {
     );
     if (allCalibrated) {
       console.log("All calibration points complete");
+      setAllCalibrated(true);
       setCalibrationStarted(false);
+      if (extendedWindow) {
+        extendedWindow.webgazer
+          .showPredictionPoints(true)
+          .showVideo(false)
+          .removeMouseEventListeners();
+      }
+
+      initCalibrationPoints();
     }
   };
+
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <div>
@@ -138,6 +204,11 @@ export default function Mode2Display() {
             {pointId}
           </button>
         ))}
+      {allCalibrated && (
+        <Link href="../dashboard">
+          <Button>Go Back</Button>
+        </Link>
+      )}
       {showInstructions && (
         <div
           style={{
@@ -181,48 +252,3 @@ export default function Mode2Display() {
     </div>
   );
 }
-// "use client";
-
-// import React, { useState, useEffect } from "react";
-
-// interface ExtendedWindow extends Window {
-//   webgazer?: any; // Adjust the type based on the 'webgazer' object
-// }
-
-// const Home: React.FC = () => {
-//   const [webgazerInitialized, setWebgazerInitialized] = useState(false);
-
-//   const initWebgazer = async () => {
-//     let webgazerModule;
-
-//     try {
-//       webgazerModule = await import("webgazer");
-//       const extendedWindow = window as ExtendedWindow;
-
-//       extendedWindow.webgazer = webgazerModule.default;
-//       extendedWindow.webgazer
-//         .setGazeListener((data: any) => {
-//           // gaze listener
-//           console.log(data);
-//         })
-//         .begin();
-
-//       setWebgazerInitialized(true);
-//     } catch (err) {
-//       console.error(err);
-//     }
-//   };
-
-//   useEffect(() => {
-//     initWebgazer();
-//   }, []);
-
-//   return (
-//     <div>
-//       <h1>My Next.js App with WebGazer</h1>
-//       {webgazerInitialized && <p>WebGazer initialized!</p>}
-//     </div>
-//   );
-// };
-
-// export default Home;
