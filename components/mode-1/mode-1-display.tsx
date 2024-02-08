@@ -77,20 +77,6 @@ const Mode1Display = () => {
       console.error('Error getting summary:', error);
     }
   }; 
-  const fetchData = async () => {
-    try {
-      const response = await fetch('http://127.0.0.1:5000/summarize', {
-        method: 'GET',
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      console.log(data.text_content)
-    } catch (error) {
-      console.error('Error getting summary:', error);
-    }
-    };
 
   useEffect(() => {
     const fetchData = async () => {

@@ -12,7 +12,7 @@ const ModeToggle = () => {
         Mode 1
       </Button>{" "}
       {/* Semi-transparent green buttons */}
-      <Link href="/mode2">
+      <Link href="/calibration">
         <Button className="bg-green-200/30 hover:bg-green-200/50 text-white navbar-dashboard-font">
           Mode 2
         </Button>
