@@ -1,11 +1,16 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import HighlightableText from "./highlightable-text";
 import CounterDisplay from "./counter-display";
 import '@/app/globals.css';
 
 const Mode1Display = () => {
-  const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. The relentless pursuit of productivity often leads to increased stress and a higher risk of burnout. It's crucial to set clear boundaries between work responsibilities and personal life. Effective time management and task prioritization are keys to reducing work-related pressure. These strategies allow individuals to enjoy a more fulfilling life both inside and outside the workplace.
+
+  const [wordsPerMinute, setNumber] = useState(300);
+  const [backgroundColor, setBackgroundColor] = useState('white'); // Initialise background color to 'white'
+  const [textColor, setTextColor] = useState('white'); // Initialise text color to 'white'
+  const [summary, setSummary] = useState('');
+  const [shortStory, setShortStory] = useState(`In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. The relentless pursuit of productivity often leads to increased stress and a higher risk of burnout. It's crucial to set clear boundaries between work responsibilities and personal life. Effective time management and task prioritization are keys to reducing work-related pressure. These strategies allow individuals to enjoy a more fulfilling life both inside and outside the workplace.
 
   Engaging in hobbies, pursuing personal interests, and spending quality time with family and friends are essential components of a well-rounded life. These activities offer opportunities for relaxation and personal growth, contributing to overall happiness and satisfaction.
   
@@ -13,10 +18,7 @@ const Mode1Display = () => {
   
   Ultimately, achieving a balance between work and life leads to improved mental and physical health, heightened job performance, and a richer, more rewarding life experience. It's about finding a rhythm that allows for both career progression and personal contentment, ensuring long-term happiness and success.`
 
-  const [wordsPerMinute, setNumber] = useState(300);
-  const [backgroundColor, setBackgroundColor] = useState('white'); // Initialise background color to 'white'
-  const [textColor, setTextColor] = useState('white'); // Initialise text color to 'white'
-  const [summary, setSummary] = useState('');
+);
 
   const toggleBackgroundColor = () => {
     // Toggle the background color between 'white' and 'black'
@@ -28,6 +30,7 @@ const Mode1Display = () => {
     setTextColor((prevColor) => (prevColor === 'white' ? 'black' : 'white'));
   };
 
+  // Set the effects of the keys being pressed 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "ArrowRight") {
@@ -68,16 +71,44 @@ const Mode1Display = () => {
       }
 
       const data = await response.json();
+      console.log(data.summary)
       setSummary(data.summary);
     } catch (error) {
       console.error('Error getting summary:', error);
     }
-  };
+  }; 
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:5000/summarize', {
+        method: 'GET',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      console.log(data.text_content)
+    } catch (error) {
+      console.error('Error getting summary:', error);
+    }
+    };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:5000/api/texts/random');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setShortStory(data.text_content);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }; 
+    fetchData();
+  }, []);
 
-
-
-
+ 
   return (
     <div className='centerContainer'>
       <CounterDisplay count={wordsPerMinute} fontSize="16px" />
