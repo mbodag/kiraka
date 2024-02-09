@@ -6,14 +6,14 @@ import '@/app/globals.css';
 
 const Mode1Display = () => {
   const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. The relentless pursuit of productivity often leads to increased stress and a higher risk of burnout. It's crucial to set clear boundaries between work responsibilities and personal life. Effective time management and task prioritization are keys to reducing work-related pressure. These strategies allow individuals to enjoy a more fulfilling life both inside and outside the workplace.
-  _
+  
   Engaging in hobbies, pursuing personal interests, and spending quality time with family and friends are essential components of a well-rounded life. These activities offer opportunities for relaxation and personal growth, contributing to overall happiness and satisfaction.
-  _
+  
   On the professional front, employers play a significant role in promoting a healthy work environment. This includes offering flexible working conditions, encouraging regular breaks, and recognizing the importance of mental health. Supportive workplace cultures that value employee well-being lead to increased productivity, greater job satisfaction, and lower turnover rates.
-  _
+  
   Ultimately, achieving a balance between work and life leads to improved mental and physical health, heightened job performance, and a richer, more rewarding life experience. It's about finding a rhythm that allows for both career progression and personal contentment, ensuring long-term happiness and success.`
 
-  const [wordsPerMinute, setNumber] = useState(300);
+  const [wordsPerMinute, setWordsPerMinute] = useState(300);
   const [backgroundColor, setBackgroundColor] = useState('white'); // Initialise background color to 'white'
   const [textColor, setTextColor] = useState('white'); // Initialise text color to 'white'
   const [summary, setSummary] = useState('');
@@ -22,7 +22,7 @@ const Mode1Display = () => {
     // Toggle the background color between 'white' and 'black'
     setBackgroundColor((prevColor) => (prevColor === 'white' ? 'black' : 'white'));
   };
-
+ 
   const toggleTextColor = () => {
     // Toggle the text color between 'black' and 'white'
     setTextColor((prevColor) => (prevColor === 'white' ? 'black' : 'white'));
@@ -31,9 +31,9 @@ const Mode1Display = () => {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "ArrowRight") {
-        setNumber((prevNumber) => prevNumber + 20);
+        setWordsPerMinute(prevWPM => Math.min(prevWPM + 20, 1000)); // Increase WPM with upper bound
       } else if (event.key === "ArrowLeft") {
-        setNumber((prevNumber) => prevNumber - 20);
+        setWordsPerMinute(prevWPM => Math.max(prevWPM - 20, 50)); // Decrease WPM with lower bound
       } else if (event.key === "b" || event.key === "B") {
         // When the "B" or "b" key is pressed, toggle the background color
         toggleBackgroundColor();

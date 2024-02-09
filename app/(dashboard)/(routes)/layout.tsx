@@ -1,19 +1,27 @@
 import StandardNavbar from "@/components/navbar";
+import StandardWebGazerNavbar from "@/components/navbar_webgazer";
 import QuizNavbar from "@/components/quiz-navbar";
 import Sidebar from "@/components/sidebar";
 import React from "react";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  navbarType?: 'standard' | 'quiz';
+  navbarType?: 'standard-manual' | 'quiz' | 'standard-auto';
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, navbarType }) => {
   let navbar;
   let sidebar;
 
-  if (navbarType === 'standard') {
+  if (navbarType === 'standard-manual') {
     navbar = <StandardNavbar />;
+    sidebar = (
+      <div className="hidden h-full md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 z-[80] bg-gray-900">
+        <Sidebar />
+      </div>
+    );
+  } else if (navbarType === 'standard-auto') {
+    navbar = <StandardWebGazerNavbar />;
     sidebar = (
       <div className="hidden h-full md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 z-[80] bg-gray-900">
         <Sidebar />

@@ -5,7 +5,7 @@ import Mode1Display from "@/components/mode-1/mode-1-display";
 
 const DashboardPage: React.FC = () => {
   return (
-    <DashboardLayout navbarType="standard">
+    <DashboardLayout navbarType="standard-manual">
       <div
         className={
           styles.dashboardBg + " flex justify-center pt-10 pb-8 min-h-screen"

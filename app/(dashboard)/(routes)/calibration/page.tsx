@@ -200,7 +200,7 @@ export default function WebgazerCalibration() {
         ))}
       {/* Link to Dashboard if All Calibrated */}
       {allCalibrated && (
-        <Link href="../dashboard">
+        <Link href="../webgazer-mode-2">
           <Button>Go Back</Button>
         </Link>
       )}
