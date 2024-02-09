@@ -4,22 +4,13 @@ import React, { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-interface ExtendedWindow extends Window {
-  webgazer?: any; // Adjust the type based on the 'webgazer' object
-}
+// Type definitions for extended window object and calibration points
+interface ExtendedWindow extends Window { webgazer?: any; } // Adjust the type based on the 'webgazer' object
+interface CalibrationPoint { x: number; y: number; clicks: number; }
+interface CalibrationPoints { [key: string]: CalibrationPoint; }
 
-interface CalibrationPoint {
-  x: number;
-  y: number;
-  clicks: number;
-}
-
-interface CalibrationPoints {
-  [key: string]: CalibrationPoint;
-}
-
+// Extend the window object to include webgazer
 let extendedWindow: ExtendedWindow | undefined;
-
 if (typeof window !== "undefined") {
   extendedWindow = window as ExtendedWindow;
 }
