@@ -21,7 +21,7 @@ const Mode2Display = () => {
   const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
   const [wordsPerMinute, setWordsPerMinute] = useState(300); // Words per minute, adjustable
   const [isPaused, setIsPaused] = useState(true); // Add a state to track whether the flashing is paused
-  const [webgazerActive, setWebgazerActive] = useState(false); // Track if WebGazer is active
+  const [webgazerActive, setWebgazerActive] = useState<false>(false); // Track if WebGazer is active
   
   // Ref for managing interval cleanly
   const intervalRef = useRef(null);
@@ -39,7 +39,6 @@ const Mode2Display = () => {
         setIsPaused((prevIsPaused) => !prevIsPaused); // Toggle pause/start
       }
     };
-  
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, []);
