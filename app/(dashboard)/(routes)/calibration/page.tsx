@@ -82,15 +82,15 @@ export default function WebgazerCalibration() {
     setCalibrationPoints({
       // Each point is positioned relative to the screen's width and height
       // and initialised with 0 clicks
-      Pt1: { x: window.innerWidth / 2 - 500, y: window.innerHeight / 2 - 450, clicks: 0 },
-      Pt2: { x: window.innerWidth / 2, y: window.innerHeight / 2 - 450, clicks: 0 },
-      Pt3: { x: window.innerWidth / 2 + 500, y: window.innerHeight / 2 - 450, clicks: 0 },
-      Pt4: { x: window.innerWidth / 2 - 500, y: window.innerHeight / 2, clicks: 0 },
+      Pt1: { x: 350, y: 50, clicks: 0 },
+      Pt2: { x: window.innerWidth / 2, y: 50, clicks: 0 },
+      Pt3: { x: window.innerWidth -50, y: 50, clicks: 0 },
+      Pt4: { x: 50, y: window.innerHeight / 2, clicks: 0 },
       Pt5: { x: window.innerWidth / 2, y: window.innerHeight / 2, clicks: 0 },
-      Pt6: { x: window.innerWidth / 2 + 500, y: window.innerHeight / 2, clicks: 0 }, // Top-center
-      Pt7: { x: window.innerWidth / 2 - 500, y: window.innerHeight / 2 + 400, clicks: 0 }, // Right-center
-      Pt8: { x: window.innerWidth / 2, y: window.innerHeight / 2 + 400, clicks: 0 }, // Bottom-center
-      Pt9: { x: window.innerWidth / 2 + 500, y: window.innerHeight / 2 + 400, clicks: 0 }, // Left-center
+      Pt6: { x: window.innerWidth - 50, y: window.innerHeight / 2, clicks: 0 }, // Top-center
+      Pt7: { x: 50, y: window.innerHeight - 50, clicks: 0 }, // Right-center
+      Pt8: { x: window.innerWidth / 2, y: window.innerHeight - 50, clicks: 0 }, // Bottom-center
+      Pt9: { x: window.innerWidth - 50, y: window.innerHeight - 50, clicks: 0 }, // Left-center
     });
   };
 
