@@ -17,13 +17,12 @@ const Mode2Display = () => {
     //   const maxCharsPerChunk = 60; // Example character limit
     //   const wordChunks = shortStory.match(new RegExp('.{1,' + maxCharsPerChunk + '}(\\s|$)', 'g')) || [];
 
-
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
     const [wordsPerMinute, setWordsPerMinute] = useState(300); // Words per minute, adjustable
     const [isPaused, setIsPaused] = useState(true); // Add a state to track whether the flashing is paused
     const [maxCharsPerChunk, setMaxCharsPerChunk] = useState(60); // Initial value, will be updated
 
-    //   const [webgazerActive, setWebgazerActive] = useState<false>(false); // Track if WebGazer is active
+    const [webgazerActive, setWebgazerActive] = useState<false>(false); // Track if WebGazer is active
     
     //   // Ref for managing interval cleanly
     //   const intervalRef = useRef(null);

@@ -1,29 +1,51 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-interface WebGazerContextState {
-  webgazerActive: boolean;
-  setWebgazerActive: React.Dispatch<React.SetStateAction<boolean>>;
+// Reset WebGazerActive state in localStorage on page load
+const resetWebGazerActiveOnReload = () => {
+  const navigationEntries = performance.getEntriesByType("navigation");
+  if (navigationEntries.length > 0 && 'type' in navigationEntries[0] && navigationEntries[0].type === 'reload') {
+    localStorage.setItem('webGazerActive', 'false');
+  }
+};
+
+// Immediately invoke the above function to ensure it runs once on page load
+resetWebGazerActiveOnReload();
+
+
+interface WebGazerContextType {
+  isWebGazerActive: boolean;
+  setWebGazerActive: (isActive: boolean) => void;
 }
 
-const WebGazerContext = createContext<WebGazerContextState | undefined>(undefined);
+const WebGazerContext = createContext<WebGazerContextType | undefined>(undefined);
 
-interface WebGazerProviderProps {
-  children: ReactNode;
-}
+export const WebGazerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isWebGazerActive, setIsWebGazerActive] = useState(false);
 
-export const WebGazerProvider: React.FC<WebGazerProviderProps> = ({ children }) => {
-  const [webgazerActive, setWebgazerActive] = useState(false);
+  useEffect(() => {
+    // Once the component mounts, check localStorage and update state accordingly
+    const isActive = localStorage.getItem('webGazerActive') === 'true';
+    setIsWebGazerActive(isActive);
+  }, []);
+
+  const setWebGazerActive = (isActive: boolean) => {
+    setIsWebGazerActive(isActive);
+    // Ensure this runs only on client side
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('webGazerActive', isActive.toString());
+    }
+  };
 
   return (
-    <WebGazerContext.Provider value={{ webgazerActive, setWebgazerActive }}>
+    <WebGazerContext.Provider value={{ isWebGazerActive, setWebGazerActive }}>
       {children}
     </WebGazerContext.Provider>
   );
 };
 
-export const useWebGazer = () => {
+export const useWebGazer = (): WebGazerContextType => {
   const context = useContext(WebGazerContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useWebGazer must be used within a WebGazerProvider');
   }
   return context;

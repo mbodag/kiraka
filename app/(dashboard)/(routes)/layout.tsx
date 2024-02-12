@@ -1,8 +1,12 @@
+"use client"
+
+import React from "react";
 import StandardNavbar from "@/components/navbar";
 import StandardWebGazerNavbar from "@/components/navbar_webgazer";
 import QuizNavbar from "@/components/quiz-navbar";
 import Sidebar from "@/components/sidebar";
-import React from "react";
+import { WebGazerProvider } from "@/contexts/WebGazerContext";
+
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -37,13 +41,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, navbarType 
   }
 
   return (
-    <div className="h-full relative">
-      {sidebar}
-      <main className={`${navbarType ? 'md:pl-72' : ''}`}>
-        {navbar}
-        {children}
-      </main>
-    </div>
+    <WebGazerProvider> {/* Wrap the entire layout in WebGazerProvider */}
+      <div className="h-full relative">
+        {sidebar}
+        <main className={`${navbarType ? 'md:pl-72' : ''}`}>
+          {navbar}
+          {children}
+        </main>
+      </div>
+    </WebGazerProvider>
   );
 };
 

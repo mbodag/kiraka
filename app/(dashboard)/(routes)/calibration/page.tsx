@@ -1,8 +1,10 @@
 "use client";
 
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useWebGazer } from '@/contexts/WebGazerContext';
+// import webgazer from "webgazer";
 
 // Type definitions for extended window object and calibration points
 interface ExtendedWindow extends Window { webgazer?: any; } // Adjust the type based on the 'webgazer' object
@@ -22,33 +24,44 @@ export default function WebgazerCalibration() {
   const [showInstructions, setShowInstructions] = useState(true);
   const [allCalibrated, setAllCalibrated] = useState(false);
 
+  // Accessing setWebgazerActive from context
+  const { isWebGazerActive, setWebGazerActive } = useWebGazer();
+
+  // Function to start the calibration process
   const startCalibration = () => {
     setCalibrationStarted(true);
-    if (extendedWindow) {
-      extendedWindow.webgazer.showPredictionPoints(true); // if bool is true: shows a circle with the current best guess given by the prediction model; if bool is false: turns off the prediction circle
+    if (extendedWindow && extendedWindow.webgazer) {
+      // Show prediction points if WebGazer is available
+      extendedWindow.webgazer.showPredictionPoints(true);
     }
-    setShowInstructions(false);
+    setShowInstructions(false); // Hide instructions overlay
   };
 
+  // Function to hide instructions when the user clicks "Got it"
   const handleGotItClick = () => {
     setShowInstructions(false);
   };
 
+  // useEffect hook to initialise calibration points once WebGazer is initialised
   useEffect(() => {
     if (webgazerInitialized) {
       initCalibrationPoints();
     }
   }, [webgazerInitialized]);
 
+  useEffect(() => {
+    console.log("Is WebGazer Active (updated):", isWebGazerActive);
+  }, [isWebGazerActive]);
+
 
   // Asynchronous function to initialise the WebGazer library
   const initWebgazer = async () => {
+    if (!extendedWindow) return; // Exit if we don't have window object
+
     try {
       // Dynamically imports the WebGazer library
-      const webgazerModule = require("webgazer");
+      const webgazerModule = await import("webgazer");
 
-      // Checks if the extendedWindow object is available (browser environment)
-      if (extendedWindow) {
         // Configures WebGazer with specific settings
         extendedWindow.webgazer = webgazerModule.default
           .setRegression("weightedRidge") // Sets the regression model to "weightedRidge"
@@ -62,16 +75,24 @@ export default function WebgazerCalibration() {
         // Sets up a gaze listener to log data and elapsed time for each prediction
         extendedWindow.webgazer
           .setGazeListener((data: any, elapsedTime: number) => {
+            if (data == null) {
+              return; // Exit if data is null
+            }
+            var xprediction = data.x; // Extract the x-coordinate
+            var yprediction = data.y; // Extract the y-coordinate
+
             // gaze listener
-            console.log(data, elapsedTime);
+            // console.log("X prediction:", xprediction, "Y prediction:", yprediction, "Elapsed Time:", elapsedTime);
           })
           .begin(); // Starts the WebGazer eye-tracking
-      }
+      
       // Marks WebGazer as initialised
+      console.log("Initialising WebGazer...");
       setWebgazerInitialized(true);
-    } catch (err) {
-      // Logs any errors that occur during the initialisation
-      console.error(err);
+      setWebGazerActive(true); // Update context to reflect active state
+    } catch (error) {
+      console.error("Failed to initialise WebGazer:", error);
+      setWebGazerActive(false); // Ensure context is updated on failure
     }
   };
 
@@ -127,7 +148,7 @@ export default function WebgazerCalibration() {
     }
   };
 
-  // State hook to track if the component has mounted
+  // // State hook to track if the component has mounted
   const [isMounted, setIsMounted] = useState(false);
 
   // Effect hook to set isMounted to true after the component has mounted
@@ -139,7 +160,7 @@ export default function WebgazerCalibration() {
   if (!isMounted) {
     return null;  // Renders nothing if the component hasn't mounted yet
   }
-
+  
   return (
     <div>
       {/* Initialise WebGazer Button */}
