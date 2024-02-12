@@ -10,13 +10,13 @@ const ModeToggle = () => {
       {/* Adjusted space-x value for a small space */}
       <Link href="/dashboard">
         <Button className="bg-green-200/30 hover:bg-green-200/50 text-white navbar-dashboard-font">
-          Manual
+          KeyMode
         </Button>{" "}
       </Link>
       {/* Semi-transparent green buttons */}
       <Link href="/webgazer-mode-2">
         <Button className="bg-green-200/30 hover:bg-green-200/50 text-white navbar-dashboard-font">
-          Automatic
+          FlashMode
         </Button>
       </Link>
       {/* <Button className="bg-green-200/30 hover:bg-green-200/50 text-white navbar-dashboard-font">

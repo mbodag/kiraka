@@ -31,7 +31,7 @@ const Mode1Display = () => {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "ArrowRight") {
-        setWordsPerMinute(prevWPM => Math.min(prevWPM + 20, 1000)); // Increase WPM with upper bound
+        setWordsPerMinute(prevWPM => Math.min(prevWPM + 20, 1500)); // Increase WPM with upper bound
       } else if (event.key === "ArrowLeft") {
         setWordsPerMinute(prevWPM => Math.max(prevWPM - 20, 50)); // Decrease WPM with lower bound
       } else if (event.key === "b" || event.key === "B") {
