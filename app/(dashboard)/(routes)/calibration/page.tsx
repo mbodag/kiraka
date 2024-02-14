@@ -32,7 +32,7 @@ export default function WebgazerCalibration() {
     setCalibrationStarted(true);
     if (extendedWindow && extendedWindow.webgazer) {
       // Show prediction points if WebGazer is available
-      extendedWindow.webgazer.showPredictionPoints(true);
+      extendedWindow.webgazer.showPredictionPoints(true).addMouseEventListeners();
     }
     setShowInstructions(false); // Hide instructions overlay
   };
@@ -69,7 +69,7 @@ export default function WebgazerCalibration() {
           .applyKalmanFilter(true) // Applies a Kalman filter for smoother predictions
           .showVideo(true) // Shows the video feed from the webcam
           .showPredictionPoints(false) // Initially hides the prediction points
-          .addMouseEventListeners() // Adds mouse event listeners for calibration
+          .removeMouseEventListeners() // Adds mouse event listeners for calibration
           .saveDataAcrossSessions(false); // Disables saving data across sessions for privacy
 
         // Sets up a gaze listener to log data and elapsed time for each prediction
@@ -82,7 +82,7 @@ export default function WebgazerCalibration() {
             var yprediction = data.y; // Extract the y-coordinate
 
             // gaze listener
-            // console.log("X prediction:", xprediction, "Y prediction:", yprediction, "Elapsed Time:", elapsedTime);
+            console.log("X prediction:", xprediction, "Y prediction:", yprediction, "Elapsed Time:", elapsedTime);
           })
           .begin(); // Starts the WebGazer eye-tracking
       
