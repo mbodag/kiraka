@@ -5,6 +5,8 @@ import CounterDisplay from "./counter-display";
 import '@/app/globals.css';
 
 const Mode1Display = () => {
+  const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. The relentless pursuit of productivity often leads to increased stress and a higher risk of burnout. It's crucial to set clear boundaries between work responsibilities and personal life. Effective time management and task prioritization are keys to reducing work-related pressure. These strategies allow individuals to enjoy a more fulfilling life both inside and outside the workplace.
+  
 
   const [wordsPerMinute, setNumber] = useState(300);
   const [backgroundColor, setBackgroundColor] = useState('white'); // Initialise background color to 'white'
@@ -18,13 +20,17 @@ const Mode1Display = () => {
   
   Ultimately, achieving a balance between work and life leads to improved mental and physical health, heightened job performance, and a richer, more rewarding life experience. It's about finding a rhythm that allows for both career progression and personal contentment, ensuring long-term happiness and success.`
 
+  const [wordsPerMinute, setWordsPerMinute] = useState(300);
+  const [backgroundColor, setBackgroundColor] = useState('white'); // Initialise background color to 'white'
+  const [textColor, setTextColor] = useState('white'); // Initialise text color to 'white'
+  const [summary, setSummary] = useState('');
 );
 
   const toggleBackgroundColor = () => {
     // Toggle the background color between 'white' and 'black'
     setBackgroundColor((prevColor) => (prevColor === 'white' ? 'black' : 'white'));
   };
-
+ 
   const toggleTextColor = () => {
     // Toggle the text color between 'black' and 'white'
     setTextColor((prevColor) => (prevColor === 'white' ? 'black' : 'white'));
@@ -34,9 +40,9 @@ const Mode1Display = () => {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "ArrowRight") {
-        setNumber((prevNumber) => prevNumber + 20);
+        setWordsPerMinute(prevWPM => Math.min(prevWPM + 20, 1500)); // Increase WPM with upper bound
       } else if (event.key === "ArrowLeft") {
-        setNumber((prevNumber) => prevNumber - 20);
+        setWordsPerMinute(prevWPM => Math.max(prevWPM - 20, 50)); // Decrease WPM with lower bound
       } else if (event.key === "b" || event.key === "B") {
         // When the "B" or "b" key is pressed, toggle the background color
         toggleBackgroundColor();

@@ -232,3 +232,12 @@ body,
   margin-top: 20px;
 }
 
+
+@keyframes flashGreenBorder {
+  0%, 100% { border-color: rgb(0, 200, 0); }
+  50% { border-color: transparent; } /* 'Off' state */
+}
+
+.flash-green-border {
+  animation: flashGreenBorder 1s infinite; /* Adjust timing as needed */
+}
