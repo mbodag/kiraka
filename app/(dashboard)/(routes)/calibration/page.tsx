@@ -78,11 +78,11 @@ export default function WebgazerCalibration() {
             if (data == null) {
               return; // Exit if data is null
             }
-            var xprediction = data.x; // Extract the x-coordinate
-            var yprediction = data.y; // Extract the y-coordinate
-
-            // gaze listener
-            console.log("X prediction:", xprediction, "Y prediction:", yprediction, "Elapsed Time:", elapsedTime);
+            // var xprediction = data.x; // Extract the x-coordinate
+            // var yprediction = data.y; // Extract the y-coordinate
+            
+            // // gaze listener
+            // console.log("X prediction:", xprediction, "Y prediction:", yprediction, "Elapsed Time:", elapsedTime);
           })
           .begin(); // Starts the WebGazer eye-tracking
       

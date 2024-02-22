@@ -34,47 +34,54 @@ const Mode2Display = () => {
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const UPDATE_INTERVAL_MS = 250;
 
+
+    const sectionEntryTimestamps = useRef<number[]>(Array(5).fill(0));
+    const timeSpentInSections = useRef<number[]>(Array(5).fill(0));
+
     // Accessing the current state of WebGazer
     const { isWebGazerActive } = useWebGazer();
 
     useEffect(() => {
-        const calculateMaxCharsPerChunk = () => {
-            // Assuming the container width matches the window width for simplicity
-            // You might need to adjust this to get the actual container's width if different
-            const containerWidth = window.innerWidth;
-            const fontSize = 40; // Font size in pixels
-            const estimatedCharWidth = fontSize * 0.6; // Estimate: adjust based on your font's characteristics
-            const chars = Math.floor((containerWidth * 0.8) / estimatedCharWidth); // Adjust based on container's maxWidth (90vw here)
-            setMaxCharsPerChunk(chars);
-        };
+      const calculateMaxCharsPerChunk = () => {
+        // Assuming the container width matches the window width for simplicity
+        // You might need to adjust this to get the actual container's width if different
+        const containerWidth = window.innerWidth;
+        const fontSize = 40; // Font size in pixels
+        const estimatedCharWidth = fontSize * 0.6; // Estimate: adjust based on your font's characteristics
+        const chars = Math.floor((containerWidth * 0.8) / estimatedCharWidth); // Adjust based on container's maxWidth (90vw here)
+        setMaxCharsPerChunk(chars);
+      };
 
-        calculateMaxCharsPerChunk(); // Calculate initially
+      calculateMaxCharsPerChunk(); // Calculate initially
 
-        // Recalculate when the window is resized
-        window.addEventListener('resize', calculateMaxCharsPerChunk);
-        
-        return () => window.removeEventListener('resize', calculateMaxCharsPerChunk);
+      // Recalculate when the window is resized
+      window.addEventListener("resize", calculateMaxCharsPerChunk);
+
+      return () =>
+        window.removeEventListener("resize", calculateMaxCharsPerChunk);
     }, []); // Empty dependency array means this runs once on mount and cleanup on unmount
 
-    const wordChunks = shortStory.match(new RegExp('.{1,' + maxCharsPerChunk + '}(\\s|$)', 'g')) || [];
+    const wordChunks =
+      shortStory.match(
+        new RegExp(".{1," + maxCharsPerChunk + "}(\\s|$)", "g")
+      ) || [];
 
     useEffect(() => {
-        const handleKeyPress = (event: KeyboardEvent) => {
+      const handleKeyPress = (event: KeyboardEvent) => {
         if (event.key === "ArrowRight") {
-            setDynamicWPM((prevWPM) => Math.min(prevWPM + 20, 1100)); // Increase dynamicWPM, max 1100
+          setDynamicWPM((prevWPM) => Math.min(prevWPM + 20, 1100)); // Increase dynamicWPM, max 1100
         } else if (event.key === "ArrowLeft") {
-            setDynamicWPM((prevWPM) => Math.max(prevWPM - 20, 50)); // Decrease dynamicWPM, min 100
+          setDynamicWPM((prevWPM) => Math.max(prevWPM - 20, 50)); // Decrease dynamicWPM, min 100
         } else if (event.key === "R" || event.key === "r") {
-            setCurrentChunkIndex(0); // Function from the first chunk
+          setCurrentChunkIndex(0); // Function from the first chunk
         } else if (event.key === " ") {
-            event.preventDefault(); // Prevent default action (e.g., page scrolling)
-            setIsPaused((prevIsPaused) => !prevIsPaused); // Toggle pause/start
+          event.preventDefault(); // Prevent default action (e.g., page scrolling)
+          setIsPaused((prevIsPaused) => !prevIsPaused); // Toggle pause/start
         }
-        };
-        window.addEventListener("keydown", handleKeyPress);
-        return () => window.removeEventListener("keydown", handleKeyPress);
+      };
+      window.addEventListener("keydown", handleKeyPress);
+      return () => window.removeEventListener("keydown", handleKeyPress);
     }, []);
-
 
     // useEffect(() => {
     //     if (typeof window !== "undefined" && isWebGazerActive && !isPaused) {
@@ -88,11 +95,11 @@ const Mode2Display = () => {
     //             setDynamicWPM((currentWPM) => Math.min(currentWPM + 5, 1100));
     //         }
     //       };
-    
+
     //       extendedWindow.webgazer?.setGazeListener((data: any, _) => {
     //         updateWPMBasedOnGaze(data);
     //       });
-    
+
     //       // Cleanup function
     //       return () => {
     //         extendedWindow.webgazer?.clearGazeListener();
@@ -100,24 +107,52 @@ const Mode2Display = () => {
     //     }
     //   }, [isWebGazerActive, isPaused]);
 
-
     // Adjust dynamicWPM based on gaze or keypress
     useEffect(() => {
-        if (isWebGazerActive && !isPaused && typeof window !== "undefined") {
+      if (isWebGazerActive && typeof window !== "undefined") {
         const extendedWindow: ExtendedWindow = window as ExtendedWindow;
-        extendedWindow.webgazer?.setGazeListener((data: any) => {
+        extendedWindow.webgazer?.setGazeListener(
+          (data: any, elapsedTime: number) => {
             if (data && data.x) {
-            const viewportWidth = window.innerWidth;
-            const gazePosition = data.x < viewportWidth / 2 ? -10 : 5;
-            setDynamicWPM((prevWPM) => Math.max(100, Math.min(prevWPM + gazePosition, 1000)));
+              const numberofSections = 5;
+              const viewportWidth = window.innerWidth / numberofSections; // Divide the viewport into 5 sections (need to adjust based on the sidebar!!!!)
+              const sectionIndex = Math.floor(data.x / viewportWidth);
+              const normalisedSectionIndex = Math.max(
+                0,
+                Math.min(sectionIndex, numberofSections - 1)
+              );
+
+              if (!isPaused) {
+                if (sectionEntryTimestamps.current[normalisedSectionIndex] === 0) {
+                  sectionEntryTimestamps.current[normalisedSectionIndex] = elapsedTime;
+                } else {
+                  const sectionExitTimestamp = elapsedTime;
+                  const timeSpentInCurrentSection = sectionExitTimestamp - sectionEntryTimestamps.current[normalisedSectionIndex];  
+                  timeSpentInSections.current[normalisedSectionIndex] += timeSpentInCurrentSection;
+                  sectionEntryTimestamps.current[normalisedSectionIndex] = sectionExitTimestamp;
+                }
+              } else {
+                sectionEntryTimestamps.current.fill(0);
+              }
+
+              console.log(timeSpentInSections.current);
+
+              // const viewportWidth = window.innerWidth;
+              // const gazePosition = data.x < viewportWidth / 2 ? -10 : 5;
+              // setDynamicWPM((prevWPM) => Math.max(100, Math.min(prevWPM + gazePosition, 1000)));
             }
-        });
+          }
+        );
 
         return () => extendedWindow.webgazer?.clearGazeListener();
-        }
+      }
     }, [isWebGazerActive, isPaused]);
 
-
+    // useEffect(() => {
+    //   timeSpentInSections.current.forEach((time, index) => {
+    //     console.log(`Time spent in section ${index}: ${time}`);
+    //   });
+    // }, [isPaused]);
 
     // Sync displayWPM with dynamicWPM at intervals
     useEffect(() => {
