@@ -37,6 +37,7 @@ const Mode2Display = () => {
 
     const sectionEntryTimestamps = useRef<number[]>(Array(5).fill(0));
     const timeSpentInSections = useRef<number[]>(Array(5).fill(0));
+    const prevSectionIndex = useRef<number>(-1);
 
     // Accessing the current state of WebGazer
     const { isWebGazerActive } = useWebGazer();
@@ -123,19 +124,29 @@ const Mode2Display = () => {
               );
 
               if (!isPaused) {
-                if (sectionEntryTimestamps.current[normalisedSectionIndex] === 0) {
-                  sectionEntryTimestamps.current[normalisedSectionIndex] = elapsedTime;
-                } else {
-                  const sectionExitTimestamp = elapsedTime;
-                  const timeSpentInCurrentSection = sectionExitTimestamp - sectionEntryTimestamps.current[normalisedSectionIndex];  
-                  timeSpentInSections.current[normalisedSectionIndex] += timeSpentInCurrentSection;
-                  sectionEntryTimestamps.current[normalisedSectionIndex] = sectionExitTimestamp;
+                // Only update time spent in sections if not paused
+
+                if (prevSectionIndex.current !== normalisedSectionIndex) {
+                  if (prevSectionIndex.current === -1) {
+                    sectionEntryTimestamps.current[normalisedSectionIndex] =
+                      elapsedTime;
+                  } else {
+                    timeSpentInSections.current[prevSectionIndex.current] +=
+                      elapsedTime -
+                      sectionEntryTimestamps.current[prevSectionIndex.current];
+                    sectionEntryTimestamps.current[normalisedSectionIndex] =
+                      elapsedTime;
+                    sectionEntryTimestamps.current[
+                      prevSectionIndex.current
+                    ] = 0;
+                  }
                 }
               } else {
+                // Reset time spent in sections if paused
                 sectionEntryTimestamps.current.fill(0);
               }
 
-              console.log(timeSpentInSections.current);
+              prevSectionIndex.current = normalisedSectionIndex;
 
               // const viewportWidth = window.innerWidth;
               // const gazePosition = data.x < viewportWidth / 2 ? -10 : 5;
@@ -202,12 +213,22 @@ const Mode2Display = () => {
         const interval = (60000 / displayWPM) * (maxCharsPerChunk / 5); // 5 chars per word
         const timer = setInterval(() => {
             setCurrentChunkIndex((prevIndex) => prevIndex + 1 >= wordChunks.length ? 0 : prevIndex + 1);
+            onChunkAdvanced();
         }, interval);
 
         return () => clearInterval(timer);
         }
     }, [displayWPM, isPaused, currentChunkIndex, wordChunks.length, maxCharsPerChunk]);
 
+    const onChunkAdvanced = () => {
+      const total = timeSpentInSections.current.reduce(
+        (acc, time) => acc + time,
+        0
+      );
+      console.log(timeSpentInSections.current, total);
+      console.log("Chunk advanced");
+      timeSpentInSections.current.fill(0);
+    };
 
     return (
         <div className="centerContainer" style={{

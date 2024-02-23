@@ -29,12 +29,17 @@ export default function WebgazerCalibration() {
 
   // Function to start the calibration process
   const startCalibration = () => {
-    setCalibrationStarted(true);
-    if (extendedWindow && extendedWindow.webgazer) {
-      // Show prediction points if WebGazer is available
-      extendedWindow.webgazer.showPredictionPoints(true).addMouseEventListeners();
+    if (isWebGazerActive) {
+      setCalibrationStarted(true);
+      if (extendedWindow && extendedWindow.webgazer) {
+        // Show prediction points if WebGazer is available
+        extendedWindow.webgazer
+          .showPredictionPoints(true)
+          .addMouseEventListeners();
+      }
+      setShowInstructions(false); // Hide instructions overlay
     }
-    setShowInstructions(false); // Hide instructions overlay
+
   };
 
   // Function to hide instructions when the user clicks "Got it"
