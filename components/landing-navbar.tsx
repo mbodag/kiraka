@@ -1,7 +1,7 @@
 "use client";
 
 import { Montserrat } from "next/font/google";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
 
