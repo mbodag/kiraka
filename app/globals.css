@@ -9,6 +9,12 @@
 @import url('https://fonts.googleapis.com/css2?family=PT+Mono&display=swap'); /* PT Mono */
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap'); /* Ubuntu Mono */
 
+/* List of imports for fonts to use in dashboard analytics */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap'); /* Roboto */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');  /* Inter */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');  /* Open Sans */
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -91,6 +97,7 @@ body,
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inconsolata', monospace;
   }
 }
 
@@ -112,6 +119,10 @@ body,
 
 .monospaced {
   font-family: 'Space Mono', monospace;
+}
+
+.analytics-font {
+  font-family: 'Inconsolata', monospace;
 }
 
 .bold {
