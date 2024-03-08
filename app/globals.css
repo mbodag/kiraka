@@ -135,6 +135,11 @@ body,
   /* font-weight: bold; */
 }
 
+.quiz-font {
+  font-family: 'Open Sans';
+  /* font-weight: bold; */
+}
+
 .bold {
   font-weight: bold;
 }

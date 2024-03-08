@@ -36,13 +36,13 @@ const userData: UserData = {
       { timestamp: "27/2/2024", textId: 4, avgWPM: 300, quizScore: 70 },
       { timestamp: "3/3/2024", textId: 5, avgWPM: 220, quizScore: 80 },
       { timestamp: "11/3/2024", textId: 6, avgWPM: 350, quizScore: 60 },
-      { timestamp: "8/2/2024", textId: 1, avgWPM: 150, quizScore: 50 },
-      { timestamp: "21/2/2024", textId: 2, avgWPM: 200, quizScore: 70 },
-      { timestamp: "23/2/2024", textId: 3, avgWPM: 250, quizScore: 60 },
-      { timestamp: "27/2/2024", textId: 4, avgWPM: 300, quizScore: 70 },
-      { timestamp: "3/3/2024", textId: 5, avgWPM: 220, quizScore: 80 },
-      { timestamp: "11/3/2024", textId: 6, avgWPM: 350, quizScore: 60 },
-      { timestamp: "21/3/2024", textId: 7, avgWPM: 450, quizScore: 45 }
+      { timestamp: "8/2/2024", textId: 12, avgWPM: 150, quizScore: 50 },
+      { timestamp: "21/2/2024", textId: 5, avgWPM: 200, quizScore: 90 },
+      { timestamp: "23/2/2024", textId: 11, avgWPM: 250, quizScore: 60 },
+      { timestamp: "27/2/2024", textId: 9, avgWPM: 300, quizScore: 70 },
+      { timestamp: "3/3/2024", textId: 8, avgWPM: 220, quizScore: 100 },
+      { timestamp: "11/3/2024", textId: 7, avgWPM: 350, quizScore: 60 },
+      { timestamp: "21/3/2024", textId: 15, avgWPM: 450, quizScore: 45 }
     ],
     // "Matis":[],
     "Fadi":[
@@ -50,14 +50,14 @@ const userData: UserData = {
       { timestamp: "21/2/2024", textId: 2, avgWPM: 200, quizScore: 70 },
       { timestamp: "23/2/2024", textId: 3, avgWPM: 250, quizScore: 60 },
       { timestamp: "27/2/2024", textId: 4, avgWPM: 300, quizScore: 70 },
-      { timestamp: "3/3/2024", textId: 5, avgWPM: 220, quizScore: 80 },
+      { timestamp: "3/3/2024", textId: 5, avgWPM: 220, quizScore: 100 },
       { timestamp: "11/3/2024", textId: 6, avgWPM: 350, quizScore: 60 },
-      { timestamp: "21/3/2024", textId: 7, avgWPM: 450, quizScore: 45 }
+      { timestamp: "21/3/2024", textId: 7, avgWPM: 450, quizScore: 90 }
     ],
     "Kyoya":[
       { timestamp: "8/2/2024", textId: 1, avgWPM: 150, quizScore: 50 },
       { timestamp: "21/2/2024", textId: 2, avgWPM: 200, quizScore: 70 },
-      { timestamp: "21/3/2024", textId: 7, avgWPM: 450, quizScore: 45 }
+      { timestamp: "21/3/2024", textId: 7, avgWPM: 450, quizScore: 95 }
     ],
     "Evangelos":[],
     "John":[],
