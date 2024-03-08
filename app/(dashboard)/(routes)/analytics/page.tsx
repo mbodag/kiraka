@@ -170,12 +170,15 @@ const AnalyticsPage: React.FC = () => {
           title: {
             display: true,
             text: `${userName}'s Performance`,
+            font: {
+              size: 18,
+            }
           },
         },
       };
     
       return (
-        <div className="plot-container" style={{ backgroundColor: 'white', padding: '20px', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0,0,0,0.2)', width: '60vw' }}>
+        <div className="plot-container" style={{ backgroundColor: 'white', padding: '10px', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0,0,0,0.2)', width: '60vw' }}>
           <Line data={combinedData} options={commonOptions} />
         </div>
       );
@@ -207,7 +210,7 @@ const AnalyticsPage: React.FC = () => {
       {/* Scrollable Navigation bar for user selection, centered */}
       <div className="flex justify-center items-center gap-4 mb-4">
         <button onClick={() => scrollUsers('left')}>&lt;</button>
-        <div ref={scrollContainerRef} className="flex gap-4 overflow-auto scroll-smooth scrollbar-hide" style={{ width: '30vw' }}>
+        <div ref={scrollContainerRef} className="flex gap-4 overflow-auto scroll-smooth scrollbar-hide scrollbar-hide" style={{ width: '30vw' }}>
         {filteredUsers.map((user) => (
             <button
               key={user}

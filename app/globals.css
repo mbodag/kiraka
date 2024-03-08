@@ -267,3 +267,9 @@ body,
 .flash-green-border {
   animation: flashGreenBorder 1s infinite; /* Adjust timing as needed */
 }
+
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
