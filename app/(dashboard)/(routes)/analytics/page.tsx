@@ -28,7 +28,15 @@ interface UserPlotProps {
 }
 
 const userData: UserData = {
-    "Konstantinos":[],
+    "Konstantinos":[
+      { timestamp: "8/2/2024", textId: 1, avgWPM: 150, quizScore: 50 },
+      { timestamp: "21/2/2024", textId: 2, avgWPM: 260, quizScore: 80 },
+      { timestamp: "23/2/2024", textId: 3, avgWPM: 250, quizScore: 50 },
+      { timestamp: "27/2/2024", textId: 4, avgWPM: 300, quizScore: 80 },
+      { timestamp: "3/3/2024", textId: 5, avgWPM: 320, quizScore: 90 },
+      { timestamp: "11/3/2024", textId: 6, avgWPM: 350, quizScore: 30 },
+      { timestamp: "21/3/2024", textId: 7, avgWPM: 500, quizScore: 80 }
+    ],
     "Jack": [
       { timestamp: "8/2/2024", textId: 1, avgWPM: 150, quizScore: 50 },
       { timestamp: "21/2/2024", textId: 2, avgWPM: 200, quizScore: 70 },
@@ -44,7 +52,15 @@ const userData: UserData = {
       { timestamp: "11/3/2024", textId: 7, avgWPM: 350, quizScore: 60 },
       { timestamp: "21/3/2024", textId: 15, avgWPM: 450, quizScore: 45 }
     ],
-    // "Matis":[],
+    "Matis":[
+      { timestamp: "8/2/2024", textId: 1, avgWPM: 150, quizScore: 60 },
+      { timestamp: "21/2/2024", textId: 2, avgWPM: 200, quizScore: 80 },
+      { timestamp: "23/2/2024", textId: 3, avgWPM: 250, quizScore: 10 },
+      { timestamp: "27/2/2024", textId: 4, avgWPM: 300, quizScore: 60 },
+      { timestamp: "3/3/2024", textId: 5, avgWPM: 220, quizScore: 90 },
+      { timestamp: "11/3/2024", textId: 6, avgWPM: 350, quizScore: 90 },
+      { timestamp: "21/3/2024", textId: 7, avgWPM: 450, quizScore: 100 }
+    ],
     "Fadi":[
       { timestamp: "8/2/2024", textId: 1, avgWPM: 150, quizScore: 50 },
       { timestamp: "21/2/2024", textId: 2, avgWPM: 200, quizScore: 70 },
