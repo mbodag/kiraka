@@ -50,9 +50,9 @@ const userData: UserData = {
       { timestamp: "21/2/2024", textId: 2, avgWPM: 200, quizScore: 70 },
       { timestamp: "23/2/2024", textId: 3, avgWPM: 250, quizScore: 60 },
       { timestamp: "27/2/2024", textId: 4, avgWPM: 300, quizScore: 70 },
-      { timestamp: "3/3/2024", textId: 5, avgWPM: 220, quizScore: 100 },
+      { timestamp: "3/3/2024", textId: 5, avgWPM: 220, quizScore: 80 },
       { timestamp: "11/3/2024", textId: 6, avgWPM: 350, quizScore: 60 },
-      { timestamp: "21/3/2024", textId: 7, avgWPM: 450, quizScore: 90 }
+      { timestamp: "21/3/2024", textId: 7, avgWPM: 450, quizScore: 45 }
     ],
     "Kyoya":[
       { timestamp: "8/2/2024", textId: 1, avgWPM: 150, quizScore: 50 },
@@ -91,41 +91,65 @@ const AnalyticsPage: React.FC = () => {
 
 
     // UserPlot component
-    const UserPlot: React.FC<UserPlotProps> = ({ userName }: { userName: string }) => {
+    const UserPlot: React.FC<UserPlotProps> = ({ userName }) => {
       const userRecords = userData[userName] || [];
       const labels = userRecords.map(record => `${record.timestamp} (ID: ${record.textId})`);
     
-      // Average WPM plot remains the same
-      const avgWpmData = {
+      // Combined data for both Average WPM and Quiz Score
+      const combinedData = {
         labels,
-        datasets: [{
-          label: 'Average Word Per Minute (WPM)',
-          data: userRecords.map(record => record.avgWPM),
-          borderColor: 'rgb(75, 192, 192)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          borderWidth: 2,
-          pointBackgroundColor: '#fff',
-        }],
+        datasets: [
+          {
+            label: 'Average WPM',
+            data: userRecords.map(record => record.avgWPM),
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+            type: 'line', // Specify the type directly in the dataset
+            yAxisID: 'yWpm', // Reference to the WPM Y-axis ID
+          },
+          {
+            label: 'Quiz Score (%)',
+            data: userRecords.map(record => record.quizScore),
+            backgroundColor: 'rgba(153, 102, 255, 0.4)',
+            borderColor: 'rgba(153, 102, 255, 1)',
+            type: 'bar', // Specify the type directly in the dataset
+            yAxisID: 'yQuiz', // Reference to the Quiz Score Y-axis ID
+          },
+        ],
       };
     
-      // Convert the quiz score plot to a histogram (emulated using a bar chart)
-      const quizScoreData = {
-        labels,
-        datasets: [{
-          label: 'Quiz Score (%)',
-          data: userRecords.map(record => record.quizScore),
-          backgroundColor: 'rgba(153, 102, 255, 0.3)',
-          borderColor: 'rgba(153, 102, 255, 1)',
-          borderWidth: 1,
-        }],
-      };
-    
-      const commonOptionsQuiz = {
+      const commonOptions = {
         responsive: true,
+        interaction: {
+          mode: 'index' as const,
+          intersect: false,
+        },
+        stacked: false, // Ensures that the bar chart does not stack over the line chart
         scales: {
-          y: {
+          yWpm: {
+            type: 'linear' as const,
+            position: 'left' as const,
             beginAtZero: true,
-            max: 100, // Set max value for y-axis if applicable
+            title: {
+              display: true,
+              text: 'Average WPM',
+            },
+            grid: {
+              drawOnChartArea: true, // Only the left axis will draw grid lines by default
+            },
+          },
+          yQuiz: {
+            type: 'linear' as const,
+            position: 'right' as const,
+            beginAtZero: true,
+            max: 100, // For percentage-based values
+            title: {
+              display: true,
+              text: 'Quiz Score (%)',
+            },
+            grid: {
+              drawOnChartArea: false, // Prevents the right axis from drawing grid lines
+            },
           },
           x: {
             display: true,
@@ -137,49 +161,22 @@ const AnalyticsPage: React.FC = () => {
         },
         plugins: {
           legend: {
+            display: true,
             position: 'top' as const,
-          },
-          title: {
-            display: true,
-            text: userName + "'s Quiz Performance",
-          },
-        },
-      };
-
-      const commonOptionsWPM = {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-          x: {
-            display: true,
-            title: {
-              display: true,
-              text: 'Date (Text ID)',
+            labels: {
+              usePointStyle: true,
             },
           },
-        },
-        plugins: {
-          legend: {
-            position: 'top' as const,
-          },
           title: {
             display: true,
-            text: userName + "'s WPM Performance",
+            text: `${userName}'s Performance`,
           },
         },
       };
     
       return (
-        <div className="plot-container mt-4" style={{ backgroundColor: 'white', padding: '20px', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0,0,0,0.3)', width: '40vw' }}>
-          <div style={{ height: '20vw', marginBottom: '20px' }}>
-            <Line data={avgWpmData} options={commonOptionsWPM} />
-          </div>
-          <div style={{ height: '20vw' }}>
-            {/* Use Bar instead of Line for the quiz score histogram */}
-            <Bar data={quizScoreData} options={{ ...commonOptionsQuiz, scales: { ...commonOptionsQuiz.scales, x: { ...commonOptionsQuiz.scales.x, stacked: true }, y: { ...commonOptionsQuiz.scales.y, stacked: true } } }} />
-          </div>
+        <div className="plot-container" style={{ backgroundColor: 'white', padding: '20px', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0,0,0,0.2)', width: '60vw' }}>
+          <Line data={combinedData} options={commonOptions} />
         </div>
       );
     };
@@ -214,7 +211,7 @@ const AnalyticsPage: React.FC = () => {
         {filteredUsers.map((user) => (
             <button
               key={user}
-              className="px-4 py-2 min-w-max rounded shadow bg-lime-50 text-gray-700 hover:bg-cyan-300 transition-colors duration-200 ease-in-out"
+              className="px-4 py-2 min-w-max rounded shadow bg-lime-50 text-gray-700 hover:bg-purple-200 transition-colors duration-200 ease-in-out"
               onClick={() => setSelectedUser(user)}
             >
               {user}
