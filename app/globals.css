@@ -24,7 +24,12 @@
 html,
 body,
 :root {
+  font-family: 'Inconsolata', monspaced;
   height: 100%;
+}
+
+* {
+  font-family: inherit;
 }
 
 @layer base {
@@ -121,8 +126,13 @@ body,
   font-family: 'Space Mono', monospace;
 }
 
+.monospaced2 {
+  font-family: monospace;
+}
+
 .analytics-font {
   font-family: 'Inconsolata', monospace;
+  /* font-weight: bold; */
 }
 
 .bold {

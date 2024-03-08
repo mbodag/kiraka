@@ -1,3 +1,3 @@
 export const LandingContent = () => {
-  return <div>content</div>;
+  return <div></div>;
 };

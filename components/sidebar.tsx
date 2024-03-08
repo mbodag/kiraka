@@ -6,7 +6,7 @@ import { UserButton } from "@clerk/nextjs";
 
 const Sidebar = () => {
   return (
-    <div className="flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-r border-gray-700">
+    <div className="flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-r border-gray-700 ">
       {/* Logo, company name, and horizontal line */}
       <div className="py-4 mb-2 w-full text-center">
         <Link href="/">

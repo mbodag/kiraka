@@ -18,6 +18,9 @@ const Navbar: React.FC = () => {
         <Link href="/quiz" passHref>
           <Button className="ml-4 bg-green-200/30 hover:bg-green-200/50 text-white navbar-dashboard-font">Quiz</Button>
         </Link>
+        <Link href="/analytics" passHref>
+          <Button className="ml-4 bg-green-200/30 hover:bg-green-200/50 text-white navbar-dashboard-font">Analytics</Button>
+        </Link>
       </div>
       <div className="flex-1 flex justify-center"> {/* Centered mode buttons */}
         <ModeToggle />

@@ -75,9 +75,6 @@ const Mode1Display = () => {
   };
 
 
-
-
-
   return (
     <div className='centerContainer'>
       <CounterDisplay count={wordsPerMinute} fontSize="16px" />
