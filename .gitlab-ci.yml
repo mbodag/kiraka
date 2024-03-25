@@ -1,0 +1,12 @@
+stages:
+    - dev
+
+dev_job:
+    stage: dev
+    image: node:latest
+    script: 
+        - npm install
+        - npm run dev
+    only:
+        - master
+
