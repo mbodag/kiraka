@@ -120,7 +120,7 @@ const AnalyticsPage: React.FC = () => {
             data: userRecords.map(record => record.avgWPM),
             borderColor: 'rgb(75, 192, 192)',
             backgroundColor: 'rgba(75, 192, 192, 0.5)',
-            type: 'line', // Specify the type directly in the dataset
+            type: 'line' as const, // Specify the type directly in the dataset
             yAxisID: 'yWpm', // Reference to the WPM Y-axis ID
           },
           {
@@ -128,7 +128,7 @@ const AnalyticsPage: React.FC = () => {
             data: userRecords.map(record => record.quizScore),
             backgroundColor: 'rgba(153, 102, 255, 0.4)',
             borderColor: 'rgba(153, 102, 255, 1)',
-            type: 'bar', // Specify the type directly in the dataset
+            type: 'bar' as const, // Specify the type directly in the dataset
             yAxisID: 'yQuiz', // Reference to the Quiz Score Y-axis ID
           },
         ],
@@ -195,7 +195,7 @@ const AnalyticsPage: React.FC = () => {
     
       return (
         <div className="plot-container" style={{ backgroundColor: 'white', padding: '10px', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0,0,0,0.2)', width: '60vw' }}>
-          <Line data={combinedData} options={commonOptions} />
+          <Line data={combinedData as any} options={commonOptions} />
         </div>
       );
     };

@@ -6,10 +6,16 @@ interface ExtendedWindow extends Window {
   webgazer?: any; // Adjust the type based on the 'webgazer' object
 }
 
+interface CalibrationPoint {
+  x: number;
+  y: number;
+  clicks: number;
+}
+
 export default function Mode2Display() {
   const [webgazerInitialized, setWebgazerInitialized] = useState(false);
   const [calibrationStarted, setCalibrationStarted] = useState(false);
-  const [calibrationPoints, setCalibrationPoints] = useState({});
+  const [calibrationPoints, setCalibrationPoints] = useState<{ [key: string]: CalibrationPoint }>({});
   const [showInstructions, setShowInstructions] = useState(true);
 
   const startCalibration = () => {
