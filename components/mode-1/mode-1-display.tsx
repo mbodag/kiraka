@@ -63,7 +63,7 @@ const Mode1Display = () => {
     const inputText = shortStory;
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/texts/summarize", {
+      const response = await fetch("https://0231-2a0c-5bc0-88-113-3d99-f3ed-984b-b50f.ngrok-free.app/api/texts/summarize", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -84,7 +84,7 @@ const Mode1Display = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/texts/summarize", {
+      const response = await fetch("https://0231-2a0c-5bc0-88-113-3d99-f3ed-984b-b50f.ngrok-free.app/api/texts/summarize", {
         method: "GET",
       });
       if (!response.ok) {
@@ -100,7 +100,7 @@ const Mode1Display = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/api/texts/random");
+        const response = await fetch("https://0231-2a0c-5bc0-88-113-3d99-f3ed-984b-b50f.ngrok-free.app/api/texts/random");
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
