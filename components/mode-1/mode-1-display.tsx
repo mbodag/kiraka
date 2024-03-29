@@ -104,8 +104,10 @@ const Mode1Display = () => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        const data = await response.json();
-        setShortStory(data.text_content);
+console.log(response);       
+const data = await response.json();
+console.log(data);        
+setShortStory(data.text_content);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
