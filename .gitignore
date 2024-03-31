@@ -39,3 +39,5 @@ certificates
 
 __pycache__/
 venv/
+
+my_env/
