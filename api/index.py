@@ -239,7 +239,7 @@ def get_logout_info():
 def delete_user_data():
     pass
 
-@app.route('/api/analytics', methods=['GET'])
+@app.route('/api/analytics', methods=['POST'])
 def get_user_analytics():
     if not request.is_json:
         return jsonify({'error': 'Request must be JSON'}), 400

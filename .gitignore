@@ -39,3 +39,6 @@ certificates
 
 __pycache__/
 venv/
+
+# Python config
+api/config.py
