@@ -310,8 +310,21 @@ clerk.ClerkApi(app, backend_api="sk_test_EpXKnES3hAuuz4eXpZddECYtH1hYvxfSQwDhJJE
 @clerk.require_session 
 def verify_session():
     user_id = clerk.get_session()["user_id"]
-    # Query your database for user details using user_id 
-    return jsonify(success=True, user_data=user_data)
+    user_data = Users.query.filter_by(user_id = user_id).first()
+    if not user_data:
+        # User does not exist
+        pass 
+    else:
+        return jsonify(success=True, user_data=user_data)
+    
+@app.route('/api/store-user-data', methods=['POST'])
+@clerk.require_session 
+def store_user_data():
+    user_data = request.get_json()
+    # Save user_data to your database
+    return jsonify(success=True)
+
+
 
 with app.app_context():
     db.create_all()
