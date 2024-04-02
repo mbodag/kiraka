@@ -6,6 +6,8 @@ from datetime import datetime
 import requests
 import random
 from config import DATABASE_URI, PORT, ADMIN_ID
+import clerk
+
 
 app = Flask(__name__)
 CORS(app) # See what this does
@@ -302,6 +304,14 @@ def populate_with_fake_analytics():
                     db.session.commit()  
                     print(f'Quiz {l} added successfully!')
     return jsonify(user_ids)
+
+clerk.ClerkApi(app, backend_api="sk_test_EpXKnES3hAuuz4eXpZddECYtH1hYvxfSQwDhJJE4xn")
+@app.route('/api/verify-session', methods=['GET'])
+@clerk.require_session 
+def verify_session():
+    user_id = clerk.get_session()["user_id"]
+    # Query your database for user details using user_id 
+    return jsonify(success=True, user_data=user_data)
 
 with app.app_context():
     db.create_all()
