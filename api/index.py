@@ -251,18 +251,19 @@ def delete_user_data():
 
 @app.route('/api/analytics', methods=['POST'])
 def get_user_analytics():
-    if not request.is_json:
-        return jsonify({'error': 'Request must be JSON'}), 400
-    user_ids = request.json.get('user_ids')
-    if not isinstance(user_ids, list):
-        return jsonify({'error': 'Invalid format, user_ids should be a list'}), 400
+    user_id = request.json.get('user_id')
     users_data = {}
-    for user_id in user_ids:
-        if not user_id_is_valid(user_id):
-            return jsonify({'error': f'Invalid user_id: {user_id}'}), 400
-        user = Users.query.filter_by(user_id=user_id).first()
-        if not user:
-            return jsonify({'error': f'User with id {user_id} not found'}), 404
+    if not user_id_is_valid(user_id):
+        return jsonify({'error': f'Invalid user_id: {user_id}'}), 400
+    user = Users.query.filter_by(user_id=user_id).first()
+    if not user:
+        return jsonify({'error': f'User with id {user_id} not found'}), 404
+    elif user.admin == False:  
+        users = [user] 
+    elif user.admin == True:
+        users = Users.query.all()
+    for user in users:
+        user_id = user.user_id
         username = user.username
         user_results = []
         practice_results = PracticeResults.query.filter_by(user_id=user_id).all()
@@ -281,7 +282,7 @@ def get_user_analytics():
                 practice_result_dict = {'textId': practice_result.text_id, 'avgWPM': practice_result.wpm, 'timestamp': practice_result.timestamp.strftime('%d/%m/%Y'), 'quizScore': score}
                 user_results.append(practice_result_dict)
             user_results = sorted(user_results, key=lambda x: x['timestamp'], reverse=True)
-        users_data[username] = user_results
+        users_data[username] = user_results          
     return jsonify(users_data)
 
 @app.route('/api/analytics/fake', methods=['POST'])
@@ -328,7 +329,7 @@ with app.app_context():
         populate_texts()
 
 if __name__ == '__main__':
-    app.run(debug=True, port = PORT)
+    app.run(debug=True, port = 8000)
 
 
 #{"text":"What is the Point of Decentralized AI? Traditionally, the development of AI systems has remained siloed among a handful of technology vendors like Google and OpenAI, who have had the financial resources necessary to develop the infrastructure and resources necessary to build and process large datasets.\nHowever, the centralization of AI development in the industry has meant that organizations need to have significant funding to be able to develop and process the data necessary to compete in the market.\nLikewise, it’s also incentivized vendors to pursue a black box approach to AI development, giving users and regulators little to no transparency over how an organization’s AI models operate and make decisions. This makes it difficult to identify inaccuracies, bias, prejudice, and misinformation.\nDecentralized AI applications address these shortcomings by providing a solution to move AI development away from centralized providers and toward smaller researchers who innovate as part of an open-source community.\nAt the same time, users can unlock the benefits of AI-driven decision-making locally without needing to share their personal data with third parties.\nFederated Learning vs. Decentralised AI\nFederated learning is the name given to an approach where two or more AI models are trained on different computers, using a decentralized dataset. Under a federated learning methodology, machine-learning models are trained on data stored within a user device without that data being shared with the upstream provider.\nWhile this sounds similar to decentralized AI, there is a key difference. Under federated learning, an organization has centralized control over the AI model used to process the datasets, while under a decentralized AI system, there is no central entity in charge of processing the data.\nThus federated learning is typically used by organizations looking to build a centralized AI model that makes decisions based on data that has been processed on a decentralized basis (usually to maintain user privacy), whereas decentralized AI solutions have no central authority in charge of the underlying model that processes the data.\nAs Patricia Thaine, co-founder and CEO of Private AI, explained to Techopedia, “Federated learning tends to have a centralized model that gets updated based on the learnings of distributed models. A decentralized system would have multiple nodes that come to a consensus, with no central model as an authority.\nBenefits of Decentralized AI\nUsing a decentralized AI architecture offers some key benefits to both AI developers and users alike. Some of these are:\nUsers can benefit from AI-based decision-making without sharing their data;\nMore transparency and accountability over how AI-based decisions are made;\nIndependent researchers have more opportunities to contribute to AI development;\nBlockchain technology provides new opportunities for encryption;\nDecentralization unlocks new opportunities for integrations with Web3 and the metaverse \nDemocratizing AI Development\nWhile decentralized AI is still in its infancy, it has the potential to democratize AI development, providing more opportunities for open-source model developers to interact with users independent of a centralized authority.\nIf enough vendors support decentralized AI models, this could significantly reduce the amount of control that proprietary model developers have in the market and increase transparency over AI development as a whole."}
