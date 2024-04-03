@@ -288,6 +288,7 @@ def get_user_analytics():
 def populate_with_fake_analytics():
     usernames = ['Fadi', 'Jack', 'Kyoya', 'Konstantinos', 'Evangelos', 'Matis']
     texts = ['This is a test text', 'This is another test text', 'This is a third test text']
+    questions = ['What is the capital of France?', 'What is the capital of Germany?', 'What is the capital of Italy?']
     user_ids = []
     for i in range(2, 2+len(usernames)):
         user = Users(username=usernames[i-2])
@@ -301,13 +302,18 @@ def populate_with_fake_analytics():
             db.session.commit()
             print(f'Text {j} added successfully!')
             text_id = text.text_id
+            for m in range(3):
+                question = Questions(text_id=text_id, question_content=questions[m], multiple_choices='a;b;c;d', correct_answer='a')
+                db.session.add(question)
+                db.session.commit()
+                print(f'Question {m} added successfully!')
             for k in range(3):
                 practice = PracticeResults(text_id=text_id, user_id=i, wpm=random.randint(100, 300), timestamp=datetime.today())
                 db.session.add(practice)
                 db.session.commit()
                 print(f'Practice {k} added successfully!')
                 for l in range(5):
-                    quiz = QuizResults(practice_id=practice.practice_id, answer='a', score=random.randint(0, 1))
+                    quiz = QuizResults(practice_id=practice.practice_id, question_id = question.question_id, answer='a', score=random.randint(0, 1))
                     db.session.add(quiz)
                     db.session.commit()  
                     print(f'Quiz {l} added successfully!')
