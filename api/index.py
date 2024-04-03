@@ -6,8 +6,6 @@ from datetime import datetime
 import requests
 import random
 from config import DATABASE_URI, PORT, ADMIN_ID
-import clerk
-
 
 app = Flask(__name__)
 CORS(app) # See what this does
@@ -305,25 +303,6 @@ def populate_with_fake_analytics():
                     print(f'Quiz {l} added successfully!')
     return jsonify(user_ids)
 
-clerk.ClerkApi(app, backend_api="sk_test_EpXKnES3hAuuz4eXpZddECYtH1hYvxfSQwDhJJE4xn")
-@app.route('/api/verify-session', methods=['GET'])
-@clerk.require_session 
-def verify_session():
-    user_id = clerk.get_session()["user_id"]
-    user_data = Users.query.filter_by(user_id = user_id).first()
-    if not user_data:
-        # User does not exist
-        pass 
-    else:
-        return jsonify(success=True, user_data=user_data)
-    
-@app.route('/api/store-user-data', methods=['POST'])
-@clerk.require_session 
-def store_user_data():
-    user_data = request.get_json()
-    # Save user_data to your database
-    return jsonify(success=True)
-
 @app.route('/save-reading-speed', methods=['POST'])
 def submit_reading_speed():
     # Check if the request is in JSON format
@@ -397,7 +376,6 @@ def submit_quiz_results():
 
     # Return success message
     return jsonify({'message': 'Quiz results submitted successfully!'}), 201
-
 
 with app.app_context():
     db.create_all()
