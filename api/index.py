@@ -324,7 +324,7 @@ def store_user_data():
     # Save user_data to your database
     return jsonify(success=True)
 
-@app.route('/reading-speed', methods=['POST'])
+@app.route('/save-reading-speed', methods=['POST'])
 def submit_reading_speed():
     # Check if the request is in JSON format
     if not request.is_json:
@@ -363,7 +363,7 @@ def submit_reading_speed():
     # Return success message
     return jsonify({'message': 'Reading speed updated successfully!'}), 200
 
-@app.route('/quiz-results', methods=['POST'])
+@app.route('/save-quiz-results', methods=['POST'])
 def submit_quiz_results():
     # Check if the request is in JSON format
     if not request.is_json:
