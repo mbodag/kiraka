@@ -324,6 +324,79 @@ def store_user_data():
     # Save user_data to your database
     return jsonify(success=True)
 
+@app.route('/reading-speed', methods=['POST'])
+def submit_reading_speed():
+    # Check if the request is in JSON format
+    if not request.is_json:
+        return jsonify({'error': 'Request must be JSON'}), 400
+
+    # Parse data from the request
+    data = request.get_json()
+
+    # Extract practice_id and avg_reading_speed
+    practice_id = data.get('practice_id')
+    avg_reading_speed = data.get('avg_reading_speed')
+
+    # Validate the practice_id as an integer
+    if not isinstance(practice_id, int):
+        return jsonify({'error': 'Invalid practice_id'}), 400
+
+    # Validate the avg_reading_speed as a non-negative number
+    if not isinstance(avg_reading_speed, (int, float)) or avg_reading_speed < 0:
+        return jsonify({'error': 'Invalid avg_reading_speed'}), 400
+
+    # Fetch the PracticeResults object from the database
+    practice_result = PracticeResults.query.filter_by(practice_id=practice_id).first()
+    if not practice_result:
+        return jsonify({'error': 'Practice result not found'}), 404
+
+    # Update the reading speed
+    practice_result.avg_reading_speed = avg_reading_speed
+
+    # Commit the changes to the database
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()  # Roll back in case of error
+        return jsonify({'error': f'Failed to update reading speed: {str(e)}'}), 500
+
+    # Return success message
+    return jsonify({'message': 'Reading speed updated successfully!'}), 200
+
+@app.route('/quiz-results', methods=['POST'])
+def submit_quiz_results():
+    # Check if the request is in JSON format
+    if not request.is_json:
+        return jsonify({'error': 'Request must be JSON'}), 400
+    
+    # Parse data from the request
+    quiz_data = request.get_json()
+
+    for data in quiz_data:
+        # Validate the score as a non-negative number
+        score = data.get('score')
+        if not isinstance(score, (int, float)) or not (0 <= score <= 1):
+            return jsonify({'error': 'Invalid score, must be between 0 and 1 inclusive'}), 400
+
+        # Create a new QuizResults object
+        new_quiz_result = QuizResults(
+            practice_id=data['practice_id'],
+            answer=data['answer'],
+            score=score
+        )
+
+        # Add to the database session
+        db.session.add(new_quiz_result)
+
+    # Commit the session to save all new quiz results to the database
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()  # Roll back in case of error
+        return jsonify({'error': f'Failed to submit quiz results: {str(e)}'}), 500
+
+    # Return success message
+    return jsonify({'message': 'Quiz results submitted successfully!'}), 201
 
 
 with app.app_context():
