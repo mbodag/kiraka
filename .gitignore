@@ -41,3 +41,5 @@ __pycache__/
 venv/
 
 my_env/
+
+api/config.py
