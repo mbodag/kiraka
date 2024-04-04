@@ -18,6 +18,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # What does this do?
 db = SQLAlchemy(app)
 
 # Creates the database model. This means we create a class for each table in the database
+# Creates the database model. This means we create a class for each table in the database
 class Texts(db.Model):  
     __tablename__ = 'Texts'
     text_id = db.Column(db.Integer, primary_key=True)
@@ -25,6 +26,7 @@ class Texts(db.Model):
     text_content = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'))
     quiz_questions = db.relationship('Questions', backref='text', lazy=True)
+    title = db.Column(db.Text)
     
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -39,6 +41,7 @@ class Questions(db.Model):
     
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    
 class Users(db.Model):
     __tablename__ = 'Users'
     user_id = db.Column(db.Integer, primary_key=True) #If clerk_id this might need to be a string
