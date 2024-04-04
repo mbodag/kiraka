@@ -36,3 +36,11 @@ yarn-error.log*
 next-env.d.ts
 
 certificates
+
+__pycache__/
+venv/
+
+my_env/
+
+#Python files
+api/config.py
