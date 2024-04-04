@@ -30,7 +30,7 @@ class Texts(db.Model):
     
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-    
+
 class Questions(db.Model): 
     __tablename__ = 'Questions'
     question_id = db.Column(db.Integer, primary_key=True)
@@ -100,7 +100,7 @@ def populate_texts():
     Add initial texts to the database
     '''
     try:
-        with open('api/preloaded_text.json', 'r') as texts_file:
+        with open('preloaded_text.json', 'r') as texts_file:
             texts = json.loads(texts_file.read())
             for text in texts.values():
                 print(text['title'])
@@ -350,35 +350,39 @@ def submit_reading_speed():
     # Parse data from the request
     data = request.get_json()
 
-    # Extract practice_id and avg_reading_speed
-    practice_id = data.get('practice_id')
-    avg_reading_speed = data.get('wpm')
+    # Extract text_id, user_id, and wpm
+    text_id = data.get('text_id')  # Assuming text_id is provided
+    user_id = data.get('user_id')  # Assuming user_id is provided
+    wpm = data.get('wpm')
 
-    # Validate the practice_id as an integer
-    if not isinstance(practice_id, int):
-        return jsonify({'error': 'Invalid practice_id'}), 400
+    # Validate the text_id and user_id as integers
+    if not isinstance(text_id, int) or not isinstance(user_id, int):
+        return jsonify({'error': 'Invalid text_id or user_id'}), 400
 
-    # Validate the avg_reading_speed as a non-negative number
-    if not isinstance(avg_reading_speed, (int, float)) or avg_reading_speed < 0:
-        return jsonify({'error': 'Invalid avg_reading_speed (wpm)'}), 400
+    # Validate the wpm as a non-negative number
+    if not isinstance(wpm, (int, float)) or wpm < 0:
+        return jsonify({'error': 'Invalid wpm'}), 400
 
-    # Fetch the PracticeResults object from the database
-    practice_result = PracticeResults.query.filter_by(practice_id=practice_id).first()
-    if not practice_result:
-        return jsonify({'error': 'Practice result not found'}), 404
+    # Create a new PracticeResults object
+    new_practice_result = PracticeResults(
+        text_id=text_id,
+        user_id=user_id,
+        wpm=wpm,
+        timestamp=datetime.utcnow()  # Assuming current time as timestamp
+    )
 
-    # Update the reading speed
-    practice_result.avg_reading_speed = avg_reading_speed
+    # Add to the database session
+    db.session.add(new_practice_result)
 
-    # Commit the changes to the database
+    # Commit the new practice result to the database
     try:
         db.session.commit()
     except Exception as e:
         db.session.rollback()  # Roll back in case of error
-        return jsonify({'error': f'Failed to update reading speed: {str(e)}'}), 500
+        return jsonify({'error': f'Failed to add new reading speed record: {str(e)}'}), 500
 
     # Return success message
-    return jsonify({'message': 'Reading speed updated successfully!'}), 200
+    return jsonify({'message': 'New reading speed record added successfully!'}), 201
 
 @app.route('/save-quiz-results', methods=['POST'])
 def submit_quiz_results():
@@ -402,6 +406,7 @@ def submit_quiz_results():
         # Create a new QuizResults object
         new_quiz_result = QuizResults(
             practice_id=data['practice_id'],
+            question_id=data['question_id'],
             answer=data['answer'],
             score=score
         )
