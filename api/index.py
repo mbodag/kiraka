@@ -44,7 +44,7 @@ class Questions(db.Model):
 class Users(db.Model):
     __tablename__ = 'Users'
     user_id = db.Column(db.Integer, primary_key=True) #If clerk_id this might need to be a string
-    username = db.Column(db.Text, unique=True)
+    username = db.Column(db.Text)
     texts = db.relationship('Texts', backref='user', lazy=True)
     admin = db.Column(db.Boolean, default=False)
     
