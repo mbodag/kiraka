@@ -96,29 +96,35 @@ def populate_texts():
 """
 
 def populate_texts():
+    '''
+    Add initial texts to the database
+    '''
     try:
-        with open('texts_and_questions.json', 'r') as file:
-            data = json.load(file)
-            for item in data:
-                new_text = Texts(text_content=item['text'].strip(), user_id=1)
+        with open('api/preloaded_text.json', 'r') as texts_file:
+            texts = json.loads(texts_file.read())
+            for text in texts.values():
+                print(text['title'])
+                new_text = Texts(
+                    title = text['title'],
+                    text_content=text['content'],  # Remove any trailing newline characters 
+                    user_id=1
+                    
+                ) 
                 db.session.add(new_text)
-                db.session.flush()
-                # No need to commit here yet; add all questions for the text
-                
-                for question in item['questions']:
-                    new_quiz_question = Questions(
-                        text_id=new_text.text_id,
-                        question_content=question['content'].strip(),
-                        multiple_choices=','.join(question['options']),
-                        correct_answer=question['answer']
-                    )
+                db.session.commit()
+                for question in text['questions']:
+                    new_quiz_question = Questions(text_id=new_text.text_id,
+                                                  question_content=question['question'],
+                                                  multiple_choices=';'.join(question['options']),
+                                                  correct_answer=question['correct_answer']
+                                                  )
                     db.session.add(new_quiz_question)
-                
-                db.session.commit()  # Commit once per text and its questions
+                    db.session.commit()
         print('Texts and quizzes added successfully!')
     except Exception as e:
         db.session.rollback()
         print(f'Error: {str(e)}')
+
 
 def add_admin():
     user_zero = Users(user_id = 1, username = 'admin', admin=True)
