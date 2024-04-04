@@ -65,8 +65,7 @@ class PracticeResults(db.Model):
     wpm = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, default=datetime.today())
     quiz_results = db.relationship('QuizResults', backref='practice', lazy=True)
-    def to_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    mode = db.Column(db.Text)
 
 """
 def populate_texts():
