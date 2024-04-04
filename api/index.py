@@ -6,6 +6,7 @@ from datetime import datetime
 import requests
 import random
 from config import DATABASE_URI, PORT, ADMIN_ID
+import json
 
 
 app = Flask(__name__)
@@ -25,6 +26,7 @@ class Texts(db.Model):
     text_content = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'))
     quiz_questions = db.relationship('Questions', backref='text', lazy=True)
+    title = db.Column(db.Text)
     
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -42,7 +44,7 @@ class Questions(db.Model):
 class Users(db.Model):
     __tablename__ = 'Users'
     user_id = db.Column(db.Integer, primary_key=True) #If clerk_id this might need to be a string
-    username = db.Column(db.Text)
+    username = db.Column(db.Text, unique=True)
     texts = db.relationship('Texts', backref='user', lazy=True)
     admin = db.Column(db.Boolean, default=False)
     
@@ -50,6 +52,7 @@ class QuizResults(db.Model):
     __tablename__ = 'QuizResults'
     result_id = db.Column(db.Integer, primary_key=True)
     practice_id = db.Column(db.Integer, db.ForeignKey('PracticeResults.practice_id'), nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('Questions.question_id'), nullable=False)
     answer = db.Column(db.Text, nullable=False)
     score = db.Column(db.Integer)
 
@@ -61,8 +64,7 @@ class PracticeResults(db.Model):
     wpm = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, default=datetime.today())
     quiz_results = db.relationship('QuizResults', backref='practice', lazy=True)
-    def to_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    mode = db.Column(db.Text)
 
 def populate_texts():
     '''
