@@ -92,7 +92,46 @@ class FlaskApiTest(unittest.TestCase):
                 print(f"Expected score: {quiz_result['score']}")
                 self.assertEqual(result.score, quiz_result['score'])
 
-    # Add more test methods for other endpoints
+    def test_save_reading_speed(self):
+        # Query the PracticeResults table
+        all_practice_results = PracticeResults.query.all()
+
+        # Iterate through the results and print them
+        for result in all_practice_results:
+            print(result.to_dict()) 
+
+        
+        # Define mock data for testing /save-reading-speed endpoint
+        mock_reading_speed_data = {
+            'practice_id': self.practice_result1_id,
+            'wpm': 300  # Updated words per minute
+        }
+
+        # Send a POST request to the endpoint with the mock data
+        response = self.app.post('/save-reading-speed', 
+                                 data=json.dumps(mock_reading_speed_data), 
+                                 content_type='application/json')
+        
+        # Query the PracticeResults table
+        all_practice_results = PracticeResults.query.all()
+
+        # Iterate through the results and print them
+        for result in all_practice_results:
+            print(result.to_dict()) 
+        
+        # Check if the response status code is 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # Optional: Check if the wpm data was actually updated in the database
+        with app.app_context():
+            updated_practice_result = PracticeResults.query.filter_by(
+                practice_id=self.practice_result1_id).first()
+            self.assertIsNotNone(updated_practice_result)
+            
+            print(f"Updated WPM: {updated_practice_result.wpm}")
+            print(f"Expected WPM: {mock_reading_speed_data['wpm']}")
+            
+            self.assertEqual(updated_practice_result.wpm, mock_reading_speed_data['wpm'])
 
 if __name__ == '__main__':
     unittest.main()

@@ -50,8 +50,9 @@ class QuizResults(db.Model):
     __tablename__ = 'QuizResults'
     result_id = db.Column(db.Integer, primary_key=True)
     practice_id = db.Column(db.Integer, db.ForeignKey('PracticeResults.practice_id'), nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('Questions.question_id'), nullable=False)
     answer = db.Column(db.Text, nullable=False)
-    score = db.Column(db.Float)
+    score = db.Column(db.Integer)
 
 class PracticeResults(db.Model):
     __tablename__ = 'PracticeResults'
@@ -342,7 +343,7 @@ def submit_reading_speed():
 
     # Extract practice_id and avg_reading_speed
     practice_id = data.get('practice_id')
-    avg_reading_speed = data.get('avg_reading_speed')
+    avg_reading_speed = data.get('wpm')
 
     # Validate the practice_id as an integer
     if not isinstance(practice_id, int):
@@ -350,7 +351,7 @@ def submit_reading_speed():
 
     # Validate the avg_reading_speed as a non-negative number
     if not isinstance(avg_reading_speed, (int, float)) or avg_reading_speed < 0:
-        return jsonify({'error': 'Invalid avg_reading_speed'}), 400
+        return jsonify({'error': 'Invalid avg_reading_speed (wpm)'}), 400
 
     # Fetch the PracticeResults object from the database
     practice_result = PracticeResults.query.filter_by(practice_id=practice_id).first()
