@@ -69,21 +69,26 @@ def populate_texts():
     Add initial texts to the database
     '''
     try:
-        with open('texts.txt', 'r') as texts_file, open('quiz_questions.txt', 'r') as quiz_file:
-            for text_line, quiz_line in zip(texts_file, quiz_file):
+        with open('api/preloaded_text.json', 'r') as texts_file:
+            texts = json.loads(texts_file.read())
+            for text in texts.values():
+                print(text['title'])
                 new_text = Texts(
-                    text_content=text_line.strip(),  # Remove any trailing newline characters 
+                    title = text['title'],
+                    text_content=text['content'],  # Remove any trailing newline characters 
                     user_id=1
+                    
                 ) 
                 db.session.add(new_text)
                 db.session.commit()
-                new_quiz_question = Questions(text_id=new_text.text_id,
-                                              question_content=quiz_line.strip(),
-                                              multiple_choices='a,b,c,d',
-                                              correct_answer='a'
-                                              )
-                db.session.add(new_quiz_question)
-                db.session.commit()
+                for question in text['questions']:
+                    new_quiz_question = Questions(text_id=new_text.text_id,
+                                                  question_content=question['question'],
+                                                  multiple_choices=';'.join(question['options']),
+                                                  correct_answer=question['correct_answer']
+                                                  )
+                    db.session.add(new_quiz_question)
+                    db.session.commit()
         print('Texts and quizzes added successfully!')
     except Exception as e:
         db.session.rollback()
