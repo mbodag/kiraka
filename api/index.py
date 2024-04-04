@@ -5,6 +5,7 @@ from sqlalchemy.sql.expression import func
 from datetime import datetime
 import requests
 import random
+import json
 from config import DATABASE_URI, PORT, ADMIN_ID
 
 app = Flask(__name__)
@@ -50,7 +51,7 @@ class QuizResults(db.Model):
     result_id = db.Column(db.Integer, primary_key=True)
     practice_id = db.Column(db.Integer, db.ForeignKey('PracticeResults.practice_id'), nullable=False)
     answer = db.Column(db.Text, nullable=False)
-    score = db.Column(db.Integer)
+    score = db.Column(db.Float)
 
 class PracticeResults(db.Model):
     __tablename__ = 'PracticeResults'
@@ -63,6 +64,7 @@ class PracticeResults(db.Model):
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+"""
 def populate_texts():
     '''
     Add initial texts to the database
@@ -83,6 +85,32 @@ def populate_texts():
                                               )
                 db.session.add(new_quiz_question)
                 db.session.commit()
+        print('Texts and quizzes added successfully!')
+    except Exception as e:
+        db.session.rollback()
+        print(f'Error: {str(e)}')
+"""
+
+def populate_texts():
+    try:
+        with open('texts_and_questions.json', 'r') as file:
+            data = json.load(file)
+            for item in data:
+                new_text = Texts(text_content=item['text'].strip(), user_id=1)
+                db.session.add(new_text)
+                db.session.flush()
+                # No need to commit here yet; add all questions for the text
+                
+                for question in item['questions']:
+                    new_quiz_question = Questions(
+                        text_id=new_text.text_id,
+                        question_content=question['content'].strip(),
+                        multiple_choices=','.join(question['options']),
+                        correct_answer=question['answer']
+                    )
+                    db.session.add(new_quiz_question)
+                
+                db.session.commit()  # Commit once per text and its questions
         print('Texts and quizzes added successfully!')
     except Exception as e:
         db.session.rollback()
@@ -350,6 +378,10 @@ def submit_quiz_results():
     
     # Parse data from the request
     quiz_data = request.get_json()
+    
+    # Validate that quiz_data is a non-empty list
+    if not isinstance(quiz_data, list) or not quiz_data:
+        return jsonify({'error': 'Invalid input, expected a non-empty list'}), 400
 
     for data in quiz_data:
         # Validate the score as a non-negative number
@@ -371,7 +403,8 @@ def submit_quiz_results():
     try:
         db.session.commit()
     except Exception as e:
-        db.session.rollback()  # Roll back in case of error
+        db.session.rollback()
+        app.logger.error(f'Failed to submit quiz results: {e}')
         return jsonify({'error': f'Failed to submit quiz results: {str(e)}'}), 500
 
     # Return success message
