@@ -42,7 +42,7 @@ class Questions(db.Model):
 class Users(db.Model):
     __tablename__ = 'Users'
     user_id = db.Column(db.Integer, primary_key=True) #If clerk_id this might need to be a string
-    username = db.Column(db.Text, unique=True)
+    username = db.Column(db.Text)
     texts = db.relationship('Texts', backref='user', lazy=True)
     admin = db.Column(db.Boolean, default=False)
     
@@ -304,15 +304,15 @@ def populate_with_fake_analytics():
                     print(f'Quiz {l} added successfully!')
     return jsonify(user_ids)
 
-@app.route('/api/verify-session', methods=['GET'])
-def verify_session():
-    user_id = clerk.get_session()["user_id"]
-    user_data = Users.query.filter_by(user_id = user_id).first()
-    if not user_data:
-        # User does not exist
-        pass 
-    else:
-        return jsonify(success=True, user_data=user_data)
+# @app.route('/api/verify-session', methods=['GET'])
+# def verify_session():
+#     user_id = clerk.get_session()["user_id"]
+#     user_data = Users.query.filter_by(user_id = user_id).first()
+#     if not user_data:
+#         # User does not exist
+#         pass 
+#     else:
+#         return jsonify(success=True, user_data=user_data)
     
 @app.route('/api/store-user-data', methods=['POST'])
 def store_user_data():
