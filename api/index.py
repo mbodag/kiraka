@@ -305,24 +305,36 @@ def populate_with_fake_analytics():
                     print(f'Quiz {l} added successfully!')
     return jsonify(user_ids)
 
-clerk.ClerkApi(app, backend_api="sk_test_EpXKnES3hAuuz4eXpZddECYtH1hYvxfSQwDhJJE4xn")
-@app.route('/api/verify-session', methods=['GET'])
-@clerk.require_session 
-def verify_session():
-    user_id = clerk.get_session()["user_id"]
-    user_data = Users.query.filter_by(user_id = user_id).first()
-    if not user_data:
-        # User does not exist
-        pass 
+@app.route('/api/get_info', methods=['GET'])
+def get_info():
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify(success=False, message="User ID is required."), 400
+
+    user_data = Users.query.filter_by(user_id=user_id).first()
+    if user_data:
+        # User exists, serialize and return user data
+        return jsonify(success=True, user_exists=True, user_data=user_data.to_dict())
     else:
-        return jsonify(success=True, user_data=user_data)
+        # User does not exist
+        return jsonify(success=False, user_exists=False, message="User not found.")
     
 @app.route('/api/store-user-data', methods=['POST'])
-@clerk.require_session 
 def store_user_data():
     user_data = request.get_json()
-    # Save user_data to your database
-    return jsonify(success=True)
+    if not user_data or 'user_id' not in user_data:
+        return jsonify(success=False, message="User ID is required."), 400
+    
+    user_id = user_data['user_id']
+    # Check if user already exists to avoid duplicates
+    existing_user = Users.query.filter_by(user_id=user_id).first()
+    if existing_user:
+        return jsonify(success=False, message="User already exists."), 400
+    
+    new_user = Users(user_id=user_id)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify(success=True, message="User added successfully.")
 
 
 
