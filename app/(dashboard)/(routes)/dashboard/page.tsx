@@ -34,19 +34,17 @@ export default async function DashboardPage() {
   const userData = async () => {
     const user = await currentUser();
 
-    try {
-      const response = await fetch("/api/get_info", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ user }),
-      });
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+    if (user) {
+      try {
+        const response = await fetch(`/api/get_info?user_id=${user.id}`);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
+    } else {
+      console.error("User is null or undefined");
     }
   };
 
