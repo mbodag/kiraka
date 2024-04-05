@@ -22,9 +22,11 @@ const Sidebar = () => {
 
       {/* Upload button aligned to the left */}
       <div className="px-3 py-2 mb-4 bg-gray-800">
+        <Link href="/upload">
         <button className="text-sm w-full max-w-xs p-2 font-medium rounded-lg hover:bg-gray-700 transition sidebar-button-font">
           Upload Files
         </button>
+        </Link>
       </div>
 
       {/* Document buttons aligned to the left */}
