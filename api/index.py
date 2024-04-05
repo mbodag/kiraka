@@ -151,7 +151,7 @@ def user_id_is_valid(user_id):
 def username_is_valid(username):
     return username and isinstance(username, str) and len(username) <= 100
 
-@app.route('/texts', methods=['POST'])
+@app.route('/api/texts', methods=['POST'])
 def add_text():
     if not request.is_json:
         return jsonify({'error':'Request must be JSON'}), 400
@@ -184,7 +184,7 @@ def add_text():
             finally:      
                 return jsonify({'message': 'Text added successfully!', 'text_id':new_text.text_id}), 201
 
-@app.route('/texts/random', methods=['GET'])        
+@app.route('/api/texts/random', methods=['GET'])        
 def get_random_text():
     '''
     Fetches a random admin text from the database and returns it as JSON
@@ -201,7 +201,7 @@ def get_random_text():
         return jsonify({'message': 'No texts found'}), 404
 
 
-@app.route('/texts/user', methods=['GET'])
+@app.route('/api/texts/user', methods=['GET'])
 def text_by_user_id():
     '''
     Fetches all texts from a user and returns it as JSON
@@ -219,7 +219,7 @@ def text_by_user_id():
         all_texts_data.append(text_data)
     return jsonify(all_texts_data)
       
-@app.route('/texts/<int:text_id>', methods=['DELETE'])
+@app.route('/api/texts/<int:text_id>', methods=['DELETE'])
 def delete_text(text_id):
     user_id = int(request.args.get('user_id'))
     text_to_delete = Texts.query.filter_by(text_id=text_id).first()
@@ -236,7 +236,7 @@ def delete_text(text_id):
             return jsonify({'error': 'Failed to delete text'}), 500
 
     
-@app.route('/texts/summarize', methods=['POST'])
+@app.route('/api/texts/summarize', methods=['POST'])
 def summarize_text():
     g = {"text":"What is the Point of Decentralized AI? Traditionally, the development of AI systems has remained siloed among a handful of technology vendors like Google and OpenAI, who have had the financial resources necessary to develop the infrastructure and resources necessary to build and process large datasets.\nHowever, the centralization of AI development in the industry has meant that organizations need to have significant funding to be able to develop and process the data necessary to compete in the market.\nLikewise, it’s also incentivized vendors to pursue a black box approach to AI development, giving users and regulators little to no transparency over how an organization’s AI models operate and make decisions. This makes it difficult to identify inaccuracies, bias, prejudice, and misinformation.\nDecentralized AI applications address these shortcomings by providing a solution to move AI development away from centralized providers and toward smaller researchers who innovate as part of an open-source community.\nAt the same time, users can unlock the benefits of AI-driven decision-making locally without needing to share their personal data with third parties.\nFederated Learning vs. Decentralised AI\nFederated learning is the name given to an approach where two or more AI models are trained on different computers, using a decentralized dataset. Under a federated learning methodology, machine-learning models are trained on data stored within a user device without that data being shared with the upstream provider.\nWhile this sounds similar to decentralized AI, there is a key difference. Under federated learning, an organization has centralized control over the AI model used to process the datasets, while under a decentralized AI system, there is no central entity in charge of processing the data.\nThus federated learning is typically used by organizations looking to build a centralized AI model that makes decisions based on data that has been processed on a decentralized basis (usually to maintain user privacy), whereas decentralized AI solutions have no central authority in charge of the underlying model that processes the data.\nAs Patricia Thaine, co-founder and CEO of Private AI, explained to Techopedia, “Federated learning tends to have a centralized model that gets updated based on the learnings of distributed models. A decentralized system would have multiple nodes that come to a consensus, with no central model as an authority.\nBenefits of Decentralized AI\nUsing a decentralized AI architecture offers some key benefits to both AI developers and users alike. Some of these are:\nUsers can benefit from AI-based decision-making without sharing their data;\nMore transparency and accountability over how AI-based decisions are made;\nIndependent researchers have more opportunities to contribute to AI development;\nBlockchain technology provides new opportunities for encryption;\nDecentralization unlocks new opportunities for integrations with Web3 and the metaverse \nDemocratizing AI Development\nWhile decentralized AI is still in its infancy, it has the potential to democratize AI development, providing more opportunities for open-source model developers to interact with users independent of a centralized authority.\nIf enough vendors support decentralized AI models, this could significantly reduce the amount of control that proprietary model developers have in the market and increase transparency over AI development as a whole."}
     input_text = g['text']
@@ -251,7 +251,7 @@ def summarize_text():
     summary = response.json()[0]['summary_text']
     return jsonify({'summary': summary})
 
-@app.route('/user', methods=['POST'])
+@app.route('/api/user', methods=['POST'])
 def add_new_account():
     if not request.is_json:
         return jsonify({'error': 'Request must be JSON'}), 400
@@ -264,15 +264,15 @@ def add_new_account():
     return jsonify({'message': 'New account created successfully!'}), 201
 
 
-@app.route('/user/login', methods=['POST'])
+@app.route('/api/user/login', methods=['POST'])
 def get_login_info():
     pass
 
-@app.route('/user/logout', methods=['POST'])
+@app.route('/api/user/logout', methods=['POST'])
 def get_logout_info():
     pass
 
-@app.route('/users', methods=['DELETE'])
+@app.route('/api/users', methods=['DELETE'])
 def delete_user_data():
     pass
 
