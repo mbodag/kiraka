@@ -5,9 +5,8 @@ from sqlalchemy.sql.expression import func
 from datetime import datetime
 import requests
 import random
+import json
 from config import DATABASE_URI, PORT, ADMIN_ID
-import clerk
-
 
 app = Flask(__name__)
 CORS(app) # See what this does
@@ -26,10 +25,11 @@ class Texts(db.Model):
     text_content = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'))
     quiz_questions = db.relationship('Questions', backref='text', lazy=True)
+    title = db.Column(db.Text)
     
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-    
+
 class Questions(db.Model): 
     __tablename__ = 'Questions'
     question_id = db.Column(db.Integer, primary_key=True)
@@ -40,6 +40,7 @@ class Questions(db.Model):
     
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    
 class Users(db.Model):
     __tablename__ = 'Users'
     user_id = db.Column(db.Integer, primary_key=True) #If clerk_id this might need to be a string
@@ -51,6 +52,7 @@ class QuizResults(db.Model):
     __tablename__ = 'QuizResults'
     result_id = db.Column(db.Integer, primary_key=True)
     practice_id = db.Column(db.Integer, db.ForeignKey('PracticeResults.practice_id'), nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('Questions.question_id'), nullable=False)
     answer = db.Column(db.Text, nullable=False)
     score = db.Column(db.Integer)
 
@@ -62,6 +64,8 @@ class PracticeResults(db.Model):
     wpm = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, default=datetime.today())
     quiz_results = db.relationship('QuizResults', backref='practice', lazy=True)
+    mode = db.Column(db.Text)
+    
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
@@ -70,25 +74,31 @@ def populate_texts():
     Add initial texts to the database
     '''
     try:
-        with open('texts.txt', 'r') as texts_file, open('quiz_questions.txt', 'r') as quiz_file:
-            for text_line, quiz_line in zip(texts_file, quiz_file):
+        with open('preloaded_text.json', 'r') as texts_file:
+            texts = json.loads(texts_file.read())
+            for text in texts.values():
+                print(text['title'])
                 new_text = Texts(
-                    text_content=text_line.strip(),  # Remove any trailing newline characters 
+                    title = text['title'],
+                    text_content=text['content'],  # Remove any trailing newline characters 
                     user_id=1
+                    
                 ) 
                 db.session.add(new_text)
                 db.session.commit()
-                new_quiz_question = Questions(text_id=new_text.text_id,
-                                              question_content=quiz_line.strip(),
-                                              multiple_choices='a,b,c,d',
-                                              correct_answer='a'
-                                              )
-                db.session.add(new_quiz_question)
-                db.session.commit()
+                for question in text['questions']:
+                    new_quiz_question = Questions(text_id=new_text.text_id,
+                                                  question_content=question['question'],
+                                                  multiple_choices=';'.join(question['options']),
+                                                  correct_answer=question['correct_answer']
+                                                  )
+                    db.session.add(new_quiz_question)
+                    db.session.commit()
         print('Texts and quizzes added successfully!')
     except Exception as e:
         db.session.rollback()
         print(f'Error: {str(e)}')
+
 
 def add_admin():
     user_zero = Users(user_id = 1, username = 'admin', admin=True)
@@ -241,20 +251,21 @@ def get_logout_info():
 def delete_user_data():
     pass
 
-@app.route('/api/analytics', methods=['GET'])
+@app.route('/api/analytics', methods=['POST'])
 def get_user_analytics():
-    if not request.is_json:
-        return jsonify({'error': 'Request must be JSON'}), 400
-    user_ids = request.json.get('user_ids')
-    if not isinstance(user_ids, list):
-        return jsonify({'error': 'Invalid format, user_ids should be a list'}), 400
+    user_id = request.json.get('user_id')
     users_data = {}
-    for user_id in user_ids:
-        if not user_id_is_valid(user_id):
-            return jsonify({'error': f'Invalid user_id: {user_id}'}), 400
-        user = Users.query.filter_by(user_id=user_id).first()
-        if not user:
-            return jsonify({'error': f'User with id {user_id} not found'}), 404
+    if not user_id_is_valid(user_id):
+        return jsonify({'error': f'Invalid user_id: {user_id}'}), 400
+    user = Users.query.filter_by(user_id=user_id).first()
+    if not user:
+        return jsonify({'error': f'User with id {user_id} not found'}), 404
+    elif user.admin == False:  
+        users = [user] 
+    elif user.admin == True:
+        users = Users.query.all()
+    for user in users:
+        user_id = user.user_id
         username = user.username
         user_results = []
         practice_results = PracticeResults.query.filter_by(user_id=user_id).all()
@@ -273,13 +284,14 @@ def get_user_analytics():
                 practice_result_dict = {'textId': practice_result.text_id, 'avgWPM': practice_result.wpm, 'timestamp': practice_result.timestamp.strftime('%d/%m/%Y'), 'quizScore': score}
                 user_results.append(practice_result_dict)
             user_results = sorted(user_results, key=lambda x: x['timestamp'], reverse=True)
-        users_data[username] = user_results
+        users_data[username] = user_results          
     return jsonify(users_data)
 
 @app.route('/api/analytics/fake', methods=['POST'])
 def populate_with_fake_analytics():
     usernames = ['Fadi', 'Jack', 'Kyoya', 'Konstantinos', 'Evangelos', 'Matis']
     texts = ['This is a test text', 'This is another test text', 'This is a third test text']
+    questions = ['What is the capital of France?', 'What is the capital of Germany?', 'What is the capital of Italy?']
     user_ids = []
     for i in range(2, 2+len(usernames)):
         user = Users(username=usernames[i-2])
@@ -293,50 +305,106 @@ def populate_with_fake_analytics():
             db.session.commit()
             print(f'Text {j} added successfully!')
             text_id = text.text_id
+            for m in range(3):
+                question = Questions(text_id=text_id, question_content=questions[m], multiple_choices='a;b;c;d', correct_answer='a')
+                db.session.add(question)
+                db.session.commit()
+                print(f'Question {m} added successfully!')
             for k in range(3):
                 practice = PracticeResults(text_id=text_id, user_id=i, wpm=random.randint(100, 300), timestamp=datetime.today())
                 db.session.add(practice)
                 db.session.commit()
                 print(f'Practice {k} added successfully!')
                 for l in range(5):
-                    quiz = QuizResults(practice_id=practice.practice_id, answer='a', score=random.randint(0, 1))
+                    quiz = QuizResults(practice_id=practice.practice_id, question_id = question.question_id, answer='a', score=random.randint(0, 1))
                     db.session.add(quiz)
                     db.session.commit()  
                     print(f'Quiz {l} added successfully!')
     return jsonify(user_ids)
 
-@app.route('/api/get_info', methods=['GET'])
-def get_info():
-    user_id = request.args.get('user_id')
-    if not user_id:
-        return jsonify(success=False, message="User ID is required."), 400
+@app.route('/save-reading-speed', methods=['POST'])
+def submit_reading_speed():
+    # Check if the request is in JSON format
+    if not request.is_json:
+        return jsonify({'error': 'Request must be JSON'}), 400
 
-    user_data = Users.query.filter_by(user_id=user_id).first()
-    if user_data:
-        # User exists, serialize and return user data
-        return jsonify(success=True, user_exists=True, user_data=user_data.to_dict())
-    else:
-        # User does not exist
-        return jsonify(success=False, user_exists=False, message="User not found.")
-    
-@app.route('/api/store-user-data', methods=['POST'])
-def store_user_data():
-    user_data = request.get_json()
-    if not user_data or 'user_id' not in user_data:
-        return jsonify(success=False, message="User ID is required."), 400
-    
-    user_id = user_data['user_id']
-    # Check if user already exists to avoid duplicates
-    existing_user = Users.query.filter_by(user_id=user_id).first()
-    if existing_user:
-        return jsonify(success=False, message="User already exists."), 400
-    
-    new_user = Users(user_id=user_id)
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify(success=True, message="User added successfully.")
+    # Parse data from the request
+    data = request.get_json()
 
+    # Extract text_id, user_id, and wpm
+    text_id = data.get('text_id')  # Assuming text_id is provided
+    user_id = data.get('user_id')  # Assuming user_id is provided
+    wpm = data.get('wpm')
 
+    # Validate the text_id and user_id as integers
+    if not isinstance(text_id, int) or not isinstance(user_id, int):
+        return jsonify({'error': 'Invalid text_id or user_id'}), 400
+
+    # Validate the wpm as a non-negative number
+    if not isinstance(wpm, (int, float)) or wpm < 0:
+        return jsonify({'error': 'Invalid wpm'}), 400
+
+    # Create a new PracticeResults object
+    new_practice_result = PracticeResults(
+        text_id=text_id,
+        user_id=user_id,
+        wpm=wpm,
+        timestamp=datetime.utcnow()  # Assuming current time as timestamp
+    )
+
+    # Add to the database session
+    db.session.add(new_practice_result)
+
+    # Commit the new practice result to the database
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()  # Roll back in case of error
+        return jsonify({'error': f'Failed to add new reading speed record: {str(e)}'}), 500
+
+    # Return success message
+    return jsonify({'message': 'New reading speed record added successfully!'}), 201
+
+@app.route('/save-quiz-results', methods=['POST'])
+def submit_quiz_results():
+    # Check if the request is in JSON format
+    if not request.is_json:
+        return jsonify({'error': 'Request must be JSON'}), 400
+    
+    # Parse data from the request
+    quiz_data = request.get_json()
+    
+    # Validate that quiz_data is a non-empty list
+    if not isinstance(quiz_data, list) or not quiz_data:
+        return jsonify({'error': 'Invalid input, expected a non-empty list'}), 400
+
+    for data in quiz_data:
+        # Validate the score as a non-negative number
+        score = data.get('score')
+        if not isinstance(score, (int, float)) or not (0 <= score <= 1):
+            return jsonify({'error': 'Invalid score, must be between 0 and 1 inclusive'}), 400
+
+        # Create a new QuizResults object
+        new_quiz_result = QuizResults(
+            practice_id=data['practice_id'],
+            question_id=data['question_id'],
+            answer=data['answer'],
+            score=score
+        )
+
+        # Add to the database session
+        db.session.add(new_quiz_result)
+
+    # Commit the session to save all new quiz results to the database
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f'Failed to submit quiz results: {e}')
+        return jsonify({'error': f'Failed to submit quiz results: {str(e)}'}), 500
+
+    # Return success message
+    return jsonify({'message': 'Quiz results submitted successfully!'}), 201
 
 with app.app_context():
     db.create_all()
@@ -347,4 +415,5 @@ with app.app_context():
         populate_texts()
 
 if __name__ == '__main__':
-    app.run(debug=True, port = PORT)
+    app.run(debug=True, port = 8000)
+
