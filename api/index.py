@@ -99,7 +99,7 @@ def populate_texts():
     Add initial texts to the database
     '''
     try:
-        with open('preloaded_text.json', 'r') as texts_file:
+        with open('api/preloaded_text.json', 'r') as texts_file:
             texts = json.loads(texts_file.read())
             for text in texts.values():
                 print(text['title'])
