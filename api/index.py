@@ -11,7 +11,7 @@ import json
 app = Flask(__name__)
 CORS(app) # See what this does
 # Huggingface API token
-API_TOKEN = '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'
+API_TOKEN = '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'  
 # MariaDB credentials
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # What does this do?
@@ -320,6 +320,39 @@ def populate_with_fake_analytics():
                     print(f'Quiz {l} added successfully!')
     return jsonify(user_ids)
 
+@app.route('/api/get_info', methods=['GET'])
+def get_info():
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify(success=False, message="User ID is required."), 400
+
+    user_data = Users.query.filter_by(user_id=user_id).first()
+    if user_data:
+        # User exists, serialize and return user data
+        return jsonify(success=True, user_exists=True, user_data=user_data.to_dict())
+    else:
+        # User does not exist
+        return jsonify(success=False, user_exists=False, message="User not found.")
+    
+@app.route('/api/store-user-data', methods=['POST'])
+def store_user_data():
+    user_data = request.get_json()
+    if not user_data or 'user_id' not in user_data:
+        return jsonify(success=False, message="User ID is required."), 400
+    
+    user_id = user_data['user_id']
+    # Check if user already exists to avoid duplicates
+    existing_user = Users.query.filter_by(user_id=user_id).first()
+    if existing_user:
+        return jsonify(success=False, message="User already exists."), 400
+    
+    new_user = Users(user_id=user_id)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify(success=True, message="User added successfully.")
+
+
+
 with app.app_context():
     db.create_all()
     
@@ -331,5 +364,3 @@ with app.app_context():
 if __name__ == '__main__':
     app.run(debug=True, port = 8000)
 
-
-#{"text":"What is the Point of Decentralized AI? Traditionally, the development of AI systems has remained siloed among a handful of technology vendors like Google and OpenAI, who have had the financial resources necessary to develop the infrastructure and resources necessary to build and process large datasets.\nHowever, the centralization of AI development in the industry has meant that organizations need to have significant funding to be able to develop and process the data necessary to compete in the market.\nLikewise, it’s also incentivized vendors to pursue a black box approach to AI development, giving users and regulators little to no transparency over how an organization’s AI models operate and make decisions. This makes it difficult to identify inaccuracies, bias, prejudice, and misinformation.\nDecentralized AI applications address these shortcomings by providing a solution to move AI development away from centralized providers and toward smaller researchers who innovate as part of an open-source community.\nAt the same time, users can unlock the benefits of AI-driven decision-making locally without needing to share their personal data with third parties.\nFederated Learning vs. Decentralised AI\nFederated learning is the name given to an approach where two or more AI models are trained on different computers, using a decentralized dataset. Under a federated learning methodology, machine-learning models are trained on data stored within a user device without that data being shared with the upstream provider.\nWhile this sounds similar to decentralized AI, there is a key difference. Under federated learning, an organization has centralized control over the AI model used to process the datasets, while under a decentralized AI system, there is no central entity in charge of processing the data.\nThus federated learning is typically used by organizations looking to build a centralized AI model that makes decisions based on data that has been processed on a decentralized basis (usually to maintain user privacy), whereas decentralized AI solutions have no central authority in charge of the underlying model that processes the data.\nAs Patricia Thaine, co-founder and CEO of Private AI, explained to Techopedia, “Federated learning tends to have a centralized model that gets updated based on the learnings of distributed models. A decentralized system would have multiple nodes that come to a consensus, with no central model as an authority.\nBenefits of Decentralized AI\nUsing a decentralized AI architecture offers some key benefits to both AI developers and users alike. Some of these are:\nUsers can benefit from AI-based decision-making without sharing their data;\nMore transparency and accountability over how AI-based decisions are made;\nIndependent researchers have more opportunities to contribute to AI development;\nBlockchain technology provides new opportunities for encryption;\nDecentralization unlocks new opportunities for integrations with Web3 and the metaverse \nDemocratizing AI Development\nWhile decentralized AI is still in its infancy, it has the potential to democratize AI development, providing more opportunities for open-source model developers to interact with users independent of a centralized authority.\nIf enough vendors support decentralized AI models, this could significantly reduce the amount of control that proprietary model developers have in the market and increase transparency over AI development as a whole."}

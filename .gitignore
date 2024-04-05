@@ -40,5 +40,7 @@ certificates
 __pycache__/
 venv/
 
-# Python config
+my_env/
+
+#Python files
 api/config.py

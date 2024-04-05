@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Line, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js';
-import { userInfo } from 'os';
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
@@ -28,63 +27,9 @@ interface UserPlotProps {
   userData: { [key: string]: UserRecord[] };
 }
 
-// const userData: UserData = {
-//     "Konstantinos":[
-//       { timestamp: "8/2/2024", textId: 1, avgWPM: 150, quizScore: 50 },
-//       { timestamp: "21/2/2024", textId: 2, avgWPM: 260, quizScore: 80 },
-//       { timestamp: "23/2/2024", textId: 3, avgWPM: 250, quizScore: 50 },
-//       { timestamp: "27/2/2024", textId: 4, avgWPM: 300, quizScore: 80 },
-//       { timestamp: "3/3/2024", textId: 5, avgWPM: 320, quizScore: 90 },
-//       { timestamp: "11/3/2024", textId: 6, avgWPM: 350, quizScore: 30 },
-//       { timestamp: "21/3/2024", textId: 7, avgWPM: 500, quizScore: 80 }
-//     ],
-//     "Jack": [
-//       { timestamp: "8/2/2024", textId: 1, avgWPM: 150, quizScore: 50 },
-//       { timestamp: "21/2/2024", textId: 2, avgWPM: 200, quizScore: 70 },
-//       { timestamp: "23/2/2024", textId: 3, avgWPM: 250, quizScore: 60 },
-//       { timestamp: "27/2/2024", textId: 4, avgWPM: 300, quizScore: 70 },
-//       { timestamp: "3/3/2024", textId: 5, avgWPM: 220, quizScore: 80 },
-//       { timestamp: "11/3/2024", textId: 6, avgWPM: 350, quizScore: 60 },
-//       { timestamp: "8/2/2024", textId: 12, avgWPM: 150, quizScore: 50 },
-//       { timestamp: "21/2/2024", textId: 5, avgWPM: 200, quizScore: 90 },
-//       { timestamp: "23/2/2024", textId: 11, avgWPM: 250, quizScore: 60 },
-//       { timestamp: "27/2/2024", textId: 9, avgWPM: 300, quizScore: 70 },
-//       { timestamp: "3/3/2024", textId: 8, avgWPM: 220, quizScore: 100 },
-//       { timestamp: "11/3/2024", textId: 7, avgWPM: 350, quizScore: 60 },
-//       { timestamp: "21/3/2024", textId: 15, avgWPM: 450, quizScore: 45 }
-//     ],
-//     "Matis":[
-//       { timestamp: "8/2/2024", textId: 1, avgWPM: 150, quizScore: 60 },
-//       { timestamp: "21/2/2024", textId: 2, avgWPM: 200, quizScore: 80 },
-//       { timestamp: "23/2/2024", textId: 3, avgWPM: 250, quizScore: 10 },
-//       { timestamp: "27/2/2024", textId: 4, avgWPM: 300, quizScore: 60 },
-//       { timestamp: "3/3/2024", textId: 5, avgWPM: 220, quizScore: 90 },
-//       { timestamp: "11/3/2024", textId: 6, avgWPM: 350, quizScore: 90 },
-//       { timestamp: "21/3/2024", textId: 7, avgWPM: 450, quizScore: 100 }
-//     ],
-//     "Fadi":[
-//       { timestamp: "8/2/2024", textId: 1, avgWPM: 150, quizScore: 50 },
-//       { timestamp: "21/2/2024", textId: 2, avgWPM: 200, quizScore: 70 },
-//       { timestamp: "23/2/2024", textId: 3, avgWPM: 250, quizScore: 60 },
-//       { timestamp: "27/2/2024", textId: 4, avgWPM: 300, quizScore: 70 },
-//       { timestamp: "3/3/2024", textId: 5, avgWPM: 220, quizScore: 80 },
-//       { timestamp: "11/3/2024", textId: 6, avgWPM: 350, quizScore: 60 },
-//       { timestamp: "21/3/2024", textId: 7, avgWPM: 450, quizScore: 45 }
-//     ],
-//     "Kyoya":[
-//       { timestamp: "8/2/2024", textId: 1, avgWPM: 150, quizScore: 50 },
-//       { timestamp: "21/2/2024", textId: 2, avgWPM: 200, quizScore: 70 },
-//       { timestamp: "21/3/2024", textId: 7, avgWPM: 450, quizScore: 95 }
-//     ],
-//     "Evangelos":[],
-//     "John":[],
-//     "Jane":[],
-//     "Sarah":[],
-//     "Charles":[]
-//   };
-let userData: any;
+// Fetch analytics data
   const getAnalytics = async () => {
-    const inputData = [2,3,4,5,6,7];
+    const inputData = 2;
 
     try {
       const response = await fetch("/api/analytics", {
@@ -92,40 +37,36 @@ let userData: any;
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_ids: inputData }),
+        body: JSON.stringify({ user_id: inputData }),
       });
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error(await response.json());
       }
 
       const data = await response.json();
-      userData = data;
       return data;
 
     } catch (error) {
-      console.error("Error getting summary:", error);
+      console.error("Error fetching response", error);
     }
   };
-
-  const fetchData = async () => {
-    try {
-      await getAnalytics();
-      // userData is available here
-      console.log(userData);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-fetchData();
-console.log(userData)
 // AnalyticsPage component
 const AnalyticsPage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const users = ['Konstantinos', 'Jack', 'Matis', 'Fadi', 'Kyoya', 'Evangelos'];
+  const [users, setUsers] = useState<string[]>([]);
+  const [userData, setUserData] = useState<UserData>({})
   const [filteredUsers, setFilteredUsers] = useState(users);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchAnalyticsData = async () => {
+      await getAnalytics().then(response => setUserData(response))
+      await getAnalytics().then(response => setUsers(Object.keys(response)))
+    };
+    fetchAnalyticsData();
+  }, []); // Empty dependency array means this effect runs once on mount and not on updates
 
   const scrollUsers = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
