@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import DashboardLayout from '../layout'; // Adjust the path if necessary
-
+import { SelectedTextProvider } from "@/contexts/SelectedTextContext"; // Adjust the import path as necessary
 
 const UploadPage: React.FC = () => {
   const [text, setText] = useState('');
@@ -22,22 +22,24 @@ const UploadPage: React.FC = () => {
   };
 
   return (
-    <DashboardLayout navbarType="quiz">
-      <div>
-        <form onSubmit={handleSubmit}>
-          <label>
-            Paste your text here: 
-            <textarea 
-              name="uploaded_text" 
-              style={{ height: '500px', width:'500px', fontSize: '14pt' }} 
-              value={text} 
-              onChange={e => setText(e.target.value)} 
-            />
-          </label>
-          <input type="submit" value="Submit" />
-        </form>
-      </div>
-    </DashboardLayout>
+    <SelectedTextProvider>
+      <DashboardLayout navbarType="quiz">
+        <div>
+          <form onSubmit={handleSubmit}>
+            <label>
+              Paste your text here: 
+              <textarea 
+                name="uploaded_text" 
+                style={{ height: '500px', width:'500px', fontSize: '14pt' }} 
+                value={text} 
+                onChange={e => setText(e.target.value)} 
+              />
+            </label>
+            <input type="submit" value="Submit" />
+          </form>
+        </div>
+      </DashboardLayout>
+    </SelectedTextProvider>
   );
 };
 

@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy.sql.expression import func
-from datetime import datetime
+from datetime import datetime, timezone
 import requests
 import random
 import json
@@ -121,7 +121,7 @@ def text_content_is_valid(text_content):
     return text_content and isinstance(text_content, str) and len(text_content) >= 100
 
 def user_id_is_valid(user_id):
-    return isinstance(user_id, int) and user_id > 0
+    return isinstance(user_id, int) and user_id > 0 # Outdated
 
 def username_is_valid(username):
     return username and isinstance(username, str) and len(username) <= 100
@@ -174,6 +174,28 @@ def get_random_text():
         return jsonify(text_data)
     else:
         return jsonify({'message': 'No texts found'}), 404
+    
+# Fetch specific text by text_id
+@app.route('/api/texts/<int:text_id>', methods=['GET'])
+def get_text_by_id(text_id):
+    '''
+    Fetches a specific text from the database by text_id and returns it as JSON
+    '''
+    # Fetch the text from the database using the provided text_id
+    text = Texts.query.get(text_id)
+
+    # If the text is found, return its details
+    if text:
+        text_data = {
+            'text_id': text.text_id,
+            'text_content': text.text_content,
+            'quiz_questions': [question.to_dict() for question in text.quiz_questions]
+        }
+        return jsonify(text_data)
+    
+    # If the text is not found, return a 404 not found error
+    else:
+        return jsonify({'message': 'Text not found'}), 404
 
 
 @app.route('/api/texts/user', methods=['GET'])
@@ -213,9 +235,7 @@ def delete_text(text_id):
     
 @app.route('/api/texts/summarize', methods=['POST'])
 def summarize_text():
-    g = {"text":"What is the Point of Decentralized AI? Traditionally, the development of AI systems has remained siloed among a handful of technology vendors like Google and OpenAI, who have had the financial resources necessary to develop the infrastructure and resources necessary to build and process large datasets.\nHowever, the centralization of AI development in the industry has meant that organizations need to have significant funding to be able to develop and process the data necessary to compete in the market.\nLikewise, it’s also incentivized vendors to pursue a black box approach to AI development, giving users and regulators little to no transparency over how an organization’s AI models operate and make decisions. This makes it difficult to identify inaccuracies, bias, prejudice, and misinformation.\nDecentralized AI applications address these shortcomings by providing a solution to move AI development away from centralized providers and toward smaller researchers who innovate as part of an open-source community.\nAt the same time, users can unlock the benefits of AI-driven decision-making locally without needing to share their personal data with third parties.\nFederated Learning vs. Decentralised AI\nFederated learning is the name given to an approach where two or more AI models are trained on different computers, using a decentralized dataset. Under a federated learning methodology, machine-learning models are trained on data stored within a user device without that data being shared with the upstream provider.\nWhile this sounds similar to decentralized AI, there is a key difference. Under federated learning, an organization has centralized control over the AI model used to process the datasets, while under a decentralized AI system, there is no central entity in charge of processing the data.\nThus federated learning is typically used by organizations looking to build a centralized AI model that makes decisions based on data that has been processed on a decentralized basis (usually to maintain user privacy), whereas decentralized AI solutions have no central authority in charge of the underlying model that processes the data.\nAs Patricia Thaine, co-founder and CEO of Private AI, explained to Techopedia, “Federated learning tends to have a centralized model that gets updated based on the learnings of distributed models. A decentralized system would have multiple nodes that come to a consensus, with no central model as an authority.\nBenefits of Decentralized AI\nUsing a decentralized AI architecture offers some key benefits to both AI developers and users alike. Some of these are:\nUsers can benefit from AI-based decision-making without sharing their data;\nMore transparency and accountability over how AI-based decisions are made;\nIndependent researchers have more opportunities to contribute to AI development;\nBlockchain technology provides new opportunities for encryption;\nDecentralization unlocks new opportunities for integrations with Web3 and the metaverse \nDemocratizing AI Development\nWhile decentralized AI is still in its infancy, it has the potential to democratize AI development, providing more opportunities for open-source model developers to interact with users independent of a centralized authority.\nIf enough vendors support decentralized AI models, this could significantly reduce the amount of control that proprietary model developers have in the market and increase transparency over AI development as a whole."}
-    input_text = g['text']
-    #input_text = request.json.get('text', '')
+    input_text = request.json.get('text', '')
     if not text_content_is_valid(input_text):
         return jsonify({'error': 'Invalid text provided'}), 400
     headers = {"Authorization": f"Bearer {API_TOKEN}"}
@@ -322,7 +342,7 @@ def populate_with_fake_analytics():
                     print(f'Quiz {l} added successfully!')
     return jsonify(user_ids)
 
-@app.route('/save-reading-speed', methods=['POST'])
+@app.route('/api/save-reading-speed', methods=['POST'])
 def submit_reading_speed():
     # Check if the request is in JSON format
     if not request.is_json:
@@ -349,7 +369,7 @@ def submit_reading_speed():
         text_id=text_id,
         user_id=user_id,
         wpm=wpm,
-        timestamp=datetime.utcnow()  # Assuming current time as timestamp
+        timestamp=datetime.now(timezone.utc)  # Assuming current time as timestamp
     )
 
     # Add to the database session
@@ -365,14 +385,15 @@ def submit_reading_speed():
     # Return success message
     return jsonify({'message': 'New reading speed record added successfully!'}), 201
 
-@app.route('/save-quiz-results', methods=['POST'])
+@app.route('/api/save-quiz-results', methods=['POST'])
 def submit_quiz_results():
     # Check if the request is in JSON format
     if not request.is_json:
         return jsonify({'error': 'Request must be JSON'}), 400
     
     # Parse data from the request
-    quiz_data = request.get_json()
+    quiz_data = request.get_json().get('quiz_results')
+
     
     # Validate that quiz_data is a non-empty list
     if not isinstance(quiz_data, list) or not quiz_data:
@@ -388,7 +409,7 @@ def submit_quiz_results():
         new_quiz_result = QuizResults(
             practice_id=data['practice_id'],
             question_id=data['question_id'],
-            answer=data['answer'],
+            answer=data['selectedAnswer'],
             score=score
         )
 
