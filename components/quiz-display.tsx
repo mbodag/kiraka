@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import styles from '@/app/(dashboard)/(routes)/quiz/QuizDisplay.module.css';
 import { useSelectedText } from "../contexts/SelectedTextContext"; // Adjust path if necessary
+import { useAuth } from "@clerk/nextjs";
+
 
 interface QuizQuestion {
   correct_answer: string;
@@ -10,9 +12,22 @@ interface QuizQuestion {
   question_content: string;
   question_id: number;
   text_id: number;
+  selectedAnswer: string;
+  score: number;
+  practice_id: number;
 }
 
 // Define your quiz questions and answers
+const sendQuizResults = async (quizQuestions: QuizQuestion[], userId:any) => {
+  await fetch("/api/save-quiz-results", {
+    method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({'quiz_results': quizQuestions, 'user_id': userId}),
+  })
+
+}
 
 
 const QuizDisplay: React.FC = () => {
@@ -22,6 +37,7 @@ const QuizDisplay: React.FC = () => {
   const [score, setScore] = useState<number>(0);
   const [quizCompleted, setQuizCompleted] = useState<boolean>(false);
   const { selectedTextId } = useSelectedText(); // Use the ID from context
+  const {userId} = useAuth()
 
   useEffect(() => {
     const fetchQuizQuestions = async (textId: number) => {
@@ -36,7 +52,9 @@ const QuizDisplay: React.FC = () => {
           multiple_choices: question.multiple_choices.split(';'), // Now splitting
           question_content: question.question_content,
           question_id: question.question_id,
-          text_id: question.text_id
+          text_id: question.text_id,
+          score: 0,
+          practice_id: 1
         }));
         setQuizQuestions(formattedQuestions);
       } catch (error) {
@@ -54,10 +72,8 @@ const QuizDisplay: React.FC = () => {
   };
 
   const handleNextQuestion = () => {
-    if (selectedOption === quizQuestions[currentQuestionIndex].correct_answer) {
-      setScore(score + 1);
-    }
-
+      quizQuestions[currentQuestionIndex].selectedAnswer = selectedOption;
+      quizQuestions[currentQuestionIndex].score = quizQuestions[currentQuestionIndex].selectedAnswer === quizQuestions[currentQuestionIndex].correct_answer? 1 : 0;
     if (currentQuestionIndex < quizQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex => currentQuestionIndex + 1);
       setSelectedOption(quizQuestions[currentQuestionIndex + 1].selectedAnswer);
@@ -65,7 +81,7 @@ const QuizDisplay: React.FC = () => {
       setQuizCompleted(true);
       let counter = 0;
       quizQuestions.forEach((question) => {
-        if (question.selectedAnswer === question.answer) {
+        if (question.selectedAnswer === question.correct_answer) {
           counter++;
         }
       });
@@ -76,10 +92,13 @@ const QuizDisplay: React.FC = () => {
 
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-      setSelectedOption(quizQuestions[currentQuestionIndex - 1].correct_answer);
+      quizQuestions[currentQuestionIndex].selectedAnswer = selectedOption;
+      quizQuestions[currentQuestionIndex].score = quizQuestions[currentQuestionIndex].selectedAnswer === quizQuestions[currentQuestionIndex].correct_answer? 1 : 0;
+      setCurrentQuestionIndex(currentQuestionIndex => currentQuestionIndex - 1);
+      setSelectedOption(quizQuestions[currentQuestionIndex - 1].selectedAnswer);
     }
   };
+
 
   const question = quizQuestions[currentQuestionIndex] || { correct_answer: '', multiple_choices: [], question_content: '' }; // Fallback for initial state
 
