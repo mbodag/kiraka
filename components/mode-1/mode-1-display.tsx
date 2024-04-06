@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelectedText } from "../../contexts/SelectedTextContext"; // Adjust path if necessary
 import HighlightableText from "./highlightable-text";
 import CounterDisplay from "./counter-display";
@@ -11,13 +11,26 @@ const Mode1Display = () => {
   const [textColor, setTextColor] = useState("white");
   const [shortStory, setShortStory] = useState("");
   const [summary, setSummary] = useState("");
-  const { selectedText } = useSelectedText();
+  const { selectedTextId } = useSelectedText(); // Use the ID from context
 
   useEffect(() => {
-    if (selectedText) {
-      setShortStory(selectedText);
+    const fetchTextById = async (textId: number) => {
+      try {
+        const response = await fetch(`/api/texts/${textId}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setShortStory(data.text_content);
+      } catch (error) {
+        console.error('Error fetching text:', error);
+      }
+    };
+
+    if (selectedTextId) {
+      fetchTextById(selectedTextId);
     }
-  }, [selectedText]);
+  }, [selectedTextId]);
 
   // Other functions and event handlers...
 

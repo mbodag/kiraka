@@ -199,6 +199,28 @@ def get_random_text():
         return jsonify(text_data)
     else:
         return jsonify({'message': 'No texts found'}), 404
+    
+# Fetch specific text by text_id
+@app.route('/api/texts/<int:text_id>', methods=['GET'])
+def get_text_by_id(text_id):
+    '''
+    Fetches a specific text from the database by text_id and returns it as JSON
+    '''
+    # Fetch the text from the database using the provided text_id
+    text = Texts.query.get(text_id)
+
+    # If the text is found, return its details
+    if text:
+        text_data = {
+            'text_id': text.text_id,
+            'text_content': text.text_content,
+            'quiz_questions': [question.to_dict() for question in text.quiz_questions]
+        }
+        return jsonify(text_data)
+    
+    # If the text is not found, return a 404 not found error
+    else:
+        return jsonify({'message': 'Text not found'}), 404
 
 
 @app.route('/api/texts/user', methods=['GET'])

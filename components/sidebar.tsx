@@ -1,21 +1,19 @@
 "use client";
 
 import React from 'react';
-import { useSelectedText } from '../contexts/SelectedTextContext'; // Adjust path if necessary
+import { useSelectedText } from '../contexts/SelectedTextContext';
 import Image from "next/legacy/image";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 
 const Sidebar = () => {
-  const { setSelectedText } = useSelectedText();
+  const { setSelectedTextId } = useSelectedText();
 
-  // Array of texts for each document
-  const texts = [
-    'One for Document 1',
-    'Two for Document 2',
-    'Three for Document 3',
-    'Four for Document 4'
-  ];
+  // Array of texts with their IDs
+  const texts = Array.from({ length: 7 }, (_, index) => ({
+    id: index + 1,
+    title: `Day ${index + 1}`
+  }));
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-r border-gray-700">
@@ -31,13 +29,13 @@ const Sidebar = () => {
 
       {/* Document buttons aligned to the left */}
       <div className="flex-1 px-3 py-2 space-y-1">
-        {texts.map((text, index) => (
+        {texts.map((text) => (
           <button
-            key={`doc-${index}`}
-            onClick={() => setSelectedText(text)}
+            key={text.id}
+            onClick={() => setSelectedTextId(text.id)}
             className="text-sm w-full max-w-xs p-2 font-medium rounded-lg hover:bg-gray-700 transition sidebar-button-font"
           >
-            Document {index + 1}
+            {text.title}
           </button>
         ))}
       </div>
