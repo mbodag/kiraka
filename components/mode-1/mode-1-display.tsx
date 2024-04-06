@@ -31,16 +31,69 @@ const Mode1Display = () => {
   };
 
   // Other effect hooks...
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === "ArrowRight") {
+        setWordsPerMinute((prevWPM) => Math.min(prevWPM + 20, 1500)); // Increase WPM with upper bound
+      } else if (event.key === "ArrowLeft") {
+        setWordsPerMinute((prevWPM) => Math.max(prevWPM - 20, 50)); // Decrease WPM with lower bound
+      } else if (event.key === "b" || event.key === "B") {
+        // When the "B" or "b" key is pressed, toggle the background color
+        toggleBackgroundColor();
+      } else if (event.key === "t" || event.key === "T") {
+        // When the "H" or "h" key is pressed, toggle the text color
+        toggleTextColor();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, []);
+
 
   // Example handleGetSummary function (adjust as needed)
   const handleGetSummary = async () => {
-    // Function implementation...
-  };
+    const inputText = shortStory;
+
+    try {
+      const response = await fetch("api/texts/summarize", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: inputText }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      setSummary(data.summary);
+    } catch (error) {
+      console.error("Error getting summary:", error);
+    }
+  }
 
   // Example fetch data function (adjust as needed)
   useEffect(() => {
-    // Function implementation...
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/api/texts/random");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+const data = await response.json();      
+setShortStory(data.text_content);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
   }, []);
+
 
   // Component return
   return (
