@@ -59,10 +59,18 @@ const QuizDisplay: React.FC = () => {
     }
 
     if (currentQuestionIndex < quizQuestions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setSelectedOption("");
+      setCurrentQuestionIndex(currentQuestionIndex => currentQuestionIndex + 1);
+      setSelectedOption(quizQuestions[currentQuestionIndex + 1].selectedAnswer);
     } else {
       setQuizCompleted(true);
+      let counter = 0;
+      quizQuestions.forEach((question) => {
+        if (question.selectedAnswer === question.answer) {
+          counter++;
+        }
+      });
+      setScore(counter);
+      sendQuizResults(quizQuestions, userId)
     }
   };
 
@@ -107,7 +115,12 @@ const QuizDisplay: React.FC = () => {
         {currentQuestionIndex > 0 && (
           <button className="quiz-next-button" onClick={handlePreviousQuestion}>Back</button>
         )}
+        {currentQuestionIndex < quizQuestions.length - 1 &&
         <button className="quiz-next-button" onClick={handleNextQuestion}>Next</button>
+        }
+        {currentQuestionIndex === quizQuestions.length - 1 &&
+        <button className="quiz-next-button" onClick={handleNextQuestion}>End Quiz</button>
+        }
       </div>
     </div>
   );
