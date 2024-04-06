@@ -14,8 +14,7 @@ const Sidebar = () => {
     'One for Document 1',
     'Two for Document 2',
     'Three for Document 3',
-    'Four for Document 4',
-    'Five for Document 5',
+    'Four for Document 4'
   ];
 
   return (
