@@ -1,43 +1,49 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelectedText } from "../../contexts/SelectedTextContext"; // Adjust path if necessary
 import HighlightableText from "./highlightable-text";
 import CounterDisplay from "./counter-display";
 import "@/app/globals.css";
 
 const Mode1Display = () => {
-  // const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. The relentless pursuit of productivity often leads to increased stress and a higher risk of burnout. It's crucial to set clear boundaries between work responsibilities and personal life. Effective time management and task prioritization are keys to reducing work-related pressure. These strategies allow individuals to enjoy a more fulfilling life both inside and outside the workplace.
-
-  // Engaging in hobbies, pursuing personal interests, and spending quality time with family and friends are essential components of a well-rounded life. These activities offer opportunities for relaxation and personal growth, contributing to overall happiness and satisfaction.
-
-  // On the professional front, employers play a significant role in promoting a healthy work environment. This includes offering flexible working conditions, encouraging regular breaks, and recognizing the importance of mental health. Supportive workplace cultures that value employee well-being lead to increased productivity, greater job satisfaction, and lower turnover rates.
-
-  // Ultimately, achieving a balance between work and life leads to improved mental and physical health, heightened job performance, and a richer, more rewarding life experience. It's about finding a rhythm that allows for both career progression and personal contentment, ensuring long-term happiness and success.`
-
   const [wordsPerMinute, setWordsPerMinute] = useState(300);
-  const [backgroundColor, setBackgroundColor] = useState("white"); // Initialise background color to 'white'
-  const [textColor, setTextColor] = useState("white"); // Initialise text color to 'white'
+  const [backgroundColor, setBackgroundColor] = useState("white");
+  const [textColor, setTextColor] = useState("white");
+  const [shortStory, setShortStory] = useState("");
   const [summary, setSummary] = useState("");
-  const [shortStory, setShortStory] =
-    useState(`In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. The relentless pursuit of productivity often leads to increased stress and a higher risk of burnout. It's crucial to set clear boundaries between work responsibilities and personal life. Effective time management and task prioritization are keys to reducing work-related pressure. These strategies allow individuals to enjoy a more fulfilling life both inside and outside the workplace.
+  const { selectedTextId } = useSelectedText(); // Use the ID from context
 
-  Engaging in hobbies, pursuing personal interests, and spending quality time with family and friends are essential components of a well-rounded life. These activities offer opportunities for relaxation and personal growth, contributing to overall happiness and satisfaction.
-  
-  On the professional front, employers play a significant role in promoting a healthy work environment. This includes offering flexible working conditions, encouraging regular breaks, and recognizing the importance of mental health. Supportive workplace cultures that value employee well-being lead to increased productivity, greater job satisfaction, and lower turnover rates.
-  
-  Ultimately, achieving a balance between work and life leads to improved mental and physical health, heightened job performance, and a richer, more rewarding life experience. It's about finding a rhythm that allows for both career progression and personal contentment, ensuring long-term happiness and success.`);
+  useEffect(() => {
+    const fetchTextById = async (textId: number) => {
+      try {
+        const response = await fetch(`/api/texts/${textId}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setShortStory(data.text_content);
+      } catch (error) {
+        console.error('Error fetching text:', error);
+      }
+    };
 
+    if (selectedTextId) {
+      fetchTextById(selectedTextId);
+    }
+  }, [selectedTextId]);
+
+  // Other functions and event handlers...
+
+  // Example toggle functions for background and text colors
   const toggleBackgroundColor = () => {
-    // Toggle the background color between 'white' and 'black'
-    setBackgroundColor((prevColor) =>
-      prevColor === "white" ? "black" : "white"
-    );
+    setBackgroundColor((prevColor) => (prevColor === "white" ? "black" : "white"));
   };
 
   const toggleTextColor = () => {
-    // Toggle the text color between 'black' and 'white'
     setTextColor((prevColor) => (prevColor === "white" ? "black" : "white"));
   };
 
+  // Other effect hooks...
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "ArrowRight") {
@@ -59,11 +65,13 @@ const Mode1Display = () => {
     };
   }, []);
 
+
+  // Example handleGetSummary function (adjust as needed)
   const handleGetSummary = async () => {
     const inputText = shortStory;
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/texts/summarize", {
+      const response = await fetch("api/texts/summarize", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -80,32 +88,18 @@ const Mode1Display = () => {
     } catch (error) {
       console.error("Error getting summary:", error);
     }
-  };
+  }
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch("http://127.0.0.1:5000/api/texts/summarize", {
-        method: "GET",
-      });
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      console.log(data.text_content);
-    } catch (error) {
-      console.error("Error getting summary:", error);
-    }
-  };
-
+  // Example fetch data function (adjust as needed)
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/api/texts/random");
+        const response = await fetch("/api/texts/random");
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        const data = await response.json();
-        setShortStory(data.text_content);
+const data = await response.json();      
+setShortStory(data.text_content);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -113,6 +107,8 @@ const Mode1Display = () => {
     fetchData();
   }, []);
 
+
+  // Component return
   return (
     <div className="centerContainer">
       <CounterDisplay count={wordsPerMinute} fontSize="16px" />
@@ -120,8 +116,8 @@ const Mode1Display = () => {
         <div
           className="monospaced"
           style={{
-            color: textColor, // Apply the textColor state variable here
-            backgroundColor, // Use the state variable for background color
+            color: textColor,
+            backgroundColor,
             boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
             padding: "20px",
             borderRadius: "10px",
