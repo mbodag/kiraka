@@ -102,11 +102,9 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
               globalIndex++;
 
               return (
-                <span>
-                <span key={wIndex} className={className}>
-                  {wordOrKeyword}
-                </span>
-                <span>{" "}</span>
+                <span key={`${pIndex}-${wIndex}`}>
+                  <span className={className}>{wordOrKeyword}</span>
+                  <span> </span>
                 </span>
               );
             })}
