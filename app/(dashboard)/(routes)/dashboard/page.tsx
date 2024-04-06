@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserButton } from "@clerk/nextjs";
+import { auth, currentUser, UserButton } from "@clerk/nextjs";
 import styles from './DashboardPage.module.css';
 import DashboardLayout from '../layout';
 import Mode1Display from "@/components/mode-1/mode-1-display";
@@ -89,5 +89,3 @@ export default async function DashboardPage() {
 export const config = {
   runtime: "edge",
 };
-
-export default DashboardPage;
