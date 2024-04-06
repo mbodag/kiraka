@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from '@/app/(dashboard)/(routes)/quiz/QuizDisplay.module.css';
 import { useSelectedText } from "../contexts/SelectedTextContext"; // Adjust path if necessary
-import { useAuth } from "@clerk/nextjs";
 
 
 interface QuizQuestion {
@@ -18,13 +17,13 @@ interface QuizQuestion {
 }
 
 // Define your quiz questions and answers
-const sendQuizResults = async (quizQuestions: QuizQuestion[], userId:any) => {
+const sendQuizResults = async (quizQuestions: QuizQuestion[]) => {
   await fetch("/api/save-quiz-results", {
     method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({'quiz_results': quizQuestions, 'user_id': userId}),
+        body: JSON.stringify({'quiz_results': quizQuestions}),
   })
 
 }
@@ -37,31 +36,33 @@ const QuizDisplay: React.FC = () => {
   const [score, setScore] = useState<number>(0);
   const [quizCompleted, setQuizCompleted] = useState<boolean>(false);
   const { selectedTextId } = useSelectedText(); // Use the ID from context
-  const {userId} = useAuth()
+
+  const fetchQuizQuestions = async (textId: number) => {
+    try {
+      const response = await fetch(`/api/texts/${textId}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      const formattedQuestions: QuizQuestion[] = await data.quiz_questions.map((question: QuizQuestion) => ({
+        correct_answer: question.correct_answer,
+        multiple_choices: question.multiple_choices.split(';'), // Now splitting
+        question_content: question.question_content,
+        question_id: question.question_id,
+        selectedAnswer : "",
+        text_id: question.text_id,
+        score: 0,
+        practice_id: 1
+      }));
+      console.log('Formatted questions', formattedQuestions)
+      setQuizQuestions(formattedQuestions);
+    } catch (error) {
+      console.error('Error fetching text:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchQuizQuestions = async (textId: number) => {
-      try {
-        const response = await fetch(`/api/texts/${textId}`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        const formattedQuestions: QuizQuestion[] = data.quiz_questions.map((question: QuizQuestion) => ({
-          correct_answer: question.correct_answer,
-          multiple_choices: question.multiple_choices.split(';'), // Now splitting
-          question_content: question.question_content,
-          question_id: question.question_id,
-          text_id: question.text_id,
-          score: 0,
-          practice_id: 1
-        }));
-        setQuizQuestions(formattedQuestions);
-      } catch (error) {
-        console.error('Error fetching text:', error);
-      }
-    };
-
+    console.log(selectedTextId)
     if (selectedTextId) {
       fetchQuizQuestions(selectedTextId);
     }
@@ -86,7 +87,7 @@ const QuizDisplay: React.FC = () => {
         }
       });
       setScore(counter);
-      sendQuizResults(quizQuestions, userId)
+      sendQuizResults(quizQuestions)
     }
   };
 
