@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import styles from '@/app/(dashboard)/(routes)/quiz/QuizDisplay.module.css';
+import { useSelectedText } from "../contexts/SelectedTextContext"; // Adjust path if necessary
 
 interface QuizQuestion {
   question: string;
