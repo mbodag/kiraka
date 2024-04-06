@@ -39,6 +39,7 @@ const Mode2Display = () => {
               throw new Error('Network response was not ok');
             }
             const data = await response.json();
+            console.log(data.quiz_questions);
             setShortStory(data.text_content);
           } catch (error) {
             console.error('Error fetching text:', error);
