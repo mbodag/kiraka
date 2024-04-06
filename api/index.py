@@ -23,7 +23,7 @@ class Texts(db.Model):
     text_id = db.Column(db.Integer, primary_key=True)
     keywords = db.Column(db.Text)
     text_content = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'))
+    user_id = db.Column(db.String(255), db.ForeignKey('Users.user_id'))
     quiz_questions = db.relationship('Questions', backref='text', lazy=True)
     title = db.Column(db.Text)
     
@@ -43,7 +43,7 @@ class Questions(db.Model):
     
 class Users(db.Model):
     __tablename__ = 'Users'
-    user_id = db.Column(db.Integer, primary_key=True) #If clerk_id this might need to be a string
+    user_id = db.Column(db.String(255), primary_key=True, nullable=False) #If clerk_id this might need to be a string
     username = db.Column(db.Text, unique=True)
     texts = db.relationship('Texts', backref='user', lazy=True)
     admin = db.Column(db.Boolean, default=False)
@@ -60,7 +60,7 @@ class PracticeResults(db.Model):
     __tablename__ = 'PracticeResults'
     practice_id = db.Column(db.Integer, primary_key=True)
     text_id = db.Column(db.Integer, db.ForeignKey('Texts.text_id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
+    user_id = db.Column(db.String(255), db.ForeignKey('Users.user_id'), nullable=False)
     wpm = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, default=datetime.today())
     quiz_results = db.relationship('QuizResults', backref='practice', lazy=True)
@@ -74,7 +74,7 @@ def populate_texts():
     Add initial texts to the database
     '''
     try:
-        with open('preloaded_text.json', 'r') as texts_file:
+        with open('api/preloaded_text.json', 'r') as texts_file:
             texts = json.loads(texts_file.read())
             for text in texts.values():
                 print(text['title'])
@@ -101,7 +101,7 @@ def populate_texts():
 
 
 def add_admin():
-    user_zero = Users(user_id = 1, username = 'admin', admin=True)
+    user_zero = Users(user_id = "1", username = 'admin', admin=True)
     db.session.add(user_zero)
     db.session.commit()
 
@@ -405,6 +405,41 @@ def submit_quiz_results():
 
     # Return success message
     return jsonify({'message': 'Quiz results submitted successfully!'}), 201
+
+
+@app.route('/api/get_info', methods=['GET'])
+def get_info():
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify(success=False, message="User ID is required."), 400
+
+    user_data = Users.query.filter_by(user_id=user_id).first()
+    if user_data:
+        # User exists, serialize and return user data
+        return jsonify(success=True, user_exists=True, user_data=user_data.to_dict())
+    else:
+        # User does not exist
+        return jsonify(success=False, user_exists=False, message="User not found.")
+
+
+@app.route('/api/store-user-data', methods=['POST'])
+def store_user_data():
+    print("testing")
+    user_data = request.get_json()
+    if not user_data or 'user_id' not in user_data:
+        return jsonify(success=False, message="User ID is required."), 400
+    
+    user_id = user_data['user_id']
+    # Check if user already exists to avoid duplicates
+    existing_user = Users.query.filter_by(user_id=user_id).first()
+    if existing_user:
+        return jsonify(success=False, message="User already exists."), 400
+    
+    new_user = Users(user_id=user_id)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify(success=True, message="User added successfully.")
+
 
 with app.app_context():
     db.create_all()
