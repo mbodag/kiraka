@@ -44,7 +44,7 @@ class Questions(db.Model):
 class Users(db.Model):
     __tablename__ = 'Users'
     user_id = db.Column(db.String(255), primary_key=True, nullable=False) #If clerk_id this might need to be a string
-    username = db.Column(db.Text, unique=True)
+    username = db.Column(db.Text)
     texts = db.relationship('Texts', backref='user', lazy=True)
     admin = db.Column(db.Boolean, default=False)
     
@@ -383,7 +383,7 @@ def submit_reading_speed():
         return jsonify({'error': f'Failed to add new reading speed record: {str(e)}'}), 500
 
     # Return success message
-    return jsonify({'message': 'New reading speed record added successfully!'}), 201
+    return jsonify({'message': 'New reading speed record added successfully!', 'practice_id': new_practice_result.practice_id}), 201
 
 @app.route('/api/save-quiz-results', methods=['POST'])
 def submit_quiz_results():
@@ -392,8 +392,12 @@ def submit_quiz_results():
         return jsonify({'error': 'Request must be JSON'}), 400
     
     # Parse data from the request
-    quiz_data = request.get_json().get('quiz_results')
-
+    json_data = request.get_json()
+    
+    quiz_data = json_data.get('quiz_results')
+    user_id = json_data.get('user_id')
+    practice_id = json_data.get('practice_id')
+    text_id = json_data.get('text_id')
     
     # Validate that quiz_data is a non-empty list
     if not isinstance(quiz_data, list) or not quiz_data:
@@ -405,11 +409,28 @@ def submit_quiz_results():
         if not isinstance(score, (int, float)) or not (0 <= score <= 1):
             return jsonify({'error': 'Invalid score, must be between 0 and 1 inclusive'}), 400
 
+        #Create a new PracticeSession if it doesn't exist
+        if practice_id == None:
+            new_practice_session = PracticeResults(
+                user_id = user_id,
+                text_id = text_id
+            )
+            db.session.add(new_practice_session)
+            try:
+                db.session.commit()
+                print(f"New practice session ({new_practice_session.practice_id}) created")
+            except Exception as e:
+                db.session.rollback()
+                app.logger.error(f'Failed to submit practice result: {e}')
+                return jsonify({'error': f'Failed to submit practice result: {str(e)}'}), 500
+            practice_id = new_practice_session.practice_id
+                
+        PracticeResults.query.filter_by(practice_id=practice_id).first()
         # Create a new QuizResults object
         new_quiz_result = QuizResults(
-            practice_id=data['practice_id'],
+            practice_id=practice_id,
             question_id=data['question_id'],
-            answer=data['selectedAnswer'],
+            answer=data['selected_answer'],
             score=score
         )
 
