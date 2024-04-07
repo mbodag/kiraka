@@ -3,9 +3,9 @@ from datetime import datetime
 from flask import json
 from index import app, db  # Replace 'index' with the actual name of your Flask app file
 from index import QuizResults, PracticeResults, Users, Texts, Questions  # Replace 'your_model_file' with the file where your models are defined
+import uuid
 
 class FlaskApiTest(unittest.TestCase):
-
     def setUp(self):
         self.app = app.test_client()
         self.app_context = app.app_context()
@@ -13,9 +13,13 @@ class FlaskApiTest(unittest.TestCase):
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
         app.config['TESTING'] = True
         db.create_all()
-        
-        # Create and insert a User instance
-        user = Users(username='unique_test_user_1', admin=False)
+
+        # Generate a unique user_id for each test
+        unique_user_id = str(uuid.uuid4())
+
+        # Create and insert a User instance with the generated user_id
+        user = Users(username='unique_test_user', admin=False)
+        user.user_id = 'some_string_id'  # Set a string ID
         db.session.add(user)
         db.session.commit()
 
@@ -36,7 +40,7 @@ class FlaskApiTest(unittest.TestCase):
         db.session.commit()
 
         # Save IDs for later use in tests
-        self.user_id = user.user_id
+        self.user_id = unique_user_id # Save user_id for later use in tests
         self.text_id = text.text_id
         self.question1_id = question1.question_id
         self.question2_id = question2.question_id
@@ -86,11 +90,10 @@ class FlaskApiTest(unittest.TestCase):
     #             self.assertEqual(result.score, quiz_result['score'])
     
     def test_save_reading_speed(self):
-        
         # Define mock data for testing /save-reading-speed endpoint
         mock_reading_speed_data = {
             'text_id': self.text_id,  # Assuming self.text_id is set in the setUp method
-            'user_id': self.user_id,  # Assuming self.user_id is set in the setUp method
+            'user_id': str(self.user_id),  # Convert user_id to string
             'wpm': 300  # Words per minute for the new record
         }
 
@@ -113,6 +116,7 @@ class FlaskApiTest(unittest.TestCase):
             self.assertEqual(new_practice_result.wpm, mock_reading_speed_data['wpm'])
 
             print(f"Newly Added WPM: {new_practice_result.wpm}")
+
 
 if __name__ == '__main__':
     unittest.main()
