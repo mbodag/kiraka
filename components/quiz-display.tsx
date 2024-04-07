@@ -38,35 +38,34 @@ const QuizDisplay: React.FC = () => {
   let { selectedTextId } = useSelectedText(); // Use the ID from context
   const { userId } = useAuth();
 
-  const fetchQuizQuestions = async (textId: number) => {
-    try {
-      const response = await fetch(`/api/texts/${textId}`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      const formattedQuestions: QuizQuestion[] = await data.quiz_questions.map((question: QuizQuestion) => ({
-        correct_answer: question.correct_answer,
-        multiple_choices: question.multiple_choices.split(';'), // Now splitting
-        question_content: question.question_content,
-        question_id: question.question_id,
-        selected_answer : "",
-        score: 0,
-        text_id: textId
-      }));
-      console.log('Formatted questions', formattedQuestions)
-      setQuizQuestions(formattedQuestions);
-    } catch (error) {
-      console.error('Error fetching text:', error);
-    }
-  };
-
   useEffect(() => {
-    selectedTextId = 1
+    const fetchQuizQuestions = async (textId: number) => {
+      try {
+        const response = await fetch(`/api/texts/${textId}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        const formattedQuestions: QuizQuestion[] = data.quiz_questions.map((question: QuizQuestion) => ({
+          correct_answer: question.correct_answer,
+          multiple_choices: question.multiple_choices.split(';'), // Now splitting
+          question_content: question.question_content,
+          question_id: question.question_id,
+          text_id: question.text_id,
+          score: 0,
+          practice_id: 1
+        }));
+        setQuizQuestions(formattedQuestions);
+      } catch (error) {
+        console.error('Error fetching text:', error);
+      }
+    };
+
     if (selectedTextId) {
       fetchQuizQuestions(selectedTextId);
     }
   }, [selectedTextId]);
+
 
   const handleOptionChange = (option: string) => {
     setSelectedOption(option);
