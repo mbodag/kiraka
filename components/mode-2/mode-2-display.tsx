@@ -39,12 +39,23 @@ const Mode2Display = () => {
     const [countdown, setCountdown] = useState<number | null>(null);
 
 
+    // useEffect(() => {
+    //     const isCalibrated = sessionStorage.getItem('isCalibrated');
+    //     if (!isCalibrated) {
+    //       setShowCalibrationPopup(true);
+    //     }
+    //   }, []);
     useEffect(() => {
-        const isCalibrated = sessionStorage.getItem('isCalibrated');
-        if (!isCalibrated) {
-          setShowCalibrationPopup(true);
+        // Directly check if WebGazer is not active to prompt for calibration.
+        if (!isWebGazerActive) {
+            sessionStorage.setItem('isCalibrated', 'false');
+            setShowCalibrationPopup(true);
+        } else {
+            // Assume WebGazer being active means calibration is done
+            const isCalibrated = sessionStorage.getItem('isCalibrated');
+            setShowCalibrationPopup(isCalibrated !== 'true');
         }
-      }, []);
+    }, [isWebGazerActive]);
 
       
     useEffect(() => {
@@ -65,6 +76,11 @@ const Mode2Display = () => {
 
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
+            // Check if the calibration popup is shown; if true, return early to disable functionality
+            if (showCalibrationPopup) {
+                return;
+              }
+
             if (event.key === "ArrowRight") {
                 setWPM((prevWPM) => Math.min(prevWPM + 20, 1100)); // Increase dynamicWPM, max 1100
             } else if (event.key === "ArrowLeft") {
@@ -81,7 +97,7 @@ const Mode2Display = () => {
         };
         window.addEventListener("keydown", handleKeyPress);
         return () => window.removeEventListener("keydown", handleKeyPress);
-    }, []);
+    }, [showCalibrationPopup]);
 
 
     // New useEffect to handle gaze data and update WPM accordingly
@@ -147,9 +163,9 @@ const Mode2Display = () => {
                 // NEW: Only update if there's a significant change
                 if (Math.abs(newWPM - WPM) >= 1) {
                     setWPM(newWPM);
-                    // Add the new WPM value to the wpmValues array.
-                    setWpmValues(prevValues => [...prevValues, newWPM]);
                 }
+                // Add the new WPM value to the wpmValues array.
+                setWpmValues(prevValues => [...prevValues, newWPM]);
             }
 
             // Prepare for next sentence
@@ -234,43 +250,43 @@ const Mode2Display = () => {
                 showCalibrationPopup && (
                     <>
                     <div className="modal-backdrop" style={{ zIndex: 500}}></div>
-                    <div className="modal-content" style={{ 
-                        width: '30vw', 
-                        display: 'flex', 
-                        flexDirection: 'column', // Stack children vertically
-                        alignItems: 'center', // Center children horizontally
-                        justifyContent: 'center', // Center children vertically (optional, if you want the content centered in the modal vertically as well)
-                        textAlign: 'center', // Ensures that text inside children elements is centered, if needed
-                        }}> 
-                        <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
-                        Click the button below to begin calibrating WebGazer and start your speed reading session!
-                        </p>
-                        <button
-                        className="GreenButton"
-                        onClick={() => {
-                            sessionStorage.setItem('isCalibrated', 'true');
-                            setShowCalibrationPopup(false);
-                            window.location.href = '/calibration'; // Adjust the route as needed
-                        }}
-                        >
-                            Go to Calibration
-                        </button>
-                    </div>
+                        <div className="modal-content" style={{ 
+                            width: '30vw', 
+                            display: 'flex', 
+                            flexDirection: 'column', // Stack children vertically
+                            alignItems: 'center', // Center children horizontally
+                            justifyContent: 'center', // Center children vertically (optional, if you want the content centered in the modal vertically as well)
+                            textAlign: 'center', // Ensures that text inside children elements is centered, if needed
+                            }}> 
+                            <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
+                            Click the button below to begin calibrating WebGazer and start your speed reading session!
+                            </p>
+                            <button
+                            className="GreenButton"
+                            onClick={() => {
+                                sessionStorage.setItem('isCalibrated', 'true');
+                                setShowCalibrationPopup(false);
+                                window.location.href = '/calibration'; // Adjust the route as needed
+                            }}
+                            >
+                                Go to Calibration
+                            </button>
+                        </div>
                     </>
                 )
             }
       
           {/* The rest of your component's content, keeping the inline styles for alignment and sizing */}
           <CounterDisplay count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
-          <div className={`wordDisplay ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{ 
-              marginTop: "20px",
-              fontSize: `${fontSize}px`,
-              fontWeight: "bold",
-              maxWidth: "100vw",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-          }}>
+            <div className={`wordDisplay ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{ 
+                marginTop: "20px",
+                fontSize: `${fontSize}px`,
+                fontWeight: "bold",
+                maxWidth: "100vw",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+            }}>
               {wordChunks[currentChunkIndex]}
           </div>
         </div>

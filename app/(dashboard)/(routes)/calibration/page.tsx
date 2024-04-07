@@ -230,9 +230,9 @@ export default function WebgazerCalibration() {
             paddingTop: "5px",
             paddingBottom: "10px",
             }}>
-            Please click each on-screen point at least 5 times until it changes colour to calibrate the eye-tracking system. 
-            For best results, remain in a well-lit area and keep your head still during calibration. 
-            Avoid significant changes to your environment while using WebGazer.
+            Click each on-screen target point <em>at least 5 times</em> until it changes colour to calibrate the eye-tracking system.<br /><br />
+            <strong>While clicking, focus your gaze on the center of each target</strong>.<br /><br />
+            For best results, remain in a well-lit area, keep your head still during calibration, and avoid significant changes to your environment while using WebGazer.
           </p>
           <button
             onClick={handleGotItClick}
