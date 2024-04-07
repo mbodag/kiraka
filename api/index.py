@@ -383,7 +383,7 @@ def submit_reading_speed():
         return jsonify({'error': f'Failed to add new reading speed record: {str(e)}'}), 500
 
     # Return success message
-    return jsonify({'message': 'New reading speed record added successfully!'}), 201
+    return jsonify({'message': 'New reading speed record added successfully!', 'practice_id': new_practice_result.practice_id}), 201
 
 @app.route('/api/save-quiz-results', methods=['POST'])
 def submit_quiz_results():
