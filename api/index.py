@@ -23,7 +23,7 @@ class Texts(db.Model):
     text_id = db.Column(db.Integer, primary_key=True)
     keywords = db.Column(db.Text)
     text_content = db.Column(db.Text)
-    user_id = db.Column(db.String(255), db.ForeignKey('Users.user_id'))
+    user_id = db.Column(db.String(50), db.ForeignKey('Users.user_id'))
     quiz_questions = db.relationship('Questions', backref='text', lazy=True)
     title = db.Column(db.Text)
     
@@ -43,7 +43,7 @@ class Questions(db.Model):
     
 class Users(db.Model):
     __tablename__ = 'Users'
-    user_id = db.Column(db.String(255), primary_key=True, nullable=False) #If clerk_id this might need to be a string
+    user_id = db.Column(db.String(50), primary_key=True, nullable=False) #If clerk_id this might need to be a string
     username = db.Column(db.Text)
     texts = db.relationship('Texts', backref='user', lazy=True)
     admin = db.Column(db.Boolean, default=False)
@@ -60,7 +60,7 @@ class PracticeResults(db.Model):
     __tablename__ = 'PracticeResults'
     practice_id = db.Column(db.Integer, primary_key=True)
     text_id = db.Column(db.Integer, db.ForeignKey('Texts.text_id'), nullable=False)
-    user_id = db.Column(db.String(255), db.ForeignKey('Users.user_id'), nullable=False)
+    user_id = db.Column(db.String(50), db.ForeignKey('Users.user_id'), nullable=False)
     wpm = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, default=datetime.today())
     quiz_results = db.relationship('QuizResults', backref='practice', lazy=True)
