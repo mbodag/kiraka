@@ -17,12 +17,15 @@ interface ExtendedWindow extends Window {
 const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
 
+const startWPM = 300
+
 const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
     const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. The relentless pursuit of productivity often leads to increased stress and a higher risk of burnout. It's crucial to set clear boundaries between work responsibilities and personal life. Effective time management and task prioritization are keys to reducing work-related pressure. These strategies allow individuals to enjoy a more fulfilling life both inside and outside the workplace. <¶> Engaging in hobbies, pursuing personal interests, and spending quality time with family and friends are essential components of a well-rounded life. These activities offer opportunities for relaxation and personal growth, contributing to overall happiness and satisfaction. <¶> On the professional front, employers play a significant role in promoting a healthy work environment. This includes offering flexible working conditions, encouraging regular breaks, and recognizing the importance of mental health. Supportive workplace cultures that value employee well-being lead to increased productivity, greater job satisfaction, and lower turnover rates. <¶> Ultimately, achieving a balance between work and life leads to improved mental and physical health, heightened job performance, and a richer, more rewarding life experience. It's about finding a rhythm that allows for both career progression and personal contentment, ensuring long-term happiness and success.`;
 
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
-    const [WPM, setWPM] = useState(300 ); 
+    const [WPM, setWPM] = useState(startWPM); 
+    const [wpmValues, setWpmValues] = useState<number[]>([]); // To store the WPMs values and take their average at the end of the session; to be sent to the database
     const [countdown, setCountdown] = useState<number | null>(null);
     const [isPaused, setIsPaused] = useState(true); // Add a state to track whether the flashing is paused
     const [fontSize, setFontSize] = useState(44); // Start with a default font size
@@ -53,11 +56,14 @@ const Mode2Display = () => {
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
             if (event.key === "ArrowRight") {
-                setWPM((prevWPM) => Math.min(prevWPM + 10, 1100)); // Increase dynamicWPM, max 1100
+                setWPM((prevWPM) => Math.min(prevWPM + 20, 1100)); // Increase dynamicWPM, max 1100
             } else if (event.key === "ArrowLeft") {
                 setWPM((prevWPM) => Math.max(prevWPM - 20, 50)); // Decrease dynamicWPM, min 50
             } else if (event.key === "R" || event.key === "r") {
-                setCurrentChunkIndex(0); // Function from the first chunk
+                setCurrentChunkIndex(0); // Restart from the first chunk
+                setIsPaused(true); // Pause the session
+                setWpmValues([]); // Reset the stored WPM values
+                setWPM(startWPM); // Reset the WPM value
             } else if (event.key === " ") {
                 event.preventDefault(); // Prevent default action (e.g., page scrolling)
                 setIsPaused((prevIsPaused) => !prevIsPaused); // Toggle pause/start
@@ -99,14 +105,15 @@ const Mode2Display = () => {
     useEffect(() => {
         if (!isPaused && currentChunkIndex < wordChunks.length) {
             // Converts WPM to seconds per word.
-            const secondsPerWord = 60 / WPM;
+            const wordsPerSecond = WPM / 60;
             
             // New function to calculate display time for a chunk, excluding short words.
-            const calculateDisplayTime = (chunk: any) => {
-                const words: string[] = chunk.split(/\s+/); // Splits chunk into words.
-                const longWords = words.filter(word => word.length > 1); // Filters out short words.
-                // Returns total display time for the chunk, adjusting for number of longer words.
-                return longWords.length * secondsPerWord * 1000; // Convert to milliseconds for setInterval.
+            const calculateDisplayTime = (chunk: string) => {
+                const characterCount = chunk.length;
+                // Divides by 5 to find the equivalent "word" count based on the provided definition
+                const wordCount = characterCount / 5;
+                // Calculates how many seconds to display this chunk, converting to milliseconds for setInterval
+                return (wordCount / wordsPerSecond) * 1000;
             };
     
             // Calculates interval duration for the current chunk.
@@ -130,6 +137,8 @@ const Mode2Display = () => {
                 // NEW: Only update if there's a significant change
                 if (Math.abs(newWPM - WPM) >= 1) {
                     setWPM(newWPM);
+                    // Add the new WPM value to the wpmValues array.
+                    setWpmValues(prevValues => [...prevValues, newWPM]);
                 }
             }
 
@@ -137,6 +146,7 @@ const Mode2Display = () => {
             setCurrentChunkIndex((prevIndex) => {
                 if (prevIndex + 1 >= wordChunks.length) {
                     clearInterval(timer); // Stop the interval when reaching the end
+                    calculateAndSubmitAverageWpm(); // Calculate and submit average WPM at the end of the session
                     return prevIndex; // Keep the index at the last element to avoid looping
                 }
                 return prevIndex + 1;
@@ -148,6 +158,38 @@ const Mode2Display = () => {
         return () => clearInterval(timer);
         }
     }, [WPM, isPaused, currentChunkIndex, wordChunks, isWebGazerActive]);
+
+
+    const calculateAndSubmitAverageWpm = () => {
+        if (wpmValues.length === 0) return; // Ensure there are recorded WPM values
+    
+        const sum = wpmValues.reduce((acc, cur) => acc + cur, 0);
+        const averageWpm = sum / wpmValues.length;
+    
+        // Call the function to submit the average WPM to the backend
+        // submitReadingSpeed(averageWpm);
+    
+        // Reset WPM values for a new session.
+        setWpmValues([]);
+    };
+
+
+    // This function takes the average WPM and sends it to the backend.
+    const submitReadingSpeed = async (averageWpm: number) => {
+        await fetch("/api/save-reading-speed", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                // Assuming the payload requires 'text_id', 'user_id', and 'wpm'.
+                // Replace 'text_id' and 'user_id' with actual values as needed.
+                text_id: 1, // Example text_id
+                user_id: 1, // Example user_id
+                wpm: averageWpm,
+            }),
+        });
+    };
 
 
     return (
