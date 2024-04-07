@@ -3,7 +3,7 @@ import React from 'react';
 import styles from '../dashboard/DashboardPage.module.css';
 import DashboardLayout from '../layout';
 import Mode2Display from "@/components/mode-2/mode-2-display";
-import { SelectedTextProvider } from '../../../../contexts/SelectedTextContext'; // Adjust the import path if necessary
+import { SelectedTextProvider } from '@/contexts/SelectedTextContext';
 
 const WebgazerPage: React.FC = () => {
   return (

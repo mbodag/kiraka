@@ -12,15 +12,21 @@ interface ExtendedWindow extends Window {
     };
   }
 
+// Assuming you want a specific number of words per chunk,
+// and estimating the average character count per word
+const wordsPerChunk = 10;
+const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
+
 const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
     const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. The relentless pursuit of productivity often leads to increased stress and a higher risk of burnout. It's crucial to set clear boundaries between work responsibilities and personal life. Effective time management and task prioritization are keys to reducing work-related pressure. These strategies allow individuals to enjoy a more fulfilling life both inside and outside the workplace. <¶> Engaging in hobbies, pursuing personal interests, and spending quality time with family and friends are essential components of a well-rounded life. These activities offer opportunities for relaxation and personal growth, contributing to overall happiness and satisfaction. <¶> On the professional front, employers play a significant role in promoting a healthy work environment. This includes offering flexible working conditions, encouraging regular breaks, and recognizing the importance of mental health. Supportive workplace cultures that value employee well-being lead to increased productivity, greater job satisfaction, and lower turnover rates. <¶> Ultimately, achieving a balance between work and life leads to improved mental and physical health, heightened job performance, and a richer, more rewarding life experience. It's about finding a rhythm that allows for both career progression and personal contentment, ensuring long-term happiness and success.`;
 
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
-    const [WPM, setWPM] = useState(400); 
+    const [WPM, setWPM] = useState(300 ); 
     const [countdown, setCountdown] = useState<number | null>(null);
     const [isPaused, setIsPaused] = useState(true); // Add a state to track whether the flashing is paused
-    const [maxCharsPerChunk, setMaxCharsPerChunk] = useState(60); // Initial value, will be updated
+    const [fontSize, setFontSize] = useState(44); // Start with a default font size
+    const maxCharsPerChunk = wordsPerChunk * avgCharCountPerWord
     const gazeTimeRef = useRef<{ rightSide: number; total: number }>({ rightSide: 0, total: 0 });
     const wordChunks = shortStory.match(new RegExp('.{1,' + maxCharsPerChunk + '}(\\s|$)', 'g')) || [];
 
@@ -29,31 +35,27 @@ const Mode2Display = () => {
     const { isWebGazerActive } = useWebGazer();
 
     useEffect(() => {
-        const calculateMaxCharsPerChunk = () => {
-            // Assuming the container width matches the window width for simplicity
-            // You might need to adjust this to get the actual container's width if different
-            const containerWidth = window.innerWidth;
-            const fontSize = 40; // Font size in pixels
-            const estimatedCharWidth = fontSize * 0.6; // Estimate: adjust based on your font's characteristics
-            const chars = Math.floor((containerWidth * 0.8) / estimatedCharWidth); // Adjust based on container's maxWidth (90vw here)
-            setMaxCharsPerChunk(chars);
+        // Function to adjust font size based on the window width
+        const adjustFontSize = () => {
+            const viewportWidth = window.innerWidth;
+            // Adjust the font size formula as needed to match your design and readability requirements
+            const newFontSize = Math.max(16, (0.77*viewportWidth)/(maxCharsPerChunk*0.6)); // taking 77% of viewpoer and assuming one character width if 60% of font size
+            setFontSize(newFontSize);
         };
 
-        calculateMaxCharsPerChunk(); // Calculate initially
-
-        // Recalculate when the window is resized
-        window.addEventListener('resize', calculateMaxCharsPerChunk);
+        adjustFontSize();
+        window.addEventListener('resize', adjustFontSize);
         
-        return () => window.removeEventListener('resize', calculateMaxCharsPerChunk);
-    }, []); // Empty dependency array means this runs once on mount and cleanup on unmount
+        return () => window.removeEventListener('resize', adjustFontSize);
+    }, []);
 
 
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
             if (event.key === "ArrowRight") {
-                setWPM((prevWPM) => Math.min(prevWPM + 20, 1100)); // Increase dynamicWPM, max 1100
+                setWPM((prevWPM) => Math.min(prevWPM + 10, 1100)); // Increase dynamicWPM, max 1100
             } else if (event.key === "ArrowLeft") {
-                setWPM((prevWPM) => Math.max(prevWPM - 20, 50)); // Decrease dynamicWPM, min 100
+                setWPM((prevWPM) => Math.max(prevWPM - 20, 50)); // Decrease dynamicWPM, min 50
             } else if (event.key === "R" || event.key === "r") {
                 setCurrentChunkIndex(0); // Function from the first chunk
             } else if (event.key === " ") {
@@ -96,7 +98,20 @@ const Mode2Display = () => {
     // Adjusting the useEffect for chunk display and WPM update
     useEffect(() => {
         if (!isPaused && currentChunkIndex < wordChunks.length) {
-        const intervalDuration = (60000 / WPM) * (maxCharsPerChunk / 5);  // 5 chars per word
+            // Converts WPM to seconds per word.
+            const secondsPerWord = 60 / WPM;
+            
+            // New function to calculate display time for a chunk, excluding short words.
+            const calculateDisplayTime = (chunk: any) => {
+                const words: string[] = chunk.split(/\s+/); // Splits chunk into words.
+                const longWords = words.filter(word => word.length > 1); // Filters out short words.
+                // Returns total display time for the chunk, adjusting for number of longer words.
+                return longWords.length * secondsPerWord * 1000; // Convert to milliseconds for setInterval.
+            };
+    
+            // Calculates interval duration for the current chunk.
+            const intervalDuration = calculateDisplayTime(wordChunks[currentChunkIndex]);
+
         const timer = setInterval(() => {
             if (isWebGazerActive) {
                 // Calculate percentage of time spent looking at the right side
@@ -132,7 +147,7 @@ const Mode2Display = () => {
 
         return () => clearInterval(timer);
         }
-    }, [WPM, isPaused, currentChunkIndex, wordChunks.length, maxCharsPerChunk, isWebGazerActive]);
+    }, [WPM, isPaused, currentChunkIndex, wordChunks, isWebGazerActive]);
 
 
     return (
@@ -141,20 +156,20 @@ const Mode2Display = () => {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            height: "100vh",
+            height: "100vh"
         }}>
-        <CounterDisplay count={WPM} fontSize="16px" />
-        <div className="wordDisplay" style={{ 
-            marginTop: "20px",
-            fontSize: "40px",
-            fontWeight: "bold",
-            maxWidth: "90vw",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-        }}>
-            {wordChunks[currentChunkIndex]}
-        </div>
+            <CounterDisplay count={WPM} fontSize="16px" />
+            <div className="wordDisplay" style={{ 
+                marginTop: "20px",
+                fontSize: `${fontSize}px`,
+                fontWeight: "bold",
+                maxWidth: "100vw",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+            }}>
+                {wordChunks[currentChunkIndex]}
+            </div>
         </div>
     );
 };
