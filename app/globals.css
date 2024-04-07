@@ -168,7 +168,7 @@ body,
 }
 
 .fancyButton:hover {
-  background-color: #45a049;
+  background-color: #3a873e;
   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 }
 
@@ -273,3 +273,85 @@ body,
   display: none;
 }
 
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.modal-content {
+  position: fixed;
+  top: 50%;
+  left: calc(var(--sidebar-width) + (100vw - var(--sidebar-width)) / 2);
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.blur-effect {
+  filter: blur(8px);
+}
+
+
+
+.GreenButton {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+
+.GreenButton:hover {
+  background-color: #3a873e;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.BlueButton {
+  background-color: #3933ea; /* Blue */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+
+.BlueButton:hover {
+  background-color: #1c197af4;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+
+/* For sidebar width: */
+:root {
+  --sidebar-width: 16rem; /* Equivalent to w-64 in TailwindCSS (1rem = 4, so 64/4 = 16rem) */
+  --modal-content-width: calc(100vw - var(--sidebar-width)); /* Example calculation for modal width */
+}

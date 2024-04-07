@@ -15,36 +15,32 @@ interface DashboardLayoutProps {
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, navbarType }) => {
   let navbar;
-  let sidebar;
+  let sidebarPresence = navbarType !== undefined; // Sidebar presence based on navbarType
 
-  if (navbarType === 'standard-manual') {
-    navbar = <StandardNavbar />;
-    sidebar = (
-      <div className="hidden h-full md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-[80] bg-gray-900">
-        <Sidebar />
-      </div>
-    );
-  } else if (navbarType === 'standard-auto') {
-    navbar = <StandardWebGazerNavbar />;
-    sidebar = (
-      <div className="hidden h-full md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-[80] bg-gray-900">
-        <Sidebar />
-      </div>
-    );
-  } else if (navbarType === 'quiz') {
-    navbar = <QuizNavbar />;
-    sidebar = (
-      <div className="hidden h-full md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-[80] bg-gray-900">
-        <Sidebar />
-      </div>
-    );
+  // Dynamically choose the navbar based on navbarType
+  switch (navbarType) {
+    case 'standard-manual':
+      navbar = <StandardNavbar />;
+      break;
+    case 'standard-auto':
+      navbar = <StandardWebGazerNavbar />;
+      break;
+    case 'quiz':
+      navbar = <QuizNavbar />;
+      break;
+    default:
+      navbar = null; // Default case if no navbarType is provided
   }
 
   return (
-    <WebGazerProvider> {/* Wrap the entire layout in WebGazerProvider */}
+    <WebGazerProvider>
       <div className="h-full relative">
-        {sidebar}
-        <main className={`${navbarType ? 'md:pl-64' : ''}`}>
+        {sidebarPresence && (
+          <div className="hidden h-full md:flex md:flex-col md:fixed md:inset-y-0 z-[1000] bg-gray-900" style={{width: 'var(--sidebar-width)'}}>
+            <Sidebar />
+          </div>
+        )}
+        <main style={sidebarPresence ? { paddingLeft: 'var(--sidebar-width)' } : {}}>
           {navbar}
           {children}
         </main>

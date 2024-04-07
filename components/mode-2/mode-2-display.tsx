@@ -26,7 +26,6 @@ const Mode2Display = () => {
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
     const [WPM, setWPM] = useState(startWPM); 
     const [wpmValues, setWpmValues] = useState<number[]>([]); // To store the WPMs values and take their average at the end of the session; to be sent to the database
-    const [countdown, setCountdown] = useState<number | null>(null);
     const [isPaused, setIsPaused] = useState(true); // Add a state to track whether the flashing is paused
     const [fontSize, setFontSize] = useState(44); // Start with a default font size
     const maxCharsPerChunk = wordsPerChunk * avgCharCountPerWord
@@ -36,7 +35,18 @@ const Mode2Display = () => {
 
     // Accessing the current state of WebGazer
     const { isWebGazerActive } = useWebGazer();
+    const [showCalibrationPopup, setShowCalibrationPopup] = useState(true);
+    const [countdown, setCountdown] = useState<number | null>(null);
 
+
+    useEffect(() => {
+        const isCalibrated = sessionStorage.getItem('isCalibrated');
+        if (!isCalibrated) {
+          setShowCalibrationPopup(true);
+        }
+      }, []);
+
+      
     useEffect(() => {
         // Function to adjust font size based on the window width
         const adjustFontSize = () => {
@@ -160,6 +170,25 @@ const Mode2Display = () => {
     }, [WPM, isPaused, currentChunkIndex, wordChunks, isWebGazerActive]);
 
 
+    useEffect(() => {
+        const mainContent = document.querySelector('.main-content'); // Target the main content container
+        if (mainContent) { // Check if the element exists
+          if (showCalibrationPopup) {
+            mainContent.classList.add('blur-effect');
+          } else {
+            mainContent.classList.remove('blur-effect');
+          }
+      
+          // Cleanup function to safely remove the class
+          return () => {
+            if (mainContent) {
+              mainContent.classList.remove('blur-effect');
+            }
+          };
+        }
+      }, [showCalibrationPopup]);
+
+
     const calculateAndSubmitAverageWpm = () => {
         if (wpmValues.length === 0) return; // Ensure there are recorded WPM values
     
@@ -167,7 +196,7 @@ const Mode2Display = () => {
         const averageWpm = sum / wpmValues.length;
     
         // Call the function to submit the average WPM to the backend
-        // submitReadingSpeed(averageWpm);
+        submitReadingSpeed(averageWpm);
     
         // Reset WPM values for a new session.
         setWpmValues([]);
@@ -192,28 +221,60 @@ const Mode2Display = () => {
     };
 
 
-    return (
+
+      return (
         <div className="centerContainer" style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            height: "100vh"
+            height: "100vh",
         }}>
-            <CounterDisplay count={WPM} fontSize="16px" />
-            <div className="wordDisplay" style={{ 
-                marginTop: "20px",
-                fontSize: `${fontSize}px`,
-                fontWeight: "bold",
-                maxWidth: "100vw",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-            }}>
-                {wordChunks[currentChunkIndex]}
-            </div>
+            {
+                showCalibrationPopup && (
+                    <>
+                    <div className="modal-backdrop" style={{ zIndex: 500}}></div>
+                    <div className="modal-content" style={{ 
+                        width: '30vw', 
+                        display: 'flex', 
+                        flexDirection: 'column', // Stack children vertically
+                        alignItems: 'center', // Center children horizontally
+                        justifyContent: 'center', // Center children vertically (optional, if you want the content centered in the modal vertically as well)
+                        textAlign: 'center', // Ensures that text inside children elements is centered, if needed
+                        }}> 
+                        <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
+                        Click the button below to begin calibrating WebGazer and start your speed reading session!
+                        </p>
+                        <button
+                        className="GreenButton"
+                        onClick={() => {
+                            sessionStorage.setItem('isCalibrated', 'true');
+                            setShowCalibrationPopup(false);
+                            window.location.href = '/calibration'; // Adjust the route as needed
+                        }}
+                        >
+                            Go to Calibration
+                        </button>
+                    </div>
+                    </>
+                )
+            }
+      
+          {/* The rest of your component's content, keeping the inline styles for alignment and sizing */}
+          <CounterDisplay count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
+          <div className={`wordDisplay ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{ 
+              marginTop: "20px",
+              fontSize: `${fontSize}px`,
+              fontWeight: "bold",
+              maxWidth: "100vw",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+          }}>
+              {wordChunks[currentChunkIndex]}
+          </div>
         </div>
-    );
+      );
 };
 
 export default Mode2Display;
