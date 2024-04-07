@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from '@/app/(dashboard)/(routes)/quiz/QuizDisplay.module.css';
 import { useSelectedText } from "../contexts/SelectedTextContext"; // Adjust path if necessary
+import { useAuth } from "@clerk/nextjs";
 
 
 interface QuizQuestion {
@@ -10,20 +11,19 @@ interface QuizQuestion {
   multiple_choices: string;
   question_content: string;
   question_id: number;
-  text_id: number;
-  selectedAnswer: string;
+  selected_answer: string;
   score: number;
-  practice_id: number;
+  text_id: number;
 }
 
 // Define your quiz questions and answers
-const sendQuizResults = async (quizQuestions: QuizQuestion[]) => {
+const sendQuizResults = async (quizQuestions: QuizQuestion[], userId: string | null | undefined, practiceId: number | null, textId: number ) => {
   await fetch("/api/save-quiz-results", {
     method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({'quiz_results': quizQuestions}),
+        body: JSON.stringify({'quiz_results': quizQuestions, 'user_id': userId, 'text_id': textId, 'practice_id': practiceId}),
   })
 
 }
@@ -35,7 +35,8 @@ const QuizDisplay: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [score, setScore] = useState<number>(0);
   const [quizCompleted, setQuizCompleted] = useState<boolean>(false);
-  const { selectedTextId } = useSelectedText(); // Use the ID from context
+  let { selectedTextId } = useSelectedText(); // Use the ID from context
+  const { userId } = useAuth();
 
   const fetchQuizQuestions = async (textId: number) => {
     try {
@@ -49,10 +50,9 @@ const QuizDisplay: React.FC = () => {
         multiple_choices: question.multiple_choices.split(';'), // Now splitting
         question_content: question.question_content,
         question_id: question.question_id,
-        selectedAnswer : "",
-        text_id: question.text_id,
+        selected_answer : "",
         score: 0,
-        practice_id: 1
+        text_id: textId
       }));
       console.log('Formatted questions', formattedQuestions)
       setQuizQuestions(formattedQuestions);
@@ -62,7 +62,7 @@ const QuizDisplay: React.FC = () => {
   };
 
   useEffect(() => {
-    console.log(selectedTextId)
+    selectedTextId = 1
     if (selectedTextId) {
       fetchQuizQuestions(selectedTextId);
     }
@@ -73,30 +73,30 @@ const QuizDisplay: React.FC = () => {
   };
 
   const handleNextQuestion = () => {
-      quizQuestions[currentQuestionIndex].selectedAnswer = selectedOption;
-      quizQuestions[currentQuestionIndex].score = quizQuestions[currentQuestionIndex].selectedAnswer === quizQuestions[currentQuestionIndex].correct_answer? 1 : 0;
+      quizQuestions[currentQuestionIndex].selected_answer = selectedOption;
+      quizQuestions[currentQuestionIndex].score = quizQuestions[currentQuestionIndex].selected_answer === quizQuestions[currentQuestionIndex].correct_answer? 1 : 0;
     if (currentQuestionIndex < quizQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex => currentQuestionIndex + 1);
-      setSelectedOption(quizQuestions[currentQuestionIndex + 1].selectedAnswer);
+      setSelectedOption(quizQuestions[currentQuestionIndex + 1].selected_answer);
     } else {
       setQuizCompleted(true);
       let counter = 0;
       quizQuestions.forEach((question) => {
-        if (question.selectedAnswer === question.correct_answer) {
+        if (question.selected_answer === question.correct_answer) {
           counter++;
         }
       });
       setScore(counter);
-      sendQuizResults(quizQuestions)
+      sendQuizResults(quizQuestions, userId, null, 1)
     }
   };
 
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
-      quizQuestions[currentQuestionIndex].selectedAnswer = selectedOption;
-      quizQuestions[currentQuestionIndex].score = quizQuestions[currentQuestionIndex].selectedAnswer === quizQuestions[currentQuestionIndex].correct_answer? 1 : 0;
+      quizQuestions[currentQuestionIndex].selected_answer = selectedOption;
+      quizQuestions[currentQuestionIndex].score = quizQuestions[currentQuestionIndex].selected_answer === quizQuestions[currentQuestionIndex].correct_answer? 1 : 0;
       setCurrentQuestionIndex(currentQuestionIndex => currentQuestionIndex - 1);
-      setSelectedOption(quizQuestions[currentQuestionIndex - 1].selectedAnswer);
+      setSelectedOption(quizQuestions[currentQuestionIndex - 1].selected_answer);
     }
   };
 
