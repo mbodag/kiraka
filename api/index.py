@@ -44,7 +44,7 @@ class Questions(db.Model):
 class Users(db.Model):
     __tablename__ = 'Users'
     user_id = db.Column(db.String(255), primary_key=True, nullable=False) #If clerk_id this might need to be a string
-    username = db.Column(db.Text, unique=True)
+    username = db.Column(db.Text)
     texts = db.relationship('Texts', backref='user', lazy=True)
     admin = db.Column(db.Boolean, default=False)
     
@@ -275,8 +275,6 @@ def delete_user_data():
 def get_user_analytics():
     user_id = request.json.get('user_id')
     users_data = {}
-    if not user_id_is_valid(user_id):
-        return jsonify({'error': f'Invalid user_id: {user_id}'}), 400
     user = Users.query.filter_by(user_id=user_id).first()
     if not user:
         return jsonify({'error': f'User with id {user_id} not found'}), 404

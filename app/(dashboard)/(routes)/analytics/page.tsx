@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Line, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js';
+import { useAuth } from "@clerk/nextjs";
+
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
@@ -28,16 +30,14 @@ interface UserPlotProps {
 }
 
 // Fetch analytics data
-  const getAnalytics = async () => {
-    const inputData = 2;
-
+  const getAnalytics = async (userId: string | null | undefined) => {
     try {
       const response = await fetch("/api/analytics", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: inputData }),
+        body: JSON.stringify({ user_id: userId }),
       });
 
       if (!response.ok) {
@@ -59,11 +59,13 @@ const AnalyticsPage: React.FC = () => {
   const [userData, setUserData] = useState<UserData>({})
   const [filteredUsers, setFilteredUsers] = useState(users);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { userId } = useAuth();
+
 
   useEffect(() => {
     const fetchAnalyticsData = async () => {
-      await getAnalytics().then(response => setUserData(response))
-      await getAnalytics().then(response => setUsers(Object.keys(response)))
+      await getAnalytics(userId).then(response => setUserData(response))
+      await getAnalytics(userId).then(response => setUsers(Object.keys(response)))
     };
     fetchAnalyticsData();
   }, []); // Empty dependency array means this effect runs once on mount and not on updates
