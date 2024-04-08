@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import styles from '@/app/(dashboard)/(routes)/quiz/QuizDisplay.module.css';
 import { useSelectedText } from "../contexts/SelectedTextContext"; // Adjust path if necessary
 import { useAuth } from "@clerk/nextjs";
 
@@ -16,8 +15,13 @@ interface QuizQuestion {
   text_id: number;
 }
 
+interface ProcessedQuizQuestion extends Omit<QuizQuestion, 'multiple_choices'> {
+  multiple_choices: string[]; // Now an array of strings
+}
+
+
 // Define your quiz questions and answers
-const sendQuizResults = async (quizQuestions: QuizQuestion[], userId: string | null | undefined, practiceId: number | null, textId: number ) => {
+const sendQuizResults = async (quizQuestions: ProcessedQuizQuestion[], userId: string | null | undefined, practiceId: number | null, textId: number ) => {
   await fetch("/api/save-quiz-results", {
     method: "POST",
         headers: {
@@ -30,7 +34,7 @@ const sendQuizResults = async (quizQuestions: QuizQuestion[], userId: string | n
 
 
 const QuizDisplay: React.FC = () => {
-  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
+  const [quizQuestions, setQuizQuestions] = useState<ProcessedQuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [score, setScore] = useState<number>(0);
@@ -46,7 +50,7 @@ const QuizDisplay: React.FC = () => {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        const formattedQuestions: QuizQuestion[] = data.quiz_questions.map((question: QuizQuestion) => ({
+        const formattedQuestions: ProcessedQuizQuestion[] = data.quiz_questions.map((question: QuizQuestion) => ({
           correct_answer: question.correct_answer,
           multiple_choices: question.multiple_choices.split(';'), // Now splitting
           question_content: question.question_content,
