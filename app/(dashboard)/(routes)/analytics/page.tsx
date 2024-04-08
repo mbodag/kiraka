@@ -21,7 +21,8 @@ interface UserRecord {
 }
 
 interface UserData {
-  [key: string]: UserRecord[];
+  usersData: UserRecord[];
+  isAdmin: boolean
 }
 
 interface UserPlotProps {
@@ -56,7 +57,7 @@ const AnalyticsPage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState<string[]>([]);
-  const [userData, setUserData] = useState<UserData>({})
+  const [userData, setUserData] = useState<UserRecord[]>([]);
   const [filteredUsers, setFilteredUsers] = useState(users);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { userId } = useAuth();
@@ -64,8 +65,9 @@ const AnalyticsPage: React.FC = () => {
 
   useEffect(() => {
     const fetchAnalyticsData = async () => {
-      await getAnalytics(userId).then(response => setUserData(response))
-      await getAnalytics(userId).then(response => setUsers(Object.keys(response)))
+      const response = await getAnalytics(userId);
+      setUserData(response.usersData);
+      setUsers(Object.keys(response.usersData));
     };
     fetchAnalyticsData();
   }, []); // Empty dependency array means this effect runs once on mount and not on updates

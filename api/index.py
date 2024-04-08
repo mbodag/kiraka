@@ -275,16 +275,16 @@ def delete_user_data():
 def get_user_analytics():
     user_id = request.json.get('user_id')
     users_data = {}
-    user = Users.query.filter_by(user_id=user_id).first()
-    if not user:
+    logged_user = Users.query.filter_by(user_id=user_id).first()
+    if not logged_user:
         return jsonify({'error': f'User with id {user_id} not found'}), 404
-    elif user.admin == False:  
-        users = [user] 
-    elif user.admin == True:
+    elif not logged_user.admin:  
+        users = [logged_user] 
+    elif logged_user.admin:
         users = Users.query.all()
     for user in users:
-        user_id = user.user_id
-        username = user.username
+        user_id = user.user_id 
+        username = user.username if logged_user.admin else "Your data"
         user_results = []
         practice_results = PracticeResults.query.filter_by(user_id=user_id).all()
         if practice_results:
@@ -303,7 +303,7 @@ def get_user_analytics():
                 user_results.append(practice_result_dict)
             user_results = sorted(user_results, key=lambda x: x['timestamp'], reverse=True)
         users_data[username] = user_results          
-    return jsonify(users_data)
+    return jsonify({'usersData': users_data, 'isAdmin': logged_user.admin})
 
 @app.route('/api/analytics/fake', methods=['POST'])
 def populate_with_fake_analytics():
