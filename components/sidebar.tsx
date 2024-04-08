@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelectedText } from '../contexts/SelectedTextContext';
 import Image from "next/legacy/image";
 import Link from "next/link";
@@ -8,6 +8,7 @@ import { UserButton, useUser } from "@clerk/nextjs";
 
 const Sidebar = () => {
   const { setSelectedTextId } = useSelectedText();
+  const [activeId, setActiveId] = useState<number | null>(null);
 
   // Array of texts with their IDs
   const texts = Array.from({ length: 7 }, (_, index) => ({
@@ -52,8 +53,12 @@ const Sidebar = () => {
         {texts.map((text) => (
           <button
             key={text.id}
-            onClick={() => setSelectedTextId(text.id)}
-            className="text-sm w-full max-w-xs p-2 font-medium rounded-lg hover:bg-gray-700 transition sidebar-button-font"
+            onClick={() => { 
+              setSelectedTextId(text.id); 
+              setActiveId(text.id); // Update the active ID
+            }}
+            className={`text-sm w-full max-w-xs p-2 font-medium rounded-lg transition sidebar-button-font 
+              ${text.id === activeId ? 'bg-gray-700' : 'hover:bg-gray-700'}`} // Apply active or hover class
           >
             {text.title}
           </button>
