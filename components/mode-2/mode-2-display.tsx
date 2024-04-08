@@ -1,6 +1,7 @@
 "use client"; 
 
 import { useEffect, useState, useRef } from "react";
+import { useSelectedText } from "../../contexts/SelectedTextContext"; // Adjust path if necessary
 import CounterDisplay from "../mode-1/counter-display";
 import '@/app/globals.css';
 import { useWebGazer } from '@/contexts/WebGazerContext';
@@ -21,7 +22,7 @@ const startWPM = 300
 
 const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
-    const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. The relentless pursuit of productivity often leads to increased stress and a higher risk of burnout. It's crucial to set clear boundaries between work responsibilities and personal life. Effective time management and task prioritization are keys to reducing work-related pressure. These strategies allow individuals to enjoy a more fulfilling life both inside and outside the workplace. <¶> Engaging in hobbies, pursuing personal interests, and spending quality time with family and friends are essential components of a well-rounded life. These activities offer opportunities for relaxation and personal growth, contributing to overall happiness and satisfaction. <¶> On the professional front, employers play a significant role in promoting a healthy work environment. This includes offering flexible working conditions, encouraging regular breaks, and recognizing the importance of mental health. Supportive workplace cultures that value employee well-being lead to increased productivity, greater job satisfaction, and lower turnover rates. <¶> Ultimately, achieving a balance between work and life leads to improved mental and physical health, heightened job performance, and a richer, more rewarding life experience. It's about finding a rhythm that allows for both career progression and personal contentment, ensuring long-term happiness and success.`;
+    //const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. The relentless pursuit of productivity often leads to increased stress and a higher risk of burnout. It's crucial to set clear boundaries between work responsibilities and personal life. Effective time management and task prioritization are keys to reducing work-related pressure. These strategies allow individuals to enjoy a more fulfilling life both inside and outside the workplace. <¶> Engaging in hobbies, pursuing personal interests, and spending quality time with family and friends are essential components of a well-rounded life. These activities offer opportunities for relaxation and personal growth, contributing to overall happiness and satisfaction. <¶> On the professional front, employers play a significant role in promoting a healthy work environment. This includes offering flexible working conditions, encouraging regular breaks, and recognizing the importance of mental health. Supportive workplace cultures that value employee well-being lead to increased productivity, greater job satisfaction, and lower turnover rates. <¶> Ultimately, achieving a balance between work and life leads to improved mental and physical health, heightened job performance, and a richer, more rewarding life experience. It's about finding a rhythm that allows for both career progression and personal contentment, ensuring long-term happiness and success.`;
 
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
     const [WPM, setWPM] = useState(startWPM); 
@@ -30,6 +31,8 @@ const Mode2Display = () => {
     const [fontSize, setFontSize] = useState(44); // Start with a default font size
     const maxCharsPerChunk = wordsPerChunk * avgCharCountPerWord
     const gazeTimeRef = useRef<{ rightSide: number; total: number }>({ rightSide: 0, total: 0 });
+    const [shortStory, setShortStory] = useState("");
+    const { selectedTextId } = useSelectedText(); // Use the ID from context
     const wordChunks = shortStory.match(new RegExp('.{1,' + maxCharsPerChunk + '}(\\s|$)', 'g')) || [];
 
 
@@ -38,6 +41,27 @@ const Mode2Display = () => {
     const [showCalibrationPopup, setShowCalibrationPopup] = useState(true);
     const [redirecting, setRedirecting] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
+
+
+    useEffect(() => {
+        const fetchTextById = async (textId: number) => {
+          try {
+            const response = await fetch(`/api/texts/${textId}`);
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            console.log(data.quiz_questions);
+            setShortStory(data.text_content);
+          } catch (error) {
+            console.error('Error fetching text:', error);
+          }
+        };
+    
+        if (selectedTextId) {
+          fetchTextById(selectedTextId);
+        }
+      }, [selectedTextId]);
 
 
     // useEffect(() => {
@@ -75,6 +99,7 @@ const Mode2Display = () => {
             // Adjust the font size formula as needed to match your design and readability requirements
             const newFontSize = Math.max(16, (0.77*viewportWidth)/(maxCharsPerChunk*0.6)); // taking 77% of viewpoer and assuming one character width if 60% of font size
             setFontSize(newFontSize);
+
         };
 
         adjustFontSize();

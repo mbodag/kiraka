@@ -23,8 +23,8 @@ export default function RootLayout({
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
     >
-      <html lang="en">
-        <body className={inter.className}>
+      <html lang="en" data-lt-installed="true">
+        <body className={inter.className} suppressHydrationWarning={true}>
           <link rel="icon" href="/favicon.ico" sizes="any" />
           {children}
         </body>
