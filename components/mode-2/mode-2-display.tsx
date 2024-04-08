@@ -1,8 +1,8 @@
 "use client"; 
 
 import { useEffect, useState, useRef } from "react";
-import { useSelectedText } from "../../contexts/SelectedTextContext"; // Adjust path if necessary
-import CounterDisplay from "../mode-1/counter-display";
+import { useSelectedText } from "@/contexts/SelectedTextContext";
+import CounterDisplay from "@/components/mode-1/counter-display";
 import '@/app/globals.css';
 import { useWebGazer } from '@/contexts/WebGazerContext';
 import  { usePracticeID } from '@/contexts/PracticeIDContext';
@@ -14,7 +14,7 @@ interface ExtendedWindow extends Window {
     };
   }
 
-// Assuming you want a specific number of words per chunk,
+// Assuming you want a specific number of words per chunk, 
 // and estimating the average character count per word
 const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
@@ -102,10 +102,8 @@ const Mode2Display = () => {
             setFontSize(newFontSize);
 
         };
-
         adjustFontSize();
         window.addEventListener('resize', adjustFontSize);
-        
         return () => window.removeEventListener('resize', adjustFontSize);
     }, []);
 
@@ -301,7 +299,7 @@ const Mode2Display = () => {
                             display: 'flex', 
                             flexDirection: 'column', // Stack children vertically
                             alignItems: 'center', // Center children horizontally
-                            justifyContent: 'center', // Center children vertically (optional, if you want the content centered in the modal vertically as well)
+                            justifyContent: 'center', // Center children vertically
                             textAlign: 'center', // Ensures that text inside children elements is centered, if needed
                             }}> 
                             {!redirecting ? (
