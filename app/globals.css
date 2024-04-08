@@ -355,3 +355,23 @@ body,
   --sidebar-width: 16rem; /* Equivalent to w-64 in TailwindCSS (1rem = 4, so 64/4 = 16rem) */
   --modal-content-width: calc(100vw - var(--sidebar-width)); /* Example calculation for modal width */
 }
+
+
+
+@keyframes blink-animation {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.dot {
+  animation: blink-animation 1.2s infinite both;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}

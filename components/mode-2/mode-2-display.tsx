@@ -36,6 +36,7 @@ const Mode2Display = () => {
     // Accessing the current state of WebGazer
     const { isWebGazerActive } = useWebGazer();
     const [showCalibrationPopup, setShowCalibrationPopup] = useState(true);
+    const [redirecting, setRedirecting] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
 
 
@@ -57,6 +58,14 @@ const Mode2Display = () => {
             setShowCalibrationPopup(false);
         }
     }, [isWebGazerActive]);
+
+
+    const handleGoToCalibration = () => {
+        setRedirecting(true); // Set redirecting state to true
+        setTimeout(() => {
+            window.location.href = '/calibration'; // Redirect after a brief pause
+        }, 1500); // Adjust this delay as needed
+    };
 
       
     useEffect(() => {
@@ -259,19 +268,23 @@ const Mode2Display = () => {
                             justifyContent: 'center', // Center children vertically (optional, if you want the content centered in the modal vertically as well)
                             textAlign: 'center', // Ensures that text inside children elements is centered, if needed
                             }}> 
-                            <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
-                            Click the button below to begin calibrating WebGazer and start your speed reading session!
+                            {!redirecting ? (
+                            <>
+                                <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
+                                    Click the button below to begin calibrating WebGazer and start your speed reading session!
+                                </p>
+                                <button className="GreenButton" onClick={handleGoToCalibration}>
+                                    Go to Calibration
+                                </button>
+                            </>
+                            ) : (
+                            <p style={{ fontSize: '18px', textAlign: 'center' }}>
+                                Redirecting to Calibration Page
+                                <span className="dot">.</span>
+                                <span className="dot">.</span>
+                                <span className="dot">.</span>
                             </p>
-                            <button
-                            className="GreenButton"
-                            onClick={() => {
-                                sessionStorage.setItem('isCalibrated', 'true');
-                                setShowCalibrationPopup(false);
-                                window.location.href = '/calibration'; // Adjust the route as needed
-                            }}
-                            >
-                                Go to Calibration
-                            </button>
+                        )}
                         </div>
                     </>
                 )
