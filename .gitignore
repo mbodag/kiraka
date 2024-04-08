@@ -43,3 +43,5 @@ venv/
 my_env/
 
 api/config.py
+
+.idea/
