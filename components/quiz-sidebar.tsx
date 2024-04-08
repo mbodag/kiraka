@@ -1,20 +1,11 @@
 "use client";
 
 import React from 'react';
-import { useSelectedText } from '../contexts/SelectedTextContext';
 import Image from "next/legacy/image";
 import Link from "next/link";
 import { UserButton, useUser } from "@clerk/nextjs";
 
 const Sidebar = () => {
-  const { setSelectedTextId } = useSelectedText();
-
-  // Array of texts with their IDs
-  const texts = Array.from({ length: 7 }, (_, index) => ({
-    id: index + 1,
-    title: `Day ${index + 1}`,
-  }));
-
   const { user } = useUser();
 
   return (
@@ -38,30 +29,10 @@ const Sidebar = () => {
         {/* Horizontal line */}
       </div>
 
-      {/* Upload button aligned to the left */}
-      <div className="px-3 py-2 mb-4 bg-gray-800">
-        <Link href="/upload">
-          <button className="text-sm w-full max-w-xs p-2 font-medium rounded-lg hover:bg-gray-700 transition sidebar-button-font">
-            Upload Files
-          </button>
-        </Link>
-      </div>
-
-      {/* Document buttons aligned to the left */}
-      <div className="flex-1 px-3 py-2 space-y-1">
-        {texts.map((text) => (
-          <button
-            key={text.id}
-            onClick={() => setSelectedTextId(text.id)}
-            className="text-sm w-full max-w-xs p-2 font-medium rounded-lg hover:bg-gray-700 transition sidebar-button-font"
-          >
-            {text.title}
-          </button>
-        ))}
-      </div>
+      {/* Spacer div */}
+      <div className="flex-grow"></div>
 
       {/* User button at the bottom */}
-
       <div className="flex item-center m-2">
         <div>
           <UserButton afterSignOutUrl="/" />
