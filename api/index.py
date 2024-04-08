@@ -357,7 +357,7 @@ def submit_reading_speed():
     wpm = data.get('wpm')
 
     # Validate the text_id and user_id as integers
-    if not isinstance(text_id, int) or not isinstance(user_id, int):
+    if not isinstance(text_id, int) or not isinstance(user_id, str):
         return jsonify({'error': 'Invalid text_id or user_id'}), 400
 
     # Validate the wpm as a non-negative number
