@@ -90,10 +90,8 @@ export default function WebgazerCalibration() {
           })
           .begin(); // Starts the WebGazer eye-tracking
       
-      // Marks WebGazer as initialised
       console.log("Initialising WebGazer...");
       setWebgazerInitialized(true);
-      setWebGazerActive(true); // Update context to reflect active state
     } catch (error) {
       console.error("Failed to initialise WebGazer:", error);
       setWebGazerActive(false); // Ensure context is updated on failure
@@ -136,9 +134,11 @@ export default function WebgazerCalibration() {
 
     // If all points are calibrated, logs the completion and updates state
     if (allCalibrated) {
-      console.log("All calibration points complete");
+      console.log("WebGazer is fully calibrated and ready.");
       setAllCalibrated(true); // Marks all points as calibrated
       setCalibrationStarted(false); // Stops the calibration process
+      setWebGazerActive(true); // Now updates context to reflect active state after calibration is complete
+
       if (extendedWindow) {
         // Shows prediction points, hides the video feed, and removes mouse event listeners
         extendedWindow.webgazer
@@ -174,6 +174,7 @@ export default function WebgazerCalibration() {
       >
         Initialise WebGazer
       </button>
+
       {/* Conditionally rendered Start Calibration Button */}
       {webgazerInitialized && showCalibrationButton && (
         <button
@@ -183,31 +184,34 @@ export default function WebgazerCalibration() {
           Start Calibration
         </button>
       )}
+
       {/* Calibration Points Buttons */}
       {calibrationStarted &&
         Object.entries(calibrationPoints).map(([pointId, point]) => (
           <button
-      key={pointId}
-      onClick={() => handleCalibrationClick(pointId)}
-      style={{
-        position: "absolute",
-        left: `${point.x}px`,
-        top: `${point.y}px`,
-        background: 'none', // Make the button background transparent
-        border: 'none', // Remove button border
-        cursor: "pointer",
-      }}
-      disabled={point.clicks >= 5}
-    >
-      <SiTarget style={{ color: point.clicks >= 5 ? "blue" : "red", fontSize: "20px" }} />
-    </button>
+            key={pointId}
+            onClick={() => handleCalibrationClick(pointId)}
+            style={{
+              position: "absolute",
+              left: `${point.x}px`,
+              top: `${point.y}px`,
+              background: 'none', // Make the button background transparent
+              border: 'none', // Remove button border
+              cursor: "pointer",
+            }}
+            disabled={point.clicks >= 5}
+          >
+            <SiTarget style={{ color: point.clicks >= 5 ? "blue" : "red", fontSize: "20px" }} />
+          </button>
         ))}
+
       {/* Link to Dashboard if All Calibrated */}
       {allCalibrated && (
         <Link href="../webgazer-mode-2">
           <Button>Go Back</Button>
         </Link>
       )}
+
       {/* Instructions Overlay */}
       {showInstructions && (
         <div
@@ -234,12 +238,25 @@ export default function WebgazerCalibration() {
             <strong>While clicking, focus your gaze on the center of each target</strong>.<br /><br />
             For best results, remain in a well-lit area, keep your head still during calibration, and avoid significant changes to your environment while using WebGazer.
           </p>
-          <button
-            onClick={handleGotItClick}
-            className="GreenButton"
-          >
-            Got it
-          </button>
+          <div style={{ display: "flex", justifyContent: "center", gap: "5px" }}>
+            {/* Got it Button */}
+            <button
+              onClick={handleGotItClick}
+              className="GreenButton"
+            >
+              Got it
+            </button>
+            {/* Back Button */}
+            <button
+              onClick={() => {
+                // Change to the desired route, and then force a reload
+                window.location.href = '/webgazer-mode-2';
+              }}
+              className="BlackButton"
+            >
+              Go Back
+            </button>
+          </div>
         </div>
       )}
     </div>
