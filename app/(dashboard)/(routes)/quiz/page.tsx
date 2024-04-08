@@ -4,18 +4,21 @@ import DashboardLayout from '../layout';
 import QuizDisplay from "@/components/quiz-display";
 import styles from '../dashboard/DashboardPage.module.css';
 import { SelectedTextProvider } from '@/contexts/SelectedTextContext';
+import { PracticeIDProvider } from '@/contexts/PracticeIDContext';
 
 const QuizPage: React.FC = () => {
   return (
-    <SelectedTextProvider>
-      <DashboardLayout navbarType="quiz">
-        <div className={styles.dashboardBg + " flex justify-center pt-20 pb-8 min-h-screen quiz-font"}>
-          <div>
-            <QuizDisplay />
+    <PracticeIDProvider>
+      <SelectedTextProvider>
+        <DashboardLayout navbarType="quiz">
+          <div className={styles.dashboardBg + " flex justify-center pt-20 pb-8 min-h-screen quiz-font"}>
+            <div>
+              <QuizDisplay />
+            </div>
           </div>
-        </div>
-      </DashboardLayout>
-    </SelectedTextProvider>
+        </DashboardLayout>
+      </SelectedTextProvider>
+    </PracticeIDProvider>
   );
 };
 
