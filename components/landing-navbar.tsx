@@ -35,10 +35,16 @@ export const LandingNavbar = () => {
     <nav className="p-4 bg-transparent flex items-center justify-between">
       <Link href="/" className="flex items-center">
         <div className="relative h-8 w-8 mr-4">
-          <Image src="/Kiraka_Logo.png" alt="Kiraka Logo" width={30} height={30} objectFit="contain" />
+          <Image
+            src="/Kiraka_Logo.png"
+            alt="Kiraka Logo"
+            width={30}
+            height={30}
+            objectFit="contain"
+          />
         </div>
         <h1 className={cn("text-2xl font-bold text-white")}>
-        {/* it was: <h1 className={cn("text-2xl font-bold text-white", font.className)}></h1> */}
+          {/* it was: <h1 className={cn("text-2xl font-bold text-white", font.className)}></h1> */}
           Kiraka.ai
         </h1>
       </Link>
@@ -53,7 +59,7 @@ export const LandingNavbar = () => {
       </div>
       <div className="flex item-center gap-x-2">
         <div>
-          <Link href={isSignedIn ? "/dashboard" : "/sign-up"}>
+          <Link href={isSignedIn ? "/webgazer-mode-2" : "/sign-up"}>
             <Button
               variant="outline"
               className="rounded-full border-none hover:bg-green-100"
@@ -63,7 +69,7 @@ export const LandingNavbar = () => {
           </Link>
         </div>
         <div>
-          <Link href={isSignedIn ? "/dashboard" : "/sign-in"}>
+          <Link href={isSignedIn ? "/webgazer-mode-2" : "/sign-in"}>
             <Button
               variant="outline"
               className="rounded-full border-none hover:bg-green-100"
