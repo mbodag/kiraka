@@ -3,11 +3,11 @@ import React from 'react';
 import styles from '../dashboard/DashboardPage.module.css';
 import DashboardLayout from '../layout';
 import Mode2Display from "@/components/mode-2/mode-2-display";
-import { SelectedTextProvider } from '@/contexts/SelectedTextContext';
+import { PracticeIDProvider } from '@/contexts/PracticeIDContext';
 
 const WebgazerPage: React.FC = () => {
   return (
-    <SelectedTextProvider>
+    <PracticeIDProvider>
       <DashboardLayout navbarType="standard-auto">
         <div
           className={
@@ -21,8 +21,9 @@ const WebgazerPage: React.FC = () => {
           </div>
         </div>
       </DashboardLayout>
-    </SelectedTextProvider>
+    </PracticeIDProvider>
   );
 };
 
 export default WebgazerPage;
+
