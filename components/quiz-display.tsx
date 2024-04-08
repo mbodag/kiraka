@@ -1,69 +1,70 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '@/app/(dashboard)/(routes)/quiz/QuizDisplay.module.css';
+import { useSelectedText } from "../contexts/SelectedTextContext"; // Adjust path if necessary
 import { useAuth } from "@clerk/nextjs";
 
-interface QuizQuestion {
-  question: string;
-  options: string[];
-  answer: string;
-  selectedAnswer: string;
-  score: number;
-  question_id: number;
-  practice_id: number;
 
+interface QuizQuestion {
+  correct_answer: string;
+  multiple_choices: string;
+  question_content: string;
+  question_id: number;
+  selected_answer: string;
+  score: number;
+  text_id: number;
 }
 
 // Define your quiz questions and answers
-const quizQuestions: QuizQuestion[] = [
-  {
-    question: "What is essential for achieving personal well-being and professional success?",
-    options: ["Work-life balance", "Continuous work", "High productivity", "Stress management"],
-    answer: "Work-life balance",
-    selectedAnswer: "",
-    score: 0,
-    question_id: 3,
-    practice_id: 1,
-  },
-  {
-    question: "What can lead to increased stress and burnout?",
-    options: ["Hobbies", "Flexible working conditions", "Pursuit of productivity", "Personal interests"],
-    answer: "Pursuit of productivity",
-    selectedAnswer: "",
-    score: 0,
-    question_id: 2,
-    practice_id: 1,
-
-  },
-  {
-    question: "What is a key factor in reducing work-related pressure and enjoying life both inside and outside the workplace?",
-    options: ["Regular breaks", "Time management and task prioritisation", "Pursuing personal interests", "Flexible working conditions"],
-    answer: "Time management and task prioritisation",
-    selectedAnswer: "",
-    score: 0,
-    question_id: 1,
-    practice_id: 1,
-
-  }
-];
-const sendQuizResults = async (quizQuestions: QuizQuestion[], userId:any) => {
+const sendQuizResults = async (quizQuestions: QuizQuestion[], userId: string | null | undefined, practiceId: number | null, textId: number ) => {
   await fetch("/api/save-quiz-results", {
     method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({'quiz_results': quizQuestions, 'user_id': userId}),
+        body: JSON.stringify({'quiz_results': quizQuestions, 'user_id': userId, 'text_id': textId, 'practice_id': practiceId}),
   })
 
 }
 
+
 const QuizDisplay: React.FC = () => {
+  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [score, setScore] = useState<number>(0);
   const [quizCompleted, setQuizCompleted] = useState<boolean>(false);
-  const {userId} = useAuth()
+  let { selectedTextId } = useSelectedText(); // Use the ID from context
+  const { userId } = useAuth();
+
+  useEffect(() => {
+    const fetchQuizQuestions = async (textId: number) => {
+      try {
+        const response = await fetch(`/api/texts/${textId}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        const formattedQuestions: QuizQuestion[] = data.quiz_questions.map((question: QuizQuestion) => ({
+          correct_answer: question.correct_answer,
+          multiple_choices: question.multiple_choices.split(';'), // Now splitting
+          question_content: question.question_content,
+          question_id: question.question_id,
+          text_id: question.text_id,
+          score: 0,
+          practice_id: 1
+        }));
+        setQuizQuestions(formattedQuestions);
+      } catch (error) {
+        console.error('Error fetching text:', error);
+      }
+    };
+
+    if (selectedTextId) {
+      fetchQuizQuestions(selectedTextId);
+    }
+  }, [selectedTextId]);
 
 
   const handleOptionChange = (option: string) => {
@@ -71,34 +72,35 @@ const QuizDisplay: React.FC = () => {
   };
 
   const handleNextQuestion = () => {
-      quizQuestions[currentQuestionIndex].selectedAnswer = selectedOption;
-      quizQuestions[currentQuestionIndex].score = quizQuestions[currentQuestionIndex].selectedAnswer === quizQuestions[currentQuestionIndex].answer? 1 : 0;
+      quizQuestions[currentQuestionIndex].selected_answer = selectedOption;
+      quizQuestions[currentQuestionIndex].score = quizQuestions[currentQuestionIndex].selected_answer === quizQuestions[currentQuestionIndex].correct_answer? 1 : 0;
     if (currentQuestionIndex < quizQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex => currentQuestionIndex + 1);
-      setSelectedOption(quizQuestions[currentQuestionIndex + 1].selectedAnswer);
+      setSelectedOption(quizQuestions[currentQuestionIndex + 1].selected_answer);
     } else {
       setQuizCompleted(true);
       let counter = 0;
       quizQuestions.forEach((question) => {
-        if (question.selectedAnswer === question.answer) {
+        if (question.selected_answer === question.correct_answer) {
           counter++;
         }
       });
       setScore(counter);
-      sendQuizResults(quizQuestions, userId)
+      sendQuizResults(quizQuestions, userId, null, 1)
     }
   };
 
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
-      quizQuestions[currentQuestionIndex].selectedAnswer = selectedOption;
-      quizQuestions[currentQuestionIndex].score = quizQuestions[currentQuestionIndex].selectedAnswer === quizQuestions[currentQuestionIndex].answer? 1 : 0;
+      quizQuestions[currentQuestionIndex].selected_answer = selectedOption;
+      quizQuestions[currentQuestionIndex].score = quizQuestions[currentQuestionIndex].selected_answer === quizQuestions[currentQuestionIndex].correct_answer? 1 : 0;
       setCurrentQuestionIndex(currentQuestionIndex => currentQuestionIndex - 1);
-      setSelectedOption(quizQuestions[currentQuestionIndex - 1].selectedAnswer);
+      setSelectedOption(quizQuestions[currentQuestionIndex - 1].selected_answer);
     }
   };
 
-  const question = quizQuestions[currentQuestionIndex];
+
+  const question = quizQuestions[currentQuestionIndex] || { correct_answer: '', multiple_choices: [], question_content: '' }; // Fallback for initial state
 
   if (quizCompleted) {
     return (
@@ -112,9 +114,9 @@ const QuizDisplay: React.FC = () => {
   return (
     <div className="quiz-container">
       <h2 className="quiz-title">Question {currentQuestionIndex + 1}</h2>
-      <p className="quiz-question">{question.question}</p>
+      <p className="quiz-question">{question.question_content}</p>
       <div className="quiz-options">
-        {question.options.map((option, index) => (
+        {question.multiple_choices.map((option, index) => (
           <div key={index} className="quiz-option">
             <input 
               type="radio" 
