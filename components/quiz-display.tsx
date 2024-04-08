@@ -59,6 +59,7 @@ const QuizDisplay: React.FC = () => {
           question_id: question.question_id,
           text_id: question.text_id,
           score: 0,
+          selected_answer: '',
           practice_id: 1
         }));
         setQuizQuestions(formattedQuestions);

@@ -8,7 +8,7 @@ import "@/app/globals.css";
 const Mode1Display = () => {
   const [wordsPerMinute, setWordsPerMinute] = useState(300);
   const [backgroundColor, setBackgroundColor] = useState("white");
-  const [textColor, setTextColor] = useState("white");
+  const [textColor, setTextColor] = useState("black");
   const [shortStory, setShortStory] = useState("");
   const [summary, setSummary] = useState("");
   const { selectedTextId } = useSelectedText(); // Use the ID from context
