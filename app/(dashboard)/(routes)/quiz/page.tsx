@@ -1,9 +1,9 @@
 // pages/quiz.tsx or similar file
 import React from 'react';
-import DashboardLayout from '../layout'; // Adjust the path if necessary
+import DashboardLayout from '../layout';
 import QuizDisplay from "@/components/quiz-display";
 import styles from '../dashboard/DashboardPage.module.css';
-import { SelectedTextProvider } from '../../../../contexts/SelectedTextContext'; // Adjust the import path if necessary
+import { SelectedTextProvider } from '@/contexts/SelectedTextContext';
 
 const QuizPage: React.FC = () => {
   return (
