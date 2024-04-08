@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 import requests
 import random
 import json
-from config import DATABASE_URI, PORT, ADMIN_ID
+from config import DATABASE_URI, ADMIN_ID
 
 app = Flask(__name__)
 CORS(app) # See what this does
@@ -23,7 +23,7 @@ class Texts(db.Model):
     text_id = db.Column(db.Integer, primary_key=True)
     keywords = db.Column(db.Text)
     text_content = db.Column(db.Text)
-    user_id = db.Column(db.String(255), db.ForeignKey('Users.user_id'))
+    user_id = db.Column(db.String(50), db.ForeignKey('Users.user_id'))
     quiz_questions = db.relationship('Questions', backref='text', lazy=True)
     title = db.Column(db.Text)
     
@@ -43,7 +43,7 @@ class Questions(db.Model):
     
 class Users(db.Model):
     __tablename__ = 'Users'
-    user_id = db.Column(db.String(255), primary_key=True, nullable=False) #If clerk_id this might need to be a string
+    user_id = db.Column(db.String(50), primary_key=True, nullable=False) #If clerk_id this might need to be a string
     username = db.Column(db.Text)
     texts = db.relationship('Texts', backref='user', lazy=True)
     admin = db.Column(db.Boolean, default=False)
@@ -60,7 +60,7 @@ class PracticeResults(db.Model):
     __tablename__ = 'PracticeResults'
     practice_id = db.Column(db.Integer, primary_key=True)
     text_id = db.Column(db.Integer, db.ForeignKey('Texts.text_id'), nullable=False)
-    user_id = db.Column(db.String(255), db.ForeignKey('Users.user_id'), nullable=False)
+    user_id = db.Column(db.String(50), db.ForeignKey('Users.user_id'), nullable=False)
     wpm = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, default=datetime.today())
     quiz_results = db.relationship('QuizResults', backref='practice', lazy=True)
@@ -275,18 +275,16 @@ def delete_user_data():
 def get_user_analytics():
     user_id = request.json.get('user_id')
     users_data = {}
-    if not user_id_is_valid(user_id):
-        return jsonify({'error': f'Invalid user_id: {user_id}'}), 400
-    user = Users.query.filter_by(user_id=user_id).first()
-    if not user:
+    logged_user = Users.query.filter_by(user_id=user_id).first()
+    if not logged_user:
         return jsonify({'error': f'User with id {user_id} not found'}), 404
-    elif user.admin == False:  
-        users = [user] 
-    elif user.admin == True:
+    elif not logged_user.admin:  
+        users = [logged_user] 
+    elif logged_user.admin:
         users = Users.query.all()
     for user in users:
-        user_id = user.user_id
-        username = user.username
+        user_id = user.user_id 
+        username = user.username if logged_user.admin else "Your data"
         user_results = []
         practice_results = PracticeResults.query.filter_by(user_id=user_id).all()
         if practice_results:
@@ -305,7 +303,7 @@ def get_user_analytics():
                 user_results.append(practice_result_dict)
             user_results = sorted(user_results, key=lambda x: x['timestamp'], reverse=True)
         users_data[username] = user_results          
-    return jsonify(users_data)
+    return jsonify({'usersData': users_data, 'isAdmin': logged_user.admin})
 
 @app.route('/api/analytics/fake', methods=['POST'])
 def populate_with_fake_analytics():
@@ -357,7 +355,7 @@ def submit_reading_speed():
     wpm = data.get('wpm')
 
     # Validate the text_id and user_id as integers
-    if not isinstance(text_id, int) or not isinstance(user_id, int):
+    if not isinstance(text_id, int) or not isinstance(user_id, str):
         return jsonify({'error': 'Invalid text_id or user_id'}), 400
 
     # Validate the wpm as a non-negative number
