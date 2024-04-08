@@ -48,12 +48,13 @@ const Mode2Display = () => {
     useEffect(() => {
         // Directly check if WebGazer is not active to prompt for calibration.
         if (!isWebGazerActive) {
-            sessionStorage.setItem('isCalibrated', 'false');
+            // sessionStorage.setItem('isCalibrated', 'false');
             setShowCalibrationPopup(true);
         } else {
             // Assume WebGazer being active means calibration is done
-            const isCalibrated = sessionStorage.getItem('isCalibrated');
-            setShowCalibrationPopup(isCalibrated !== 'true');
+            // const isCalibrated = sessionStorage.getItem('isCalibrated');
+            // setShowCalibrationPopup(isCalibrated !== 'true');
+            setShowCalibrationPopup(false);
         }
     }, [isWebGazerActive]);
 
