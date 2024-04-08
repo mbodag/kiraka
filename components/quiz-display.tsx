@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useSelectedText } from "../contexts/SelectedTextContext"; // Adjust path if necessary
+import { useSelectedText } from "@/contexts/SelectedTextContext";
+import { usePracticeID } from "@/contexts/PracticeIDContext";
 import { useAuth } from "@clerk/nextjs";
 
 
@@ -21,7 +22,7 @@ interface ProcessedQuizQuestion extends Omit<QuizQuestion, 'multiple_choices'> {
 
 
 // Define your quiz questions and answers
-const sendQuizResults = async (quizQuestions: ProcessedQuizQuestion[], userId: string | null | undefined, practiceId: number | null, textId: number ) => {
+const sendQuizResults = async (quizQuestions: ProcessedQuizQuestion[], userId: string | null | undefined, practiceId: number | null, textId: number | null) => {
   await fetch("/api/save-quiz-results", {
     method: "POST",
         headers: {
@@ -40,7 +41,8 @@ const QuizDisplay: React.FC = () => {
   const [score, setScore] = useState<number>(0);
   const [quizCompleted, setQuizCompleted] = useState<boolean>(false);
   let { selectedTextId } = useSelectedText(); // Use the ID from context
-  const { userId } = useAuth();
+  const { userId } = useAuth()
+  const { practiceId } = usePracticeID();
 
   useEffect(() => {
     const fetchQuizQuestions = async (textId: number) => {
@@ -91,7 +93,7 @@ const QuizDisplay: React.FC = () => {
         }
       });
       setScore(counter);
-      sendQuizResults(quizQuestions, userId, null, 1)
+      sendQuizResults(quizQuestions, userId, practiceId, selectedTextId)
     }
   };
 
