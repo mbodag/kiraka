@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useSelectedText } from "@/contexts/SelectedTextContext";
 import CounterDisplay from "@/components/mode-1/counter-display";
+import styles from '@/app/(dashboard)/(routes)/dashboard/DashboardPage.module.css';
 import '@/app/globals.css';
 import { useWebGazer } from '@/contexts/WebGazerContext';
 
@@ -34,13 +35,11 @@ const Mode2Display = () => {
     const { selectedTextId } = useSelectedText(); // Use the ID from context
     const wordChunks = shortStory.match(new RegExp('.{1,' + maxCharsPerChunk + '}(\\s|$)', 'g')) || [];
 
-
     // Accessing the current state of WebGazer
     const { isWebGazerActive } = useWebGazer();
     const [showCalibrationPopup, setShowCalibrationPopup] = useState(true);
     const [redirecting, setRedirecting] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
-
 
     useEffect(() => {
         const fetchTextById = async (textId: number) => {
@@ -62,7 +61,6 @@ const Mode2Display = () => {
         }
       }, [selectedTextId]);
 
-
     // useEffect(() => {
     //     const isCalibrated = sessionStorage.getItem('isCalibrated');
     //     if (!isCalibrated) {
@@ -81,7 +79,6 @@ const Mode2Display = () => {
             setShowCalibrationPopup(false);
         }
     }, [isWebGazerActive]);
-
 
     const handleGoToCalibration = () => {
         setRedirecting(true); // Set redirecting state to true
@@ -104,7 +101,6 @@ const Mode2Display = () => {
         window.addEventListener('resize', adjustFontSize);
         return () => window.removeEventListener('resize', adjustFontSize);
     }, []);
-
 
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
@@ -130,7 +126,6 @@ const Mode2Display = () => {
         window.addEventListener("keydown", handleKeyPress);
         return () => window.removeEventListener("keydown", handleKeyPress);
     }, [showCalibrationPopup]);
-
 
     // Hook to set up and manage the gaze listener based on WebGazer's activity and pause state
     useEffect(() => {
@@ -229,7 +224,6 @@ const Mode2Display = () => {
         }
     }, [WPM, isPaused, currentChunkIndex, wordChunks, isWebGazerActive]); // Depend on these states and data to trigger updates
 
-
     useEffect(() => {
         const mainContent = document.querySelector('.main-content'); // Target the main content container
         if (mainContent) { // Check if the element exists
@@ -248,7 +242,6 @@ const Mode2Display = () => {
         }
       }, [showCalibrationPopup]);
 
-
     const calculateAndSubmitAverageWpm = () => {
         if (wpmValues.length === 0) return; // Ensure there are recorded WPM values
     
@@ -261,7 +254,6 @@ const Mode2Display = () => {
         // Reset WPM values for a new session.
         setWpmValues([]);
     };
-
 
     // This function takes the average WPM and sends it to the backend.
     const submitReadingSpeed = async (averageWpm: number) => {
@@ -281,64 +273,135 @@ const Mode2Display = () => {
     };
 
 
+    const gapSize = '20px';
 
-      return (
-        <div className="centerContainer" style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            height: "100vh",
-        }}>
-            {
-                showCalibrationPopup && (
-                    <>
-                    <div className="modal-backdrop" style={{ zIndex: 500}}></div>
-                        <div className="modal-content" style={{ 
-                            width: '30vw', 
-                            display: 'flex', 
-                            flexDirection: 'column', // Stack children vertically
-                            alignItems: 'center', // Center children horizontally
-                            justifyContent: 'center', // Center children vertically
-                            textAlign: 'center', // Ensures that text inside children elements is centered, if needed
-                            }}> 
-                            {!redirecting ? (
+    return (
+    <div
+        className={
+        styles.dashboardBg +
+        " flex flex-col justify-start w-full px-4 pt-8 pb-10 min-h-screen"
+        }
+        style={{ paddingTop: "150px" }}
+    >
+
+        {/* Parent div with horizontal layout */}
+        <div
+            className="flex justify-center items-start w-full"
+            style={{ gap: gapSize }}
+          >
+
+            {/* Div for Mode2 Display, taking more space */}
+            <div
+                className="bg-white rounded-lg shadow-lg p-8 pt-2 my-2 flex-1"
+                style={{
+                maxWidth: `calc(100% - var(--sidebar-width) - ${gapSize})`,
+                height: "25vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                }}
+            >
+                <div className="centerContainer" style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100vh",
+                }}>
+                    {
+                        showCalibrationPopup && (
                             <>
-                                <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
-                                    Click the button below to begin calibrating WebGazer and start your speed reading session!
-                                </p>
-                                <button className="GreenButton" onClick={handleGoToCalibration}>
-                                    Go to Calibration
-                                </button>
+                            <div className="modal-backdrop" style={{ zIndex: 500}}></div>
+                                <div className="modal-content" style={{ 
+                                    width: '30vw', 
+                                    display: 'flex', 
+                                    flexDirection: 'column', // Stack children vertically
+                                    alignItems: 'center', // Center children horizontally
+                                    justifyContent: 'center', // Center children vertically
+                                    textAlign: 'center', // Ensures that text inside children elements is centered, if needed
+                                    }}> 
+                                    {!redirecting ? (
+                                    <>
+                                        <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
+                                            Click the button below to begin calibrating WebGazer and start your speed reading session!
+                                        </p>
+                                        <button className="GreenButton" onClick={handleGoToCalibration}>
+                                            Go to Calibration
+                                        </button>
+                                    </>
+                                    ) : (
+                                    <p style={{ fontSize: '18px', textAlign: 'center' }}>
+                                        Redirecting to Calibration Page
+                                        <span className="dot">.</span>
+                                        <span className="dot">.</span>
+                                        <span className="dot">.</span>
+                                    </p>
+                                )}
+                                </div>
                             </>
-                            ) : (
-                            <p style={{ fontSize: '18px', textAlign: 'center' }}>
-                                Redirecting to Calibration Page
-                                <span className="dot">.</span>
-                                <span className="dot">.</span>
-                                <span className="dot">.</span>
-                            </p>
-                        )}
-                        </div>
-                    </>
-                )
-            }
-      
-          {/* The rest of your component's content, keeping the inline styles for alignment and sizing */}
-          <CounterDisplay count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
-            <div className={`wordDisplay ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{ 
-                marginTop: "20px",
-                fontSize: `${fontSize}px`,
-                fontWeight: "bold",
-                maxWidth: "100vw",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-            }}>
-              {wordChunks[currentChunkIndex]}
-          </div>
+                        )
+                    }
+            
+                {/* The rest of your component's content, keeping the inline styles for alignment and sizing */}
+                <CounterDisplay count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
+                    <div className={`wordDisplay ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{ 
+                        marginTop: "20px",
+                        fontSize: `${fontSize}px`,
+                        fontWeight: "bold",
+                        maxWidth: "100vw",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                    }}>
+                    {wordChunks[currentChunkIndex]}
+                    </div>
+                </div>
+            </div>
+
+            {/* Smaller div on the right */}
+            <div
+            className="bg-white rounded-lg shadow-lg p-6 pt-2 my-2"
+            style={{
+              width: `calc(var(--sidebar-width) - ${gapSize})`, // Use template literals to include the gapSize
+              height: '25vh',
+              display: 'flex',
+              flexDirection: 'column', // This will stack children divs on top of each other
+              alignItems: 'center',
+              justifyContent: 'space-evenly', // Adjust spacing between inner divs
+            }}
+            >
+            {/* First inner div for the title "Stats" and a gray horizontal line */}
+                <div
+                    style={{
+                    backgroundColor: 'white',
+                    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
+                    padding: '2px',
+                    borderRadius: '10px',
+                    margin: '5px',
+                    width: '100%', // Adjust width as necessary
+                    textAlign: 'center',
+                    }}
+                >
+                    <h3 className="text-lg font-semibold">Stats</h3>
+                </div>
+
+                {/* Second inner div for the text "Average WPM:" centered */}
+                <div
+                    style={{
+                    width: '90%', // Matches the width of the first inner div for consistency
+                    display: 'flex',
+                    alignItems: 'center', // Center-align the text vertically
+                    justifyContent: 'center', // Center-align the text horizontally
+                    flex: 1, // Take up remaining space
+                    }}
+                >
+                    <p>Average WPM: {/* Dynamic content here */}</p>
+                </div>
+            </div>
         </div>
-      );
+    </div>
+
+    );
 };
 
 export default Mode2Display;
