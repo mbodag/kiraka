@@ -122,13 +122,54 @@ body,
   font-weight: bold;
 }
 
-.monospaced {
+
+/* Define CSS classes for monospaced fonts */
+.monospace-roboto-mono {
+  font-family: 'Roboto Mono', monospace;
+}
+
+.monospace-source-code-pro {
+  font-family: 'Source Code Pro', monospace;
+}
+
+.monospace-fira-code {
+  font-family: 'Fira Code', monospace;
+}
+
+.monospace-space-mono {
   font-family: 'Space Mono', monospace;
+}
+
+.monospace-jetbrains-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.monospace-cousine {
+  font-family: 'Cousine', monospace;
+}
+
+.monospace-inconsolata {
+  font-family: 'Inconsolata', monospace;
+}
+
+.monospace-pt-mono {
+  font-family: 'PT Mono', monospace;
+}
+
+.monospace-ubuntu-mono {
+  font-family: 'Ubuntu Mono', monospace;
+}
+
+.monospaced {
+  font-family: 'Inconsolata', monospace;
 }
 
 .monospaced2 {
   font-family: monospace;
 }
+
+/* End of Defining CSS classes for monospaced fonts */
+
 
 .analytics-font {
   font-family: 'Inconsolata', monospace;

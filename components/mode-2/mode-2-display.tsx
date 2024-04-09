@@ -366,7 +366,7 @@ const Mode2Display = () => {
             
                 {/* The rest of your component's content, keeping the inline styles for alignment and sizing */}
                 <CounterDisplay count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
-                    <div className={`wordDisplay ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{ 
+                    <div className={`wordDisplay monospaced ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{ 
                         marginTop: "20px",
                         fontSize: `${fontSize}px`,
                         fontWeight: "bold",
