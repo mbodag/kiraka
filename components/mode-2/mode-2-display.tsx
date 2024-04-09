@@ -6,6 +6,8 @@ import CounterDisplay from "@/components/mode-1/counter-display";
 import styles from '@/app/(dashboard)/(routes)/dashboard/DashboardPage.module.css';
 import '@/app/globals.css';
 import { useWebGazer } from '@/contexts/WebGazerContext';
+import { TbSquareLetterR } from "react-icons/tb";
+import { RiSpace } from "react-icons/ri";
 
 interface ExtendedWindow extends Window {
     webgazer?: {
@@ -387,14 +389,14 @@ const Mode2Display = () => {
                         style={{
                         backgroundColor: 'white',
                         boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
-                        padding: '2px',
+                        padding: '1px',
                         borderRadius: '10px',
                         margin: '5px',
                         width: '100%', // Adjust width as necessary
                         textAlign: 'center',
                         }}
                     >
-                        <h3 className="text-lg font-semibold">Commands</h3>
+                        <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Commands</h3>
                     </div>
 
                     {/* Second inner div for the text "Average WPM:" centered */}
@@ -403,12 +405,21 @@ const Mode2Display = () => {
                         width: '100%', // Matches the width of the first inner div for consistency
                         display: 'flex',
                         justifyContent: 'center', // Center-align the text horizontally
+                        alignItems: 'center',
                         flexDirection: 'column',
                         flex: 1, // Take up remaining space
                         }}
                     >
-                        <p>Press to Pause/Play {/* Dynamic content here */}</p>
-                        <p>Press to Restart {/* Dynamic content here */}</p>
+                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                            <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
+                            <TbSquareLetterR style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
+                            <p style={{ margin: '0'}}>to Restart</p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)' , marginBottom: '5px' }}>
+                            <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
+                            <RiSpace style={{ marginRight: '5px', color: '#606060', fontSize: '26px' }} />
+                            <p style={{ margin: '0' }}>to Pause/Play</p>
+                        </div>
                     </div>
                 </div>
 
@@ -429,14 +440,14 @@ const Mode2Display = () => {
                         style={{
                         backgroundColor: 'white',
                         boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
-                        padding: '2px',
+                        padding: '1px',
                         borderRadius: '10px',
                         margin: '5px',
                         width: '100%', // Adjust width as necessary
                         textAlign: 'center',
                         }}
                     >
-                        <h3 className="text-lg font-semibold">Stats</h3>
+                        <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Stats</h3>
                     </div>
 
                     {/* Second inner div for the text "Average WPM:" centered */}
@@ -445,10 +456,11 @@ const Mode2Display = () => {
                         width: '100%', // Matches the width of the first inner div for consistency
                         display: 'flex',
                         alignItems: 'center', // Center-align the text vertically
+                        justifyContent: 'center',
                         flex: 1, // Take up remaining space
                         }}
                     >
-                        <p>Average WPM: {/* Dynamic content here */}</p>
+                        <p style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }}>Average WPM: {/* Dynamic content here */}</p>
                     </div>
                 </div>
             </div>
