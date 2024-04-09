@@ -23,7 +23,7 @@ const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English lan
 
 const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
-    const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. `;
+    // const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. `;
 
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
     const [startWPM, setstartWPM] = useState(300); 
@@ -35,7 +35,7 @@ const Mode2Display = () => {
     const [fontSize, setFontSize] = useState(44); // Start with a default font size
     const maxCharsPerChunk = wordsPerChunk * avgCharCountPerWord
     const gazeTimeRef = useRef<{ rightSide: number; total: number }>({ rightSide: 0, total: 0 });
-    // const [shortStory, setShortStory] = useState("");
+    const [shortStory, setShortStory] = useState("");
     const { selectedTextId } = useSelectedText(); // Use the ID from context
     const wordChunks = shortStory.match(new RegExp('.{1,' + maxCharsPerChunk + '}(\\s|$)', 'g')) || [];
 
@@ -45,25 +45,25 @@ const Mode2Display = () => {
     const [redirecting, setRedirecting] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
 
-    // useEffect(() => {
-    //     const fetchTextById = async (textId: number) => {
-    //       try {
-    //         const response = await fetch(`/api/texts/${textId}`);
-    //         if (!response.ok) {
-    //           throw new Error('Network response was not ok');
-    //         }
-    //         const data = await response.json();
-    //         console.log(data.quiz_questions);
-    //         setShortStory(data.text_content);
-    //       } catch (error) {
-    //         console.error('Error fetching text:', error);
-    //       }
-    //     };
+    useEffect(() => {
+        const fetchTextById = async (textId: number) => {
+          try {
+            const response = await fetch(`/api/texts/${textId}`);
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            console.log(data.quiz_questions);
+            setShortStory(data.text_content);
+          } catch (error) {
+            console.error('Error fetching text:', error);
+          }
+        };
     
-    //     if (selectedTextId) {
-    //       fetchTextById(selectedTextId);
-    //     }
-    //   }, [selectedTextId]);
+        if (selectedTextId) {
+          fetchTextById(selectedTextId);
+        }
+      }, [selectedTextId]);
 
     useEffect(() => {
         const isCalibrated = sessionStorage.getItem('isCalibrated');
@@ -76,7 +76,7 @@ const Mode2Display = () => {
         // Directly check if WebGazer is not active to prompt for calibration.
         if (!isWebGazerActive) {
             // sessionStorage.setItem('isCalibrated', 'false');
-            setShowCalibrationPopup(false);
+            setShowCalibrationPopup(true);
         } else {
             // Assume WebGazer being active means calibration is done
             // const isCalibrated = sessionStorage.getItem('isCalibrated');
