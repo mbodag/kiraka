@@ -23,17 +23,19 @@ const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English lan
 
 const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
-    //const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. The relentless pursuit of productivity often leads to increased stress and a higher risk of burnout. It's crucial to set clear boundaries between work responsibilities and personal life. Effective time management and task prioritization are keys to reducing work-related pressure. These strategies allow individuals to enjoy a more fulfilling life both inside and outside the workplace. <¶> Engaging in hobbies, pursuing personal interests, and spending quality time with family and friends are essential components of a well-rounded life. These activities offer opportunities for relaxation and personal growth, contributing to overall happiness and satisfaction. <¶> On the professional front, employers play a significant role in promoting a healthy work environment. This includes offering flexible working conditions, encouraging regular breaks, and recognizing the importance of mental health. Supportive workplace cultures that value employee well-being lead to increased productivity, greater job satisfaction, and lower turnover rates. <¶> Ultimately, achieving a balance between work and life leads to improved mental and physical health, heightened job performance, and a richer, more rewarding life experience. It's about finding a rhythm that allows for both career progression and personal contentment, ensuring long-term happiness and success.`;
+    const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. `;
 
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
     const [startWPM, setstartWPM] = useState(300); 
     const [WPM, setWPM] = useState(startWPM); 
     const [wpmValues, setWpmValues] = useState<number[]>([]); // To store the WPMs values and take their average at the end of the session; to be sent to the database
+    const [averageWPM, setAverageWPM] = useState<number | null>(null);
+
     const [isPaused, setIsPaused] = useState(true); // Add a state to track whether the flashing is paused
     const [fontSize, setFontSize] = useState(44); // Start with a default font size
     const maxCharsPerChunk = wordsPerChunk * avgCharCountPerWord
     const gazeTimeRef = useRef<{ rightSide: number; total: number }>({ rightSide: 0, total: 0 });
-    const [shortStory, setShortStory] = useState("");
+    // const [shortStory, setShortStory] = useState("");
     const { selectedTextId } = useSelectedText(); // Use the ID from context
     const wordChunks = shortStory.match(new RegExp('.{1,' + maxCharsPerChunk + '}(\\s|$)', 'g')) || [];
 
@@ -43,37 +45,38 @@ const Mode2Display = () => {
     const [redirecting, setRedirecting] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
 
-    useEffect(() => {
-        const fetchTextById = async (textId: number) => {
-          try {
-            const response = await fetch(`/api/texts/${textId}`);
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            console.log(data.quiz_questions);
-            setShortStory(data.text_content);
-          } catch (error) {
-            console.error('Error fetching text:', error);
-          }
-        };
-    
-        if (selectedTextId) {
-          fetchTextById(selectedTextId);
-        }
-      }, [selectedTextId]);
-
     // useEffect(() => {
-    //     const isCalibrated = sessionStorage.getItem('isCalibrated');
-    //     if (!isCalibrated) {
-    //       setShowCalibrationPopup(true);
+    //     const fetchTextById = async (textId: number) => {
+    //       try {
+    //         const response = await fetch(`/api/texts/${textId}`);
+    //         if (!response.ok) {
+    //           throw new Error('Network response was not ok');
+    //         }
+    //         const data = await response.json();
+    //         console.log(data.quiz_questions);
+    //         setShortStory(data.text_content);
+    //       } catch (error) {
+    //         console.error('Error fetching text:', error);
+    //       }
+    //     };
+    
+    //     if (selectedTextId) {
+    //       fetchTextById(selectedTextId);
     //     }
-    //   }, []);
+    //   }, [selectedTextId]);
+
+    useEffect(() => {
+        const isCalibrated = sessionStorage.getItem('isCalibrated');
+        if (!isCalibrated) {
+          setShowCalibrationPopup(true);
+        }
+      }, []);
+
     useEffect(() => {
         // Directly check if WebGazer is not active to prompt for calibration.
         if (!isWebGazerActive) {
             // sessionStorage.setItem('isCalibrated', 'false');
-            setShowCalibrationPopup(true);
+            setShowCalibrationPopup(false);
         } else {
             // Assume WebGazer being active means calibration is done
             // const isCalibrated = sessionStorage.getItem('isCalibrated');
@@ -120,6 +123,7 @@ const Mode2Display = () => {
                 setIsPaused(true); // Pause the session
                 setWpmValues([]); // Reset the stored WPM values
                 setWPM(startWPM); // Reset the WPM value
+                setAverageWPM(null); // Reset the averageWPM value
             } else if (event.key === " ") {
                 event.preventDefault(); // Prevent default action (e.g., page scrolling)
                 setIsPaused((prevIsPaused) => !prevIsPaused); // Toggle pause/start
@@ -203,14 +207,18 @@ const Mode2Display = () => {
                     }
                     // Store the new WPM for later analysis
                     setWpmValues(prevValues => [...prevValues, newWPM]);
+                } else {
+                    // If WebGazer is not active, simply add the current WPM to the values for later analysis
+                    setWpmValues(prevValues => [...prevValues, WPM]);
                 }
 
                 // Move to the next chunk or end the session
                 setCurrentChunkIndex((prevIndex) => {
                     // Check if we've reached the end of the chunks
                     if (prevIndex + 1 >= wordChunks.length) {
+                        setWpmValues(prevValues => [...prevValues, WPM]);
+                        console.log("final")
                         clearInterval(timer); // Stop the timer
-                        calculateAndSubmitAverageWpm(); // Submit the average WPM
                         return prevIndex; // Keep the index unchanged to avoid overflow
                     }
                     return prevIndex + 1; // Move to the next chunk
@@ -225,6 +233,13 @@ const Mode2Display = () => {
             return () => clearInterval(timer);
         }
     }, [WPM, isPaused, currentChunkIndex, wordChunks, isWebGazerActive]); // Depend on these states and data to trigger updates
+
+    useEffect(() => {
+        // Check if we've reached the end and are not just paused temporarily.
+        if (currentChunkIndex >= wordChunks.length - 1) {
+            calculateAndSubmitAverageWpm();
+        }
+    }, [currentChunkIndex, wordChunks.length]);
 
     useEffect(() => {
         const mainContent = document.querySelector('.main-content'); // Target the main content container
@@ -245,20 +260,24 @@ const Mode2Display = () => {
       }, [showCalibrationPopup]);
 
     const calculateAndSubmitAverageWpm = () => {
-        if (wpmValues.length === 0) return; // Ensure there are recorded WPM values
+        if (averageWPM !== null || wpmValues.length === 0) return;// Ensure there are recorded WPM values
     
         const sum = wpmValues.reduce((acc, cur) => acc + cur, 0);
-        const averageWpm = sum / wpmValues.length;
-    
-        // Call the function to submit the average WPM to the backend
-        submitReadingSpeed(averageWpm);
+        console.log(wpmValues.length)
+        console.log(wpmValues)
+        const calculatedAverageWpm = Math.round(sum / wpmValues.length);
+        console.log(calculatedAverageWpm)
+
+        // Update state and submit.
+        setAverageWPM(calculatedAverageWpm);
+        submitReadingSpeed(calculatedAverageWpm); // Use the freshly calculated value.
     
         // Reset WPM values for a new session.
         setWpmValues([]);
     };
 
     // This function takes the average WPM and sends it to the backend.
-    const submitReadingSpeed = async (averageWpm: number) => {
+    const submitReadingSpeed = async (averageWpm: number | null) => {
         await fetch("/api/save-reading-speed", {
             method: "POST",
             headers: {
@@ -386,6 +405,7 @@ const Mode2Display = () => {
                 >
                 {/* First inner div for the title "Stats" and a gray horizontal line */}
                     <div
+                        className={showCalibrationPopup ? 'blur-effect' : ''}
                         style={{
                         backgroundColor: 'white',
                         boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
@@ -410,12 +430,12 @@ const Mode2Display = () => {
                         flex: 1, // Take up remaining space
                         }}
                     >
-                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                        <div className={showCalibrationPopup ? 'blur-effect' : ''} style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
                             <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                             <TbSquareLetterR style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
                             <p style={{ margin: '0'}}>to Restart</p>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)' , marginBottom: '5px' }}>
+                        <div className={showCalibrationPopup ? 'blur-effect' : ''} style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)' , marginBottom: '5px' }}>
                             <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                             <RiSpace style={{ marginRight: '5px', color: '#606060', fontSize: '26px' }} />
                             <p style={{ margin: '0' }}>to Pause/Play</p>
@@ -437,6 +457,7 @@ const Mode2Display = () => {
                 >
                 {/* First inner div for the title "Stats" and a gray horizontal line */}
                     <div
+                        className={showCalibrationPopup ? 'blur-effect' : ''}
                         style={{
                         backgroundColor: 'white',
                         boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
@@ -460,7 +481,9 @@ const Mode2Display = () => {
                         flex: 1, // Take up remaining space
                         }}
                     >
-                        <p style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }}>Average WPM: {/* Dynamic content here */}</p>
+                        <p className={showCalibrationPopup ? 'blur-effect' : ''} style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }}>
+                        Average WPM: {averageWPM !== null ? averageWPM : <span style={{ fontStyle: 'italic', color: 'rgb(150, 150, 150)' }}>Pending</span>}
+                        </p>
                     </div>
                 </div>
             </div>
