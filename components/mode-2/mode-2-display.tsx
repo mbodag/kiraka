@@ -18,13 +18,12 @@ interface ExtendedWindow extends Window {
 const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
 
-const startWPM = 300
-
 const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
     //const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. The relentless pursuit of productivity often leads to increased stress and a higher risk of burnout. It's crucial to set clear boundaries between work responsibilities and personal life. Effective time management and task prioritization are keys to reducing work-related pressure. These strategies allow individuals to enjoy a more fulfilling life both inside and outside the workplace. <¶> Engaging in hobbies, pursuing personal interests, and spending quality time with family and friends are essential components of a well-rounded life. These activities offer opportunities for relaxation and personal growth, contributing to overall happiness and satisfaction. <¶> On the professional front, employers play a significant role in promoting a healthy work environment. This includes offering flexible working conditions, encouraging regular breaks, and recognizing the importance of mental health. Supportive workplace cultures that value employee well-being lead to increased productivity, greater job satisfaction, and lower turnover rates. <¶> Ultimately, achieving a balance between work and life leads to improved mental and physical health, heightened job performance, and a richer, more rewarding life experience. It's about finding a rhythm that allows for both career progression and personal contentment, ensuring long-term happiness and success.`;
 
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
+    const [startWPM, setstartWPM] = useState(300); 
     const [WPM, setWPM] = useState(startWPM); 
     const [wpmValues, setWpmValues] = useState<number[]>([]); // To store the WPMs values and take their average at the end of the session; to be sent to the database
     const [isPaused, setIsPaused] = useState(true); // Add a state to track whether the flashing is paused
@@ -139,7 +138,7 @@ const Mode2Display = () => {
             const extendedWindow: ExtendedWindow = window as ExtendedWindow;
             extendedWindow.webgazer?.setGazeListener((data: any) => {
                 if (data && data.x) {
-                const sentenceDisplayElement = document.querySelector('.wordDisplay');
+                    const sentenceDisplayElement = document.querySelector('.wordDisplay');
                     if (sentenceDisplayElement) {
                         const { left, width } = sentenceDisplayElement.getBoundingClientRect();
                         const rightBoundary = left + width * 0.7; // Adjusting to 70% to consider the rightmost part
@@ -149,13 +148,13 @@ const Mode2Display = () => {
 
                         // Check if gaze is in the rightmost part
                         if (data.x >= rightBoundary) {
-                        gazeTimeRef.current.rightSide += 1;
+                            gazeTimeRef.current.rightSide += 1;
                         }
                     }
                 }
             });
-
-        return () => extendedWindow.webgazer?.clearGazeListener();
+ 
+            return () => extendedWindow.webgazer?.clearGazeListener();
         }
     }, [isWebGazerActive, isPaused]);
 
