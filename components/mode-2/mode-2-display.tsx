@@ -132,90 +132,102 @@ const Mode2Display = () => {
     }, [showCalibrationPopup]);
 
 
-    // New useEffect to handle gaze data and update WPM accordingly
+    // Hook to set up and manage the gaze listener based on WebGazer's activity and pause state
     useEffect(() => {
+        // Only proceed if WebGazer is active, the component is not paused, and we're in a browser environment
         if (isWebGazerActive && !isPaused && typeof window !== "undefined") {
+            // Cast the window object to an ExtendedWindow type to access custom properties like webgazer
             const extendedWindow: ExtendedWindow = window as ExtendedWindow;
+            // Use optional chaining to safely call setGazeListener if webgazer is defined
             extendedWindow.webgazer?.setGazeListener((data: any) => {
+                // Proceed if there's gaze data and it includes an x-coordinate
                 if (data && data.x) {
+                    // Find the element displaying the sentence to track gaze within its bounds
                     const sentenceDisplayElement = document.querySelector('.wordDisplay');
                     if (sentenceDisplayElement) {
+                        // Get the element's position and size
                         const { left, width } = sentenceDisplayElement.getBoundingClientRect();
-                        const rightBoundary = left + width * 0.7; // Adjusting to 70% to consider the rightmost part
+                        // Calculate a boundary (70% from the left) to define the "rightmost part"
+                        const rightBoundary = left + width * 0.7;
 
-                        // Increment total gaze time
+                        // Increment the total gaze time counter
                         gazeTimeRef.current.total += 1;
 
-                        // Check if gaze is in the rightmost part
+                        // If the gaze is to the right of the boundary, increment the right-side gaze counter
                         if (data.x >= rightBoundary) {
                             gazeTimeRef.current.rightSide += 1;
                         }
                     }
                 }
             });
- 
+
+            // Cleanup function to clear the gaze listener when the component unmounts or dependencies change
             return () => extendedWindow.webgazer?.clearGazeListener();
         }
-    }, [isWebGazerActive, isPaused]);
+    }, [isWebGazerActive, isPaused]); // Depend on WebGazer's activity and pause state
+    
 
-  
-    // Adjusting the useEffect for chunk display and WPM update
+    // Hook for managing word display based on chunk index, updating WPM based on gaze data
     useEffect(() => {
+        // Only proceed if not paused and there are more chunks to display
         if (!isPaused && currentChunkIndex < wordChunks.length) {
-            // Converts WPM to seconds per word.
+            // Convert WPM to words per second for timing calculations
             const wordsPerSecond = WPM / 60;
-            
-            // New function to calculate display time for a chunk, excluding short words.
+
+            // Function to calculate how long to display a chunk of text, based on its length
             const calculateDisplayTime = (chunk: string) => {
-                const characterCount = chunk.length;
-                // Divides by 5 to find the equivalent "word" count based on the provided definition
-                const wordCount = characterCount / 5;
-                // Calculates how many seconds to display this chunk, converting to milliseconds for setInterval
+                // Calculate the equivalent word count using an average character count per word
+                const wordCount = chunk.length / 5;
+                // Return the display time in milliseconds
                 return (wordCount / wordsPerSecond) * 1000;
             };
-    
-            // Calculates interval duration for the current chunk.
+
+            // Determine how long to display the current chunk
             const intervalDuration = calculateDisplayTime(wordChunks[currentChunkIndex]);
 
-        const timer = setInterval(() => {
-            if (isWebGazerActive) {
-                // Calculate percentage of time spent looking at the right side
-                const gazeRightPercentage = (gazeTimeRef.current.rightSide / gazeTimeRef.current.total) * 100;
-                let newWPM = WPM;
+            // Set up an interval to move through the chunks based on calculated display times
+            const timer = setInterval(() => {
+                // Check gaze data and adjust WPM if WebGazer is active
+                if (isWebGazerActive) {
+                    // Calculate the percentage of time spent looking at the right side of the text
+                    const gazeRightPercentage = (gazeTimeRef.current.rightSide / gazeTimeRef.current.total) * 100;
+                    let newWPM = WPM;
 
-                // NEW: Adjust WPM based on gazeRightPercentage and ensure it's an integer
-                if (gazeRightPercentage > 50) {
-                    // Increase WPM by 10% and round to nearest integer
-                    newWPM = Math.round(WPM +50);
-                } else {
-                    // Decrease WPM by 10% and round to nearest integer
-                    newWPM = Math.round(WPM -30);
+                    // Adjust WPM based on the gaze direction (increase if gazing right, decrease if not)
+                    if (gazeRightPercentage > 50) {
+                        newWPM = Math.round(WPM + 50);
+                    } else {
+                        newWPM = Math.round(WPM - 30);
+                    }
+
+                    // Apply the new WPM value if it represents a significant change
+                    if (Math.abs(newWPM - WPM) >= 1) {
+                        setWPM(newWPM);
+                    }
+                    // Store the new WPM for later analysis
+                    setWpmValues(prevValues => [...prevValues, newWPM]);
                 }
 
-                // NEW: Only update if there's a significant change
-                if (Math.abs(newWPM - WPM) >= 1) {
-                    setWPM(newWPM);
-                }
-                // Add the new WPM value to the wpmValues array.
-                setWpmValues(prevValues => [...prevValues, newWPM]);
-            }
+                // Move to the next chunk or end the session
+                setCurrentChunkIndex((prevIndex) => {
+                    // Check if we've reached the end of the chunks
+                    if (prevIndex + 1 >= wordChunks.length) {
+                        clearInterval(timer); // Stop the timer
+                        calculateAndSubmitAverageWpm(); // Submit the average WPM
+                        return prevIndex; // Keep the index unchanged to avoid overflow
+                    }
+                    return prevIndex + 1; // Move to the next chunk
+                });
 
-            // Prepare for next sentence
-            setCurrentChunkIndex((prevIndex) => {
-                if (prevIndex + 1 >= wordChunks.length) {
-                    clearInterval(timer); // Stop the interval when reaching the end
-                    calculateAndSubmitAverageWpm(); // Calculate and submit average WPM at the end of the session
-                    return prevIndex; // Keep the index at the last element to avoid looping
-                }
-                return prevIndex + 1;
-            });
-            gazeTimeRef.current = { rightSide: 0, total: 0 }; // Reset gaze data
+                // Reset gaze data counters for the next interval
+                gazeTimeRef.current = { rightSide: 0, total: 0 };
 
-        }, intervalDuration);
+            }, intervalDuration); // Use the calculated duration for the interval
 
-        return () => clearInterval(timer);
+            // Cleanup function to clear the interval when the component unmounts or dependencies change
+            return () => clearInterval(timer);
         }
-    }, [WPM, isPaused, currentChunkIndex, wordChunks, isWebGazerActive]);
+    }, [WPM, isPaused, currentChunkIndex, wordChunks, isWebGazerActive]); // Depend on these states and data to trigger updates
 
 
     useEffect(() => {

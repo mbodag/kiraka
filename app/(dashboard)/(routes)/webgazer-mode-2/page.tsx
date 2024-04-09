@@ -34,20 +34,29 @@ export default async function WebgazerPage() {
     }
   }
 
+
+  const gapSize = '15px';
+  
   return (
     <SelectedTextProvider>
-      <DashboardLayout navbarType="standard-auto">
+    <DashboardLayout navbarType="standard-auto">
+      <div
+        className={
+          styles.dashboardBg +
+          " flex flex-col justify-start w-full pt-8 pb-10 min-h-screen"
+        }
+        style={{ paddingTop: "150px" }}
+      >
+        {/* Parent div with horizontal layout */}
         <div
-          className={
-            styles.dashboardBg +
-            " flex flex-col justify-start w-full pt-8 pb-10 min-h-screen"
-          }
-          style={{ paddingTop: "150px" }}
+          className="flex justify-center items-start w-full px-6"
+          style={{ gap: gapSize }} // Adjust the gap as needed
         >
+          {/* Div for Mode2Display, taking more space */}
           <div
-            className="bg-white rounded-lg shadow-lg mx-auto p-8 pt-2 my-2"
+            className="bg-white rounded-lg shadow-lg p-8 pt-2 my-2 flex-1"
             style={{
-              width: "90%",
+              maxWidth: `calc(100% - var(--sidebar-width) - ${gapSize})`, // Adjust based on your preference
               height: "25vh",
               display: "flex",
               alignItems: "center",
@@ -56,9 +65,24 @@ export default async function WebgazerPage() {
           >
             <Mode2Display />
           </div>
+
+          {/* Smaller div on the right with width of var(--sidebar-width) minus gap */}
+          <div
+            className="bg-white rounded-lg shadow-lg p-8 pt-2 my-2"
+            style={{
+              width: `calc(var(--sidebar-width) - ${gapSize})`,
+              height: "25vh",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {/* Content of the smaller div goes here */}
+          </div>
         </div>
-      </DashboardLayout>
-    </SelectedTextProvider>
+      </div>
+    </DashboardLayout>
+  </SelectedTextProvider>
   );
 }
 
