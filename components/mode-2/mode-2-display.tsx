@@ -273,7 +273,8 @@ const Mode2Display = () => {
     };
 
 
-    const gapSize = '20px';
+    const gapBetweenSize = '10px';
+    const gapEdgeSize = '15px';
 
     return (
     <div
@@ -287,14 +288,14 @@ const Mode2Display = () => {
         {/* Parent div with horizontal layout */}
         <div
             className="flex justify-center items-start w-full"
-            style={{ gap: gapSize }}
+            style={{ gap: gapBetweenSize }}
           >
 
             {/* Div for Mode2 Display, taking more space */}
             <div
                 className="bg-white rounded-lg shadow-lg p-8 pt-2 my-2 flex-1"
                 style={{
-                maxWidth: `calc(100% - var(--sidebar-width) - ${gapSize})`,
+                maxWidth: `calc(100% - var(--sidebar-width) - ${gapEdgeSize})`,
                 height: "25vh",
                 display: "flex",
                 alignItems: "center",
@@ -358,44 +359,97 @@ const Mode2Display = () => {
                 </div>
             </div>
 
-            {/* Smaller div on the right */}
-            <div
-            className="bg-white rounded-lg shadow-lg p-6 pt-2 my-2"
-            style={{
-              width: `calc(var(--sidebar-width) - ${gapSize})`, // Use template literals to include the gapSize
-              height: '25vh',
-              display: 'flex',
-              flexDirection: 'column', // This will stack children divs on top of each other
-              alignItems: 'center',
-              justifyContent: 'space-evenly', // Adjust spacing between inner divs
-            }}
-            >
-            {/* First inner div for the title "Stats" and a gray horizontal line */}
+
+            {/* Smaller divs on the right */}
+            <div className="my-2" style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "space-between", // This will evenly space the children vertically
+                    height: "25vh",
+            }}>
+
+                {/* div 1 */}
                 <div
-                    style={{
-                    backgroundColor: 'white',
-                    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
-                    padding: '2px',
-                    borderRadius: '10px',
-                    margin: '5px',
-                    width: '100%', // Adjust width as necessary
-                    textAlign: 'center',
-                    }}
+                className="bg-white rounded-lg shadow-lg p-6 pt-2"
+                style={{
+                width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
+                display: 'flex',
+                flexDirection: 'column', // This will stack children divs on top of each other
+                alignItems: 'center',
+                justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                flexGrow: 1,
+                marginBottom: `${gapBetweenSize}`,
+                }}
                 >
-                    <h3 className="text-lg font-semibold">Stats</h3>
+                {/* First inner div for the title "Stats" and a gray horizontal line */}
+                    <div
+                        style={{
+                        backgroundColor: 'white',
+                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
+                        padding: '2px',
+                        borderRadius: '10px',
+                        margin: '5px',
+                        width: '100%', // Adjust width as necessary
+                        textAlign: 'center',
+                        }}
+                    >
+                        <h3 className="text-lg font-semibold">Commands</h3>
+                    </div>
+
+                    {/* Second inner div for the text "Average WPM:" centered */}
+                    <div
+                        style={{
+                        width: '100%', // Matches the width of the first inner div for consistency
+                        display: 'flex',
+                        justifyContent: 'center', // Center-align the text horizontally
+                        flexDirection: 'column',
+                        flex: 1, // Take up remaining space
+                        }}
+                    >
+                        <p>Press to Pause/Play {/* Dynamic content here */}</p>
+                        <p>Press to Restart {/* Dynamic content here */}</p>
+                    </div>
                 </div>
 
-                {/* Second inner div for the text "Average WPM:" centered */}
+                {/* div 2 */}
                 <div
-                    style={{
-                    width: '90%', // Matches the width of the first inner div for consistency
-                    display: 'flex',
-                    alignItems: 'center', // Center-align the text vertically
-                    justifyContent: 'center', // Center-align the text horizontally
-                    flex: 1, // Take up remaining space
-                    }}
+                className="bg-white rounded-lg shadow-lg p-6 pt-2"
+                style={{
+                width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
+                display: 'flex',
+                flexDirection: 'column', // This will stack children divs on top of each other
+                alignItems: 'center',
+                justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                flexGrow: 1, 
+                }}
                 >
-                    <p>Average WPM: {/* Dynamic content here */}</p>
+                {/* First inner div for the title "Stats" and a gray horizontal line */}
+                    <div
+                        style={{
+                        backgroundColor: 'white',
+                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
+                        padding: '2px',
+                        borderRadius: '10px',
+                        margin: '5px',
+                        width: '100%', // Adjust width as necessary
+                        textAlign: 'center',
+                        }}
+                    >
+                        <h3 className="text-lg font-semibold">Stats</h3>
+                    </div>
+
+                    {/* Second inner div for the text "Average WPM:" centered */}
+                    <div
+                        style={{
+                        width: '100%', // Matches the width of the first inner div for consistency
+                        display: 'flex',
+                        alignItems: 'center', // Center-align the text vertically
+                        flex: 1, // Take up remaining space
+                        }}
+                    >
+                        <p>Average WPM: {/* Dynamic content here */}</p>
+                    </div>
                 </div>
             </div>
         </div>
