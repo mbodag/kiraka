@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 import requests
 import random
 import json
-from config import DATABASE_URI, ADMIN_ID
+from api.config import DATABASE_URI, ADMIN_ID
 
 app = Flask(__name__)
 CORS(app) # See what this does
