@@ -198,6 +198,7 @@ export default function WebgazerCalibration() {
               background: 'none', // Make the button background transparent
               border: 'none', // Remove button border
               cursor: "pointer",
+              zIndex: 9999,
             }}
             disabled={point.clicks >= 5}
           >

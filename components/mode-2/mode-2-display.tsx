@@ -22,6 +22,8 @@ interface ExtendedWindow extends Window {
 // and estimating the average character count per word
 const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
+const minWPM = 200;
+const maxWPM = 800; // This is an approximation (~4.7 for English language)
 
 const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
@@ -57,7 +59,9 @@ const Mode2Display = () => {
             }
             const data = await response.json();
             console.log(data.quiz_questions);
-            setShortStory(data.text_content);
+            // Replace newlines (\n) with spaces and set the cleaned text
+            const cleanedText = data.text_content.replace(/\n+/g, ' ');
+            setShortStory(cleanedText);
           } catch (error) {
             console.error('Error fetching text:', error);
           }
@@ -118,9 +122,9 @@ const Mode2Display = () => {
               }
 
             if (event.key === "ArrowRight") {
-                setWPM((prevWPM) => Math.min(prevWPM + 20, 1100)); // Increase dynamicWPM, max 1100
+                setWPM((prevWPM) => Math.min(prevWPM + 20, maxWPM)); // Increase dynamicWPM, max 1100
             } else if (event.key === "ArrowLeft") {
-                setWPM((prevWPM) => Math.max(prevWPM - 20, 50)); // Decrease dynamicWPM, min 50
+                setWPM((prevWPM) => Math.max(prevWPM - 20, minWPM)); // Decrease dynamicWPM, min 50
             } else if (event.key === "R" || event.key === "r") {
                 setCurrentChunkIndex(0); // Restart from the first chunk
                 setIsPaused(true); // Pause the session
@@ -199,9 +203,9 @@ const Mode2Display = () => {
 
                     // Adjust WPM based on the gaze direction (increase if gazing right, decrease if not)
                     if (gazeRightPercentage > 50) {
-                        newWPM = Math.round(WPM + 50);
+                        newWPM = Math.min(Math.round(WPM + 50), maxWPM);
                     } else {
-                        newWPM = Math.round(WPM - 30);
+                        newWPM = Math.max(Math.round(WPM - 30), minWPM);
                     }
 
                     // Apply the new WPM value if it represents a significant change
@@ -352,6 +356,7 @@ const Mode2Display = () => {
                                 <div className="modal-content" style={{ 
                                     width: '30vw', 
                                     display: 'flex', 
+                                    borderRadius: '20px' ,
                                     flexDirection: 'column', // Stack children vertically
                                     alignItems: 'center', // Center children horizontally
                                     justifyContent: 'center', // Center children vertically
