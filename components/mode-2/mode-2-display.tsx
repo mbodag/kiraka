@@ -140,6 +140,7 @@ const Mode2Display = () => {
         return () => window.removeEventListener("keydown", handleKeyPress);
     }, [showCalibrationPopup]);
 
+    
     // Hook to set up and manage the gaze listener based on WebGazer's activity and pause state
     useEffect(() => {
         // Only proceed if WebGazer is active, the component is not paused, and we're in a browser environment
