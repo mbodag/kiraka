@@ -32,7 +32,7 @@ const Sidebar = () => {
                 objectFit="contain"
               />
             </div>
-            <span className="text-2xl font-bold">Kiraka.ai</span>
+            <span className="monospace-jetbrains-mono text-2xl font-bold">Kiraka.ai</span>
           </div>
         </Link>
         <hr className="border-t border-gray-700 mt-2 w-3/4 mx-auto" />{" "}
@@ -40,12 +40,18 @@ const Sidebar = () => {
       </div>
 
       {/* Upload button aligned to the left */}
-      <div className="px-3 py-2 mb-4 bg-gray-800">
+      {/* <div className="px-3 py-2 mb-4 bg-gray-800">
         <Link href="/upload">
           <button className="text-sm w-full max-w-xs p-2 font-medium rounded-lg hover:bg-gray-700 transition sidebar-button-font">
             Upload Files
           </button>
         </Link>
+      </div> */}
+      {/* TEMPORARY REPLACEMENT FOR THE UPLOAD BUTTON FOR MVP LAUNCH */}
+      <div className="flex justify-center items-center px-3 py-2 mb-4 bg-gray-800">
+        <p className="text-md p-2 font-medium rounded-lg">
+          Your Texts
+        </p>
       </div>
 
       {/* Document buttons aligned to the left */}
