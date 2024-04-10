@@ -20,11 +20,6 @@ interface UserRecord {
   quizScore: number;
 }
 
-interface UserData {
-  usersData: UserRecord[];
-  isAdmin: boolean
-}
-
 interface UserPlotProps {
   userName: string;
   userData: { [key: string]: UserRecord[] };
@@ -57,20 +52,28 @@ const AnalyticsPage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState<string[]>([]);
-  const [userData, setUserData] = useState<UserRecord[]>([]);
+  const [userData, setUserData] = useState<{ [key: string]: UserRecord[] }>({});
   const [filteredUsers, setFilteredUsers] = useState(users);
+  const [isAdmin, setAdmin] = useState(false)
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { userId } = useAuth();
 
 
   useEffect(() => {
     const fetchAnalyticsData = async () => {
-      const response = await getAnalytics(userId);
+      const response = await getAnalytics(userId)
+      console.log('Response:', response);
       setUserData(response.usersData);
       setUsers(Object.keys(response.usersData));
-    };
+      setAdmin(response.isAdmin)
+      console.log('Updated state:', userData, users, isAdmin);
+        };
     fetchAnalyticsData();
   }, []); // Empty dependency array means this effect runs once on mount and not on updates
+
+  useEffect(() => {
+    console.log('Updated state:', userData, users, isAdmin);
+  }, [userData, users, isAdmin]);
 
   const scrollUsers = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
@@ -84,7 +87,7 @@ const AnalyticsPage: React.FC = () => {
     // Filter users as per the search term
     const newFilteredUsers = users.filter(user => user.toLowerCase().includes(searchTerm.toLowerCase()));
     setFilteredUsers(newFilteredUsers);
-  }, [searchTerm]); // Re-run the effect whenever searchTerm changes
+  }, [searchTerm, userData]); // Re-run the effect whenever searchTerm changes
 
 
     // UserPlot component
@@ -194,7 +197,7 @@ const AnalyticsPage: React.FC = () => {
       <h1 className="text-5xl font-bold mb-4">Dashboard Analytics</h1>
       
       {/* Search bar for filtering plots, with reduced width */}
-      <div className="flex justify-center mt-6 mb-6">
+      {isAdmin && (<div className="flex justify-center mt-6 mb-6">
         <input
           type="text"
           placeholder="Search for a user..."
@@ -202,7 +205,7 @@ const AnalyticsPage: React.FC = () => {
           style={{ width: '100%' }} // Reduced width of the search bar
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-      </div>
+      </div>)}
       
       {/* Scrollable Navigation bar for user selection, centered */}
       <div className="flex justify-center items-center gap-4 mb-4">
