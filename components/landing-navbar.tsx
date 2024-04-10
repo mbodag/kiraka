@@ -43,8 +43,7 @@ export const LandingNavbar = () => {
             objectFit="contain"
           />
         </div>
-        <h1 className={cn("text-2xl font-bold text-white")}>
-          {/* it was: <h1 className={cn("text-2xl font-bold text-white", font.className)}></h1> */}
+        <h1 className={cn("monospace-jetbrains-mono text-2xl font-bold text-white")}>
           Kiraka.ai
         </h1>
       </Link>

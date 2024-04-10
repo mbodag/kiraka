@@ -29,7 +29,7 @@ export const LandingHero = () => {
         </div>
       </div>
       <div
-        className="text-2xl font-light text-zinc-500 monospaced2"
+        className="text-2xl font-light text-zinc-500 landing-font"
         style={{ marginTop: "110px" }}
       >
         Learn more. Read more. Understand more.

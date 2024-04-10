@@ -31,13 +31,20 @@ interface SelectedTextProviderProps {
 export const SelectedTextProvider: React.FC<SelectedTextProviderProps> = ({ children }) => {
   // State initialization with function to load from localStorage
   const [selectedText, setSelectedText] = useState<string>(() => {
-    const storedSelectedText = localStorage.getItem('selectedText');
-    return storedSelectedText !== null ? storedSelectedText : '';
+    // Ensure localStorage is accessed only on the client-side
+    if (typeof window !== 'undefined') {
+      const storedSelectedText = localStorage.getItem('selectedText');
+      return storedSelectedText !== null ? storedSelectedText : '';
+    }
+    return '';
   });
 
   const [selectedTextId, setSelectedTextId] = useState<number | null>(() => {
-    const storedSelectedTextId = localStorage.getItem('selectedTextId');
-    return storedSelectedTextId !== null ? JSON.parse(storedSelectedTextId) : null;
+    if (typeof window !== 'undefined') {
+      const storedSelectedTextId = localStorage.getItem('selectedTextId');
+      return storedSelectedTextId !== null ? JSON.parse(storedSelectedTextId) : null;
+    }
+    return null;
   });
 
   // Effect hook to update localStorage when state changes
