@@ -8,6 +8,8 @@ import '@/app/globals.css';
 import { useWebGazer } from '@/contexts/WebGazerContext';
 import { TbSquareLetterR } from "react-icons/tb";
 import { RiSpace } from "react-icons/ri";
+import  { usePracticeID } from '@/contexts/PracticeIDContext';
+import { useAuth } from "@clerk/nextjs";
 
 interface ExtendedWindow extends Window {
     webgazer?: {
@@ -37,6 +39,7 @@ const Mode2Display = () => {
     const gazeTimeRef = useRef<{ rightSide: number; total: number }>({ rightSide: 0, total: 0 });
     const [shortStory, setShortStory] = useState("");
     const { selectedTextId } = useSelectedText(); // Use the ID from context
+    const { userId } = useAuth()
     const wordChunks = shortStory.match(new RegExp('.{1,' + maxCharsPerChunk + '}(\\s|$)', 'g')) || [];
 
     // Accessing the current state of WebGazer
@@ -276,21 +279,33 @@ const Mode2Display = () => {
         setWpmValues([]);
     };
 
+    const { updatePracticeId } = usePracticeID(); // Accessing the updatePracticeId method from the global context
+
     // This function takes the average WPM and sends it to the backend.
     const submitReadingSpeed = async (averageWpm: number | null) => {
-        await fetch("/api/save-reading-speed", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                // Assuming the payload requires 'text_id', 'user_id', and 'wpm'.
-                // Replace 'text_id' and 'user_id' with actual values as needed.
-                text_id: 1, // Example text_id
-                user_id: 1, // Example user_id
-                wpm: averageWpm,
-            }),
-        });
+        try {
+            const response = await fetch("/api/save-reading-speed", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    text_id: selectedTextId, 
+                    user_id: userId,
+                    wpm: averageWpm,
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                updatePracticeId(data.practice_id); // Update global practice ID
+            } else {
+                // Handle non-OK responses
+                console.error('Error submitting reading speed');
+            }
+        } catch (error) {
+            console.error('Error in submitReadingSpeed:', error);
+        }
     };
 
 

@@ -2,6 +2,7 @@
 import React from 'react';
 import DashboardLayout from '../layout';
 import Mode2Display from "@/components/mode-2/mode-2-display";
+import { PracticeIDProvider } from '@/contexts/PracticeIDContext';
 import { SelectedTextProvider } from '@/contexts/SelectedTextContext'; // Adjust the import path if necessary
 import { auth, currentUser } from "@clerk/nextjs";
 
@@ -36,9 +37,11 @@ export default async function WebgazerPage() {
   
   return (
     <SelectedTextProvider>
-      <DashboardLayout navbarType="standard-auto">
-            <Mode2Display />
-      </DashboardLayout>
+      <PracticeIDProvider>
+        <DashboardLayout navbarType="standard-auto">
+              <Mode2Display />
+        </DashboardLayout>
+      </PracticeIDProvider>
     </SelectedTextProvider>
   );
 }
