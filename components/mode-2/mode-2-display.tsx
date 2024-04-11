@@ -36,7 +36,7 @@ const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English lan
 const minWPM = 200;
 const maxWPM = 800; // This is an approximation (~4.7 for English language)
 const significantLeftSpeed = -2;
-const constIncreaseWPM = 50;
+const constIncreaseWPM = 20;
 const constDecreaseWPM = 30;
 
 const Mode2Display = () => {
@@ -166,7 +166,6 @@ const Mode2Display = () => {
         return (wordCount / wordsPerSecond) * 1000;
     };
     
-
     
     // Hook to set up and manage the gaze listener based on WebGazer's activity and pause state
     useEffect(() => {
@@ -174,20 +173,22 @@ const Mode2Display = () => {
         if (isWebGazerActive && !isPaused && typeof window !== "undefined") {
             // Cast the window object to an ExtendedWindow type to access custom properties like webgazer
             const extendedWindow: ExtendedWindow = window as ExtendedWindow;
-            const chunkKey = `chunk_${currentChunkIndex + 1}`;
 
             // Use optional chaining to safely call setGazeListener if webgazer is defined
             extendedWindow.webgazer?.setGazeListener((data: any, elapsedTime: any) => {
                 // Proceed if there's gaze data and it includes an x-coordinate
                 if (data && data.x && data.y && elapsedTime) {
-                    const deltaX = gazeDataRef.current.length >= 0 ? data.x - gazeDataRef.current[gazeDataRef.current.length - 1].x : 0;
-                    const deltaY = gazeDataRef.current.length >= 0 ? data.y - gazeDataRef.current[gazeDataRef.current.length - 1].y : 0;
-                    const deltaT = gazeDataRef.current.length >= 0 ? elapsedTime - gazeDataRef.current[gazeDataRef.current.length - 1].elapsedTime : 0;
-                    const speedX = (deltaX >= 0 && deltaX > 0) ? deltaX/deltaT : 0;
+                    const deltaX = gazeDataRef.current.length > 0 ? data.x - gazeDataRef.current[gazeDataRef.current.length - 1].x : 0;
+                    const deltaY = gazeDataRef.current.length > 0 ? data.y - gazeDataRef.current[gazeDataRef.current.length - 1].y : 0;
+                    const deltaT = gazeDataRef.current.length > 0 ? elapsedTime - gazeDataRef.current[gazeDataRef.current.length - 1].elapsedTime : 0;
+                    const speedX = deltaT > 0 ? deltaX/deltaT : 0;
+                    console.log(deltaX, deltaY, deltaT, speedX);
 
                     if (speedX < significantLeftSpeed) {
+                        console.log('Significant leftward movement detected');
                         consecutiveLeftMovements.current += 1;
                       } else {
+                        console.log('No significant leftward movement detected');
                         consecutiveLeftMovements.current = 0;
                       }
                     const Lefts = consecutiveLeftMovements.current
@@ -205,6 +206,8 @@ const Mode2Display = () => {
 
     // Hook for managing word display based on chunk index, updating WPM based on gaze data
     useEffect(() => {
+        let animationFrameId: number; // Used to store the request ID for cancellation
+
         // Continuously monitor and adjust based on gaze data
         const monitorAndAdjust = () => {
             // The start time of monitoring the current chunk
@@ -214,22 +217,27 @@ const Mode2Display = () => {
             const analyzeAndAdjust = () => {
                 const currentTime = performance.now();
                 const elapsedTime = currentTime - startTime;
+                console.log(`elapsed time: ${elapsedTime}`)
                 const chunkDisplayTime = calculateDisplayTime(wordChunks[currentChunkIndex]);
     
                 // Ensure we're analyzing only after at least 60% of the expected chunk display time has passed
                 if (elapsedTime > chunkDisplayTime * 0.6) {
+                    console.log(`elapsed time - RELEVANT: ${elapsedTime}`)
                     // If significant leftward movement is detected
-                    if (gazeDataRef.current[gazeDataRef.current.length].Lefts > 5) {
+                    if (gazeDataRef.current.length > 0 && gazeDataRef.current[gazeDataRef.current.length - 1].Lefts >= 2) {
+                        console.log('Increasing WPM');
                         // Increase WPM and move to the next chunk
                         setWPM(prevWPM => Math.min(prevWPM + constIncreaseWPM, maxWPM));
+                        setWpmValues(prevValues => [...prevValues, WPM]);
                         setCurrentChunkIndex(prevIndex => prevIndex + 1);
-                        // Reset gaze data for fresh analysis in the next chunk
                         gazeDataRef.current = [];
                         consecutiveLeftMovements.current = 0;
                     } else if (elapsedTime >= chunkDisplayTime) {
                         // No leftward movement detected by the end of the chunk display time,
                         // possibly indicating the need to slow down
+                        console.log('Decreasing WPM or flipping due to timeout');
                         setWPM(prevWPM => Math.max(prevWPM - constDecreaseWPM, minWPM));
+                        setWpmValues(prevValues => [...prevValues, WPM]);
                         setCurrentChunkIndex(prevIndex => prevIndex + 1);
                         gazeDataRef.current = [];
                         consecutiveLeftMovements.current = 0;
@@ -238,26 +246,30 @@ const Mode2Display = () => {
     
                 // If the chunk hasn't ended or been skipped, keep monitoring
                 if (currentChunkIndex < wordChunks.length && !isPaused) {
-                    requestAnimationFrame(analyzeAndAdjust);
+                    animationFrameId = requestAnimationFrame(analyzeAndAdjust);
                 }
             };
     
             // Start the continuous analysis
-            requestAnimationFrame(analyzeAndAdjust); //generally has a refresh rate of 60Hz
+            animationFrameId = requestAnimationFrame(analyzeAndAdjust); //generally has a refresh rate of 60Hz
         };
     
         if (isWebGazerActive && !isPaused && currentChunkIndex < wordChunks.length) {
             monitorAndAdjust();
         }
-    }, [currentChunkIndex, isPaused, wordChunks, WPM, isWebGazerActive]);
 
-
-    useEffect(() => {
-        // Check if we've reached the end and are not just paused temporarily.
+        // When we reach the last chunk
         if (currentChunkIndex >= wordChunks.length - 1) {
             calculateAndSubmitAverageWpm();
         }
-    }, [currentChunkIndex, wordChunks.length]);
+
+        return () => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+        };
+
+    }, [currentChunkIndex, isPaused, wordChunks, WPM, isWebGazerActive]);
 
 
     const calculateAndSubmitAverageWpm = () => {
