@@ -22,11 +22,9 @@ interface GazeDataPoint {
     x: number;
     y: number;
     elapsedTime: number;
-    deltaX: number;
-    deltaY: number;
-    deltaT: number;
-    speedX: number;
-    Lefts: number;
+}
+interface GazeDataAccumulator {
+    [key: string]: GazeDataPoint[];
 }
 
 // Assuming you want a specific number of words per chunk, 
@@ -35,9 +33,6 @@ const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
 const minWPM = 200;
 const maxWPM = 800; // This is an approximation (~4.7 for English language)
-const significantLeftSpeed = -2;
-const constIncreaseWPM = 50;
-const constDecreaseWPM = 30;
 
 const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
@@ -48,8 +43,7 @@ const Mode2Display = () => {
     const [WPM, setWPM] = useState(startWPM); 
     const [wpmValues, setWpmValues] = useState<number[]>([]); // To store the WPMs values and take their average at the end of the session; to be sent to the database
     const [averageWPM, setAverageWPM] = useState<number | null>(null);
-    const gazeDataRef = useRef<GazeDataPoint[]>([]);
-    const consecutiveLeftMovements = useRef<number>(0);
+    const gazeDataAccumulator = useRef<GazeDataAccumulator>({});
 
     const [isPaused, setIsPaused] = useState(true); // Add a state to track whether the flashing is paused
     const [fontSize, setFontSize] = useState(44); // Start with a default font size
@@ -138,9 +132,9 @@ const Mode2Display = () => {
               }
 
             if (event.key === "ArrowRight") {
-                setWPM((prevWPM) => Math.min(prevWPM + constIncreaseWPM, maxWPM)); // Increase dynamicWPM
+                setWPM((prevWPM) => Math.min(prevWPM + 20, maxWPM)); // Increase dynamicWPM, max 1100
             } else if (event.key === "ArrowLeft") {
-                setWPM((prevWPM) => Math.max(prevWPM - constDecreaseWPM, minWPM)); // Decrease dynamicWPM
+                setWPM((prevWPM) => Math.max(prevWPM - 20, minWPM)); // Decrease dynamicWPM, min 50
             } else if (event.key === "R" || event.key === "r") {
                 setCurrentChunkIndex(0); // Restart from the first chunk
                 setIsPaused(true); // Pause the session
@@ -156,17 +150,6 @@ const Mode2Display = () => {
         return () => window.removeEventListener("keydown", handleKeyPress);
     }, [showCalibrationPopup]);
 
-
-
-    // Function to calculate display time for a chunk
-    const calculateDisplayTime = (chunk: string) => {
-        const wordsPerSecond = WPM / 60;
-        const wordCount = chunk.length / 5;
-        // Return the display time in milliseconds
-        return (wordCount / wordsPerSecond) * 1000;
-    };
-    
-
     
     // Hook to set up and manage the gaze listener based on WebGazer's activity and pause state
     useEffect(() => {
@@ -175,82 +158,110 @@ const Mode2Display = () => {
             // Cast the window object to an ExtendedWindow type to access custom properties like webgazer
             const extendedWindow: ExtendedWindow = window as ExtendedWindow;
             const chunkKey = `chunk_${currentChunkIndex + 1}`;
-
             // Use optional chaining to safely call setGazeListener if webgazer is defined
             extendedWindow.webgazer?.setGazeListener((data: any, elapsedTime: any) => {
                 // Proceed if there's gaze data and it includes an x-coordinate
                 if (data && data.x && data.y && elapsedTime) {
-                    const deltaX = gazeDataRef.current.length >= 0 ? data.x - gazeDataRef.current[gazeDataRef.current.length - 1].x : 0;
-                    const deltaY = gazeDataRef.current.length >= 0 ? data.y - gazeDataRef.current[gazeDataRef.current.length - 1].y : 0;
-                    const deltaT = gazeDataRef.current.length >= 0 ? elapsedTime - gazeDataRef.current[gazeDataRef.current.length - 1].elapsedTime : 0;
-                    const speedX = (deltaX >= 0 && deltaX > 0) ? deltaX/deltaT : 0;
+                    // Find the element displaying the sentence to track gaze within its bounds
+                    const sentenceDisplayElement = document.querySelector('.wordDisplay');
+                    if (sentenceDisplayElement) {
+                        // Get the element's position and size
+                        console.log('data:', data, 'elapsedTime:', elapsedTime);
 
-                    if (speedX < significantLeftSpeed) {
-                        consecutiveLeftMovements.current += 1;
-                      } else {
-                        consecutiveLeftMovements.current = 0;
-                      }
-                    const Lefts = consecutiveLeftMovements.current
+                        const newEntry = { x: data.x, y: data.y, elapsedTime };
 
-                    gazeDataRef.current.push({ x: data.x, y: data.y, elapsedTime, deltaX, deltaY, deltaT, speedX, Lefts });
+                        // Accumulate data in the ref
+                        if (!gazeDataAccumulator.current[chunkKey]) {
+                        gazeDataAccumulator.current[chunkKey] = [];
+                        }
+                        gazeDataAccumulator.current[chunkKey].push(newEntry);
 
+                        const { left, width } = sentenceDisplayElement.getBoundingClientRect();
+                        // Calculate a boundary (70% from the left) to define the "rightmost part"
+                        const rightBoundary = left + width * 0.7;
+
+                        // Increment the total gaze time counter
+                        gazeTimeRef.current.total += 1;
+
+                        // If the gaze is to the right of the boundary, increment the right-side gaze counter
+                        if (data.x >= rightBoundary) {
+                            gazeTimeRef.current.rightSide += 1;
+                        }
+                    }
                 }
             });
 
             // Cleanup function to clear the gaze listener when the component unmounts or dependencies change
             return () => extendedWindow.webgazer?.clearGazeListener();
         }
-    }, [isWebGazerActive, isPaused]); // Depend on WebGazer's activity and pause state
+    }, [isWebGazerActive, isPaused, currentChunkIndex]); // Depend on WebGazer's activity and pause state
     
 
     // Hook for managing word display based on chunk index, updating WPM based on gaze data
     useEffect(() => {
-        // Continuously monitor and adjust based on gaze data
-        const monitorAndAdjust = () => {
-            // The start time of monitoring the current chunk
-            const startTime = performance.now();
-    
-            // Function to analyze gaze data and decide whether to adjust WPM or move to the next chunk
-            const analyzeAndAdjust = () => {
-                const currentTime = performance.now();
-                const elapsedTime = currentTime - startTime;
-                const chunkDisplayTime = calculateDisplayTime(wordChunks[currentChunkIndex]);
-    
-                // Ensure we're analyzing only after at least 60% of the expected chunk display time has passed
-                if (elapsedTime > chunkDisplayTime * 0.6) {
-                    // If significant leftward movement is detected
-                    if (gazeDataRef.current[gazeDataRef.current.length].Lefts > 5) {
-                        // Increase WPM and move to the next chunk
-                        setWPM(prevWPM => Math.min(prevWPM + constIncreaseWPM, maxWPM));
-                        setCurrentChunkIndex(prevIndex => prevIndex + 1);
-                        // Reset gaze data for fresh analysis in the next chunk
-                        gazeDataRef.current = [];
-                        consecutiveLeftMovements.current = 0;
-                    } else if (elapsedTime >= chunkDisplayTime) {
-                        // No leftward movement detected by the end of the chunk display time,
-                        // possibly indicating the need to slow down
-                        setWPM(prevWPM => Math.max(prevWPM - constDecreaseWPM, minWPM));
-                        setCurrentChunkIndex(prevIndex => prevIndex + 1);
-                        gazeDataRef.current = [];
-                        consecutiveLeftMovements.current = 0;
-                    }
-                }
-    
-                // If the chunk hasn't ended or been skipped, keep monitoring
-                if (currentChunkIndex < wordChunks.length && !isPaused) {
-                    requestAnimationFrame(analyzeAndAdjust);
-                }
-            };
-    
-            // Start the continuous analysis
-            requestAnimationFrame(analyzeAndAdjust); //generally has a refresh rate of 60Hz
-        };
-    
-        if (isWebGazerActive && !isPaused && currentChunkIndex < wordChunks.length) {
-            monitorAndAdjust();
-        }
-    }, [currentChunkIndex, isPaused, wordChunks, WPM, isWebGazerActive]);
+        // Only proceed if not paused and there are more chunks to display
+        if (!isPaused && currentChunkIndex < wordChunks.length) {
+            // Convert WPM to words per second for timing calculations
+            const wordsPerSecond = WPM / 60;
 
+            // Function to calculate how long to display a chunk of text, based on its length
+            const calculateDisplayTime = (chunk: string) => {
+                // Calculate the equivalent word count using an average character count per word
+                const wordCount = chunk.length / 5;
+                // Return the display time in milliseconds
+                return (wordCount / wordsPerSecond) * 1000;
+            };
+
+            // Determine how long to display the current chunk
+            const intervalDuration = calculateDisplayTime(wordChunks[currentChunkIndex]);
+
+            // Set up an interval to move through the chunks based on calculated display times
+            const timer = setInterval(() => {
+                // Check gaze data and adjust WPM if WebGazer is active
+                if (isWebGazerActive) {
+                    // Calculate the percentage of time spent looking at the right side of the text
+                    const gazeRightPercentage = (gazeTimeRef.current.rightSide / gazeTimeRef.current.total) * 100;
+                    let newWPM = WPM;
+
+                    // Adjust WPM based on the gaze direction (increase if gazing right, decrease if not)
+                    if (gazeRightPercentage > 50) {
+                        newWPM = Math.min(Math.round(WPM + 0), maxWPM);
+                    } else {
+                        newWPM = Math.max(Math.round(WPM - 0), minWPM);
+                    }
+
+                    // Apply the new WPM value if it represents a significant change
+                    if (Math.abs(newWPM - WPM) >= 1) {
+                        setWPM(newWPM);
+                    }
+                    // Store the new WPM for later analysis
+                    setWpmValues(prevValues => [...prevValues, newWPM]); //INITIALISE IT WITH STARTWPM?
+                } else {
+                    // If WebGazer is not active, simply add the current WPM to the values for later analysis
+                    setWpmValues(prevValues => [...prevValues, WPM]);
+                }
+
+                // Move to the next chunk or end the session
+                setCurrentChunkIndex((prevIndex) => {
+                    // Check if we've reached the end of the chunks
+                    if (prevIndex + 1 >= wordChunks.length) {
+                        setWpmValues(prevValues => [...prevValues, WPM]); //REMOVE?
+                        console.log("Session End")
+                        clearInterval(timer); // Stop the timer
+                        return prevIndex; // Keep the index unchanged to avoid overflow
+                    }
+                    return prevIndex + 1; // Move to the next chunk
+                });
+
+                // Reset gaze data counters for the next interval
+                gazeTimeRef.current = { rightSide: 0, total: 0 };
+
+            }, intervalDuration); // Use the calculated duration for the interval
+
+            // Cleanup function to clear the interval when the component unmounts or dependencies change
+            return () => clearInterval(timer);
+        }
+    }, [WPM, isPaused, currentChunkIndex, wordChunks, isWebGazerActive]); // Depend on these states and data to trigger updates
 
     useEffect(() => {
         // Check if we've reached the end and are not just paused temporarily.
@@ -323,21 +334,21 @@ const Mode2Display = () => {
       }, [showCalibrationPopup]);
 
     
-    //   const downloadGazeData = () => {
-    //     const fileName = "gazeData.json";
-    //     const json = JSON.stringify(gazeDataAccumulator.current, null, 2); // Use gazeDataAccumulator.current here
-    //     const blob = new Blob([json], {type: "application/json"});
-    //     const href = URL.createObjectURL(blob);
+      const downloadGazeData = () => {
+        const fileName = "gazeData.json";
+        const json = JSON.stringify(gazeDataAccumulator.current, null, 2); // Use gazeDataAccumulator.current here
+        const blob = new Blob([json], {type: "application/json"});
+        const href = URL.createObjectURL(blob);
       
-    //     const link = document.createElement('a');
-    //     link.href = href;
-    //     link.download = fileName;
-    //     document.body.appendChild(link);
-    //     link.click();
+        const link = document.createElement('a');
+        link.href = href;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
       
-    //     document.body.removeChild(link);
-    //     URL.revokeObjectURL(href);
-    //   };
+        document.body.removeChild(link);
+        URL.revokeObjectURL(href);
+      };
 
     const gapBetweenSize = '10px';
     const gapEdgeSize = '15px';
@@ -413,7 +424,7 @@ const Mode2Display = () => {
             
                 {/* The rest of your component's content, keeping the inline styles for alignment and sizing */}
                 <CounterDisplay count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
-                {/* <button onClick={downloadGazeData}>Download Gaze Data</button> */}
+                <button onClick={downloadGazeData}>Download Gaze Data</button>
                     <div className={`wordDisplay monospaced ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{ 
                         marginTop: "20px",
                         fontSize: `${fontSize}px`,
