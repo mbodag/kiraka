@@ -25,7 +25,7 @@ const DiagnosticPage = () => {
         <div className="text-left">
           <p>
             This diagnostic test is designed to measure your reading speed and
-            comprehension skills across a variety of text difficulties. Here’s
+            comprehension skills across a variety of text difficulties. Here&apos;s
             how it works:
           </p>
           <ol className="mt-2">
@@ -33,15 +33,15 @@ const DiagnosticPage = () => {
               You will be presented with 5 texts, each increasing in difficulty.
             </li>
             <li>
-              For each text, click "Start" to begin reading and "Done" once you
+              For each text, click &quot;Start &quot; to begin reading and  &quot;Done&quot; once you
               finish. Your reading time will be recorded.
             </li>
             <li>
-              After each text, you'll take a short quiz to test your
-              comprehension of what you've just read.
+              After each text, you&apos;ll take a short quiz to test your
+              comprehension of what you&apos;ve just read.
             </li>
             <li>
-              Based on your reading speed and quiz scores, we'll provide
+              Based on your reading speed and quiz scores, we&apos;ll provide
               personalized recommendations to improve your reading skills.
             </li>
           </ol>

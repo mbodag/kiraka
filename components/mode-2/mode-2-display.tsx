@@ -1,6 +1,6 @@
 "use client"; 
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useSelectedText } from "@/contexts/SelectedTextContext";
 import CounterDisplay from "@/components/mode-1/counter-display";
 import styles from '@/app/(dashboard)/(routes)/dashboard/DashboardPage.module.css';
@@ -42,7 +42,14 @@ const Mode2Display = () => {
     const [shortStory, setShortStory] = useState("");
     const { selectedTextId } = useSelectedText(); // Use the ID from context
     const { userId } = useAuth()
-    const wordChunks = shortStory.match(new RegExp('.{1,' + maxCharsPerChunk + '}(\\s|$)', 'g')) || [];
+    const wordChunks = useMemo(() => {
+      return (
+        shortStory.match(
+          new RegExp(".{1," + maxCharsPerChunk + "}(\\s|$)", "g")
+        ) || []
+      );
+    }, [shortStory, maxCharsPerChunk]);
+    // const wordChunks = shortStory.match(new RegExp('.{1,' + maxCharsPerChunk + '}(\\s|$)', 'g')) || [];
 
     // Accessing the current state of WebGazer
     const { isWebGazerActive } = useWebGazer();
@@ -51,94 +58,95 @@ const Mode2Display = () => {
     const [countdown, setCountdown] = useState<number | null>(null);
 
     useEffect(() => {
-        const fetchTextById = async (textId: number) => {
-          try {
-            const response = await fetch(`/api/texts/${textId}`);
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            console.log(data.quiz_questions);
-            // Replace newlines (\n) with spaces and set the cleaned text
-            const cleanedText = data.text_content.replace(/\n+/g, ' ');
-            setShortStory(cleanedText);
-          } catch (error) {
-            console.error('Error fetching text:', error);
+      const fetchTextById = async (textId: number) => {
+        try {
+          const response = await fetch(`/api/texts/${textId}`);
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
           }
-        };
-    
-        if (selectedTextId) {
-          fetchTextById(selectedTextId);
+          const data = await response.json();
+          console.log(data.quiz_questions);
+          // Replace newlines (\n) with spaces and set the cleaned text
+          const cleanedText = data.text_content.replace(/\n+/g, " ");
+          setShortStory(cleanedText);
+        } catch (error) {
+          console.error("Error fetching text:", error);
         }
-      }, [selectedTextId]);
+      };
+
+      if (selectedTextId) {
+        fetchTextById(selectedTextId);
+      }
+    }, [selectedTextId]);
 
     useEffect(() => {
-        const isCalibrated = sessionStorage.getItem('isCalibrated');
-        if (!isCalibrated) {
-          setShowCalibrationPopup(true);
-        }
-      }, []);
-
-    useEffect(() => {
-        // Directly check if WebGazer is not active to prompt for calibration.
-        if (!isWebGazerActive) {
-            // sessionStorage.setItem('isCalibrated', 'false');
-            setShowCalibrationPopup(true);
-        } else {
-            // Assume WebGazer being active means calibration is done
-            // const isCalibrated = sessionStorage.getItem('isCalibrated');
-            // setShowCalibrationPopup(isCalibrated !== 'true');
-            setShowCalibrationPopup(false);
-        }
-    }, [isWebGazerActive]);
-
-    const handleGoToCalibration = () => {
-        setRedirecting(true); // Set redirecting state to true
-        setTimeout(() => {
-            window.location.href = '/calibration'; // Redirect after a brief pause
-        }, 1500); // Adjust this delay as needed
-    };
-
-      
-    useEffect(() => {
-        // Function to adjust font size based on the window width
-        const adjustFontSize = () => {
-            const viewportWidth = window.innerWidth;
-            // Adjust the font size formula as needed to match your design and readability requirements
-            const newFontSize = Math.max(16, (0.77*viewportWidth)/(maxCharsPerChunk*0.6)); // taking 77% of viewpoer and assuming one character width if 60% of font size
-            setFontSize(newFontSize);
-
-        };
-        adjustFontSize();
-        window.addEventListener('resize', adjustFontSize);
-        return () => window.removeEventListener('resize', adjustFontSize);
+      const isCalibrated = sessionStorage.getItem("isCalibrated");
+      if (!isCalibrated) {
+        setShowCalibrationPopup(true);
+      }
     }, []);
 
     useEffect(() => {
-        const handleKeyPress = (event: KeyboardEvent) => {
-            // Check if the calibration popup is shown; if true, return early to disable functionality
-            if (showCalibrationPopup) {
-                return;
-              }
+      // Directly check if WebGazer is not active to prompt for calibration.
+      if (!isWebGazerActive) {
+        // sessionStorage.setItem('isCalibrated', 'false');
+        setShowCalibrationPopup(true);
+      } else {
+        // Assume WebGazer being active means calibration is done
+        // const isCalibrated = sessionStorage.getItem('isCalibrated');
+        // setShowCalibrationPopup(isCalibrated !== 'true');
+        setShowCalibrationPopup(false);
+      }
+    }, [isWebGazerActive]);
 
-            if (event.key === "ArrowRight") {
-                setWPM((prevWPM) => Math.min(prevWPM + 20, maxWPM)); // Increase dynamicWPM, max 1100
-            } else if (event.key === "ArrowLeft") {
-                setWPM((prevWPM) => Math.max(prevWPM - 20, minWPM)); // Decrease dynamicWPM, min 50
-            } else if (event.key === "R" || event.key === "r") {
-                setCurrentChunkIndex(0); // Restart from the first chunk
-                setIsPaused(true); // Pause the session
-                setWpmValues([]); // Reset the stored WPM values
-                setWPM(startWPM); // Reset the WPM value
-                setAverageWPM(null); // Reset the averageWPM value
-            } else if (event.key === " ") {
-                event.preventDefault(); // Prevent default action (e.g., page scrolling)
-                setIsPaused((prevIsPaused) => !prevIsPaused); // Toggle pause/start
-            }
-        };
-        window.addEventListener("keydown", handleKeyPress);
-        return () => window.removeEventListener("keydown", handleKeyPress);
-    }, [showCalibrationPopup]);
+    const handleGoToCalibration = () => {
+      setRedirecting(true); // Set redirecting state to true
+      setTimeout(() => {
+        window.location.href = "/calibration"; // Redirect after a brief pause
+      }, 1500); // Adjust this delay as needed
+    };
+
+    useEffect(() => {
+      // Function to adjust font size based on the window width
+      const adjustFontSize = () => {
+        const viewportWidth = window.innerWidth;
+        // Adjust the font size formula as needed to match your design and readability requirements
+        const newFontSize = Math.max(
+          16,
+          (0.77 * viewportWidth) / (maxCharsPerChunk * 0.6)
+        ); // taking 77% of viewpoer and assuming one character width if 60% of font size
+        setFontSize(newFontSize);
+      };
+      adjustFontSize();
+      window.addEventListener("resize", adjustFontSize);
+      return () => window.removeEventListener("resize", adjustFontSize);
+    }, [maxCharsPerChunk]);
+
+    useEffect(() => {
+      const handleKeyPress = (event: KeyboardEvent) => {
+        // Check if the calibration popup is shown; if true, return early to disable functionality
+        if (showCalibrationPopup) {
+          return;
+        }
+
+        if (event.key === "ArrowRight") {
+          setWPM((prevWPM) => Math.min(prevWPM + 20, maxWPM)); // Increase dynamicWPM, max 1100
+        } else if (event.key === "ArrowLeft") {
+          setWPM((prevWPM) => Math.max(prevWPM - 20, minWPM)); // Decrease dynamicWPM, min 50
+        } else if (event.key === "R" || event.key === "r") {
+          setCurrentChunkIndex(0); // Restart from the first chunk
+          setIsPaused(true); // Pause the session
+          setWpmValues([]); // Reset the stored WPM values
+          setWPM(startWPM); // Reset the WPM value
+          setAverageWPM(null); // Reset the averageWPM value
+        } else if (event.key === " ") {
+          event.preventDefault(); // Prevent default action (e.g., page scrolling)
+          setIsPaused((prevIsPaused) => !prevIsPaused); // Toggle pause/start
+        }
+      };
+      window.addEventListener("keydown", handleKeyPress);
+      return () => window.removeEventListener("keydown", handleKeyPress);
+    }, [showCalibrationPopup, startWPM]);
 
     
     // Hook to set up and manage the gaze listener based on WebGazer's activity and pause state
@@ -243,10 +251,10 @@ const Mode2Display = () => {
     }, [WPM, isPaused, currentChunkIndex, wordChunks, isWebGazerActive]); // Depend on these states and data to trigger updates
 
     useEffect(() => {
-        // Check if we've reached the end and are not just paused temporarily.
-        if (currentChunkIndex >= wordChunks.length - 1) {
-            calculateAndSubmitAverageWpm();
-        }
+      // Check if we've reached the end and are not just paused temporarily.
+      if (currentChunkIndex >= wordChunks.length - 1) {
+        calculateAndSubmitAverageWpm();
+      }
     }, [currentChunkIndex, wordChunks.length]);
 
     useEffect(() => {
