@@ -46,6 +46,8 @@ export default async function WebgazerPage() {
   );
 }
 
-export const config = {
-  runtime: "edge",
-};
+// export const config = {
+//   runtime: "edge",
+// };
+
+export const runtime = "edge"
