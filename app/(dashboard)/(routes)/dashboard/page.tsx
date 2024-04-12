@@ -86,6 +86,5 @@ export default async function DashboardPage() {
   );
 }
 
-export const config = {
-  runtime: "edge",
-};
+
+export const runtime = "edge";
