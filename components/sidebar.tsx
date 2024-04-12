@@ -66,7 +66,7 @@ const Sidebar = () => {
             className={`text-sm w-full max-w-xs p-2 font-medium rounded-lg transition sidebar-button-font 
               ${text.id === activeId ? 'bg-gray-700' : 'hover:bg-gray-700'}`} // Apply active or hover class
           >
-            {text.title}
+            Text {text.title?.match(/\d+/)?.[0] ?? 'Default'}
           </button>
         ))}
       </div>

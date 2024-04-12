@@ -87,12 +87,12 @@ const Mode2Display = () => {
         }
       }, [selectedTextId]);
 
-    useEffect(() => {
-        const isCalibrated = sessionStorage.getItem('isCalibrated');
-        if (!isCalibrated) {
-          setShowCalibrationPopup(true);
-        }
-      }, []);
+    // useEffect(() => {
+    //     const isCalibrated = sessionStorage.getItem('isCalibrated');
+    //     if (!isCalibrated) {
+    //       setShowCalibrationPopup(true);
+    //     }
+    //   }, []);
 
     useEffect(() => {
         // Directly check if WebGazer is not active to prompt for calibration.
@@ -118,16 +118,18 @@ const Mode2Display = () => {
     useEffect(() => {
         // Function to adjust font size based on the window width
         const adjustFontSize = () => {
-            const viewportWidth = window.innerWidth;
-            // Adjust the font size formula as needed to match your design and readability requirements
-            const newFontSize = Math.max(16, (0.77*viewportWidth)/(maxCharsPerChunk*0.6)); // taking 77% of viewpoer and assuming one character width if 60% of font size
-            setFontSize(newFontSize);
-
+            const div = document.querySelector('.wordDisplayDiv');
+            if (div) {
+                const divWidth = div.clientWidth;
+                const newFontSize = Math.max(1, (1.1 * divWidth) / (maxCharsPerChunk * 0.6));
+                setFontSize(newFontSize);
+            }
         };
         adjustFontSize();
         window.addEventListener('resize', adjustFontSize);
         return () => window.removeEventListener('resize', adjustFontSize);
     }, []);
+
 
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
@@ -356,7 +358,7 @@ const Mode2Display = () => {
 
             {/* Div for Mode2 Display, taking more space */}
             <div
-                className="bg-white rounded-lg shadow-lg p-8 pt-2 my-2 flex-1"
+                className="wordDisplayDiv bg-white rounded-lg shadow-lg p-8 pt-2 my-2 flex-1"
                 style={{
                 maxWidth: `calc(100% - var(--sidebar-width) - ${gapEdgeSize})`,
                 height: divheight,
