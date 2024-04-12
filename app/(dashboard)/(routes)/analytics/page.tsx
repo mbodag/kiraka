@@ -66,6 +66,9 @@ const AnalyticsPage: React.FC = () => {
       setUserData(response.usersData);
       setUsers(Object.keys(response.usersData));
       setAdmin(response.isAdmin)
+      if (!response.isAdmin){
+        setSelectedUser('Your data')
+      }
       console.log('Updated state:', userData, users, isAdmin);
         };
     fetchAnalyticsData();
