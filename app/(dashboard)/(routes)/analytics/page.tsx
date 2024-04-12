@@ -70,7 +70,7 @@ const AnalyticsPage: React.FC = () => {
       setUsers(Object.keys(response.usersData));
     };
     fetchAnalyticsData();
-  }, []); // Empty dependency array means this effect runs once on mount and not on updates
+  }, [userId]); // Empty dependency array means this effect runs once on mount and not on updates
 
   const scrollUsers = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
@@ -84,7 +84,7 @@ const AnalyticsPage: React.FC = () => {
     // Filter users as per the search term
     const newFilteredUsers = users.filter(user => user.toLowerCase().includes(searchTerm.toLowerCase()));
     setFilteredUsers(newFilteredUsers);
-  }, [searchTerm]); // Re-run the effect whenever searchTerm changes
+  }, [searchTerm, users]); // Re-run the effect whenever searchTerm changes
 
 
     // UserPlot component
