@@ -37,7 +37,7 @@ const minWPM = 200;
 const maxWPM = 800; // This is an approximation (~4.7 for English language)
 const significantLeftSpeed = -2;
 const constIncreaseWPM = 20;
-const constDecreaseWPM = 30;
+const constDecreaseWPM = 20;
 
 const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
@@ -45,7 +45,7 @@ const Mode2Display = () => {
 
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
     const [startWPM, setstartWPM] = useState(400); 
-    const [WPM, setWPM] = useState(startWPM); 
+    const [WPM, setWPM] = useState(startWPM);
     const [wpmValues, setWpmValues] = useState<number[]>([]); // To store the WPMs values and take their average at the end of the session; to be sent to the database
     const [averageWPM, setAverageWPM] = useState<number | null>(null);
     const gazeDataRef = useRef<GazeDataPoint[]>([]);
@@ -54,7 +54,6 @@ const Mode2Display = () => {
     const [isPaused, setIsPaused] = useState(true); // Add a state to track whether the flashing is paused
     const [fontSize, setFontSize] = useState(44); // Start with a default font size
     const maxCharsPerChunk = wordsPerChunk * avgCharCountPerWord
-    const gazeTimeRef = useRef<{ rightSide: number; total: number }>({ rightSide: 0, total: 0 });
     const [shortStory, setShortStory] = useState("");
     const { selectedTextId } = useSelectedText(); // Use the ID from context
     const { userId } = useAuth()
@@ -64,7 +63,7 @@ const Mode2Display = () => {
     const { isWebGazerActive } = useWebGazer();
     const [showCalibrationPopup, setShowCalibrationPopup] = useState(true);
     const [redirecting, setRedirecting] = useState(false);
-    const [countdown, setCountdown] = useState<number | null>(null);
+    const [countdown, setCountdown] = useState<number | null>(null); 
 
     useEffect(() => {
         const fetchTextById = async (textId: number) => {
@@ -335,21 +334,6 @@ const Mode2Display = () => {
       }, [showCalibrationPopup]);
 
     
-    //   const downloadGazeData = () => {
-    //     const fileName = "gazeData.json";
-    //     const json = JSON.stringify(gazeDataAccumulator.current, null, 2); // Use gazeDataAccumulator.current here
-    //     const blob = new Blob([json], {type: "application/json"});
-    //     const href = URL.createObjectURL(blob);
-      
-    //     const link = document.createElement('a');
-    //     link.href = href;
-    //     link.download = fileName;
-    //     document.body.appendChild(link);
-    //     link.click();
-      
-    //     document.body.removeChild(link);
-    //     URL.revokeObjectURL(href);
-    //   };
 
     const gapBetweenSize = '10px';
     const gapEdgeSize = '15px';
