@@ -38,6 +38,7 @@ const maxWPM = 800; // This is an approximation (~4.7 for English language)
 const significantLeftSpeed = -2;
 const constIncreaseWPM = 20;
 const constDecreaseWPM = 20;
+const percentageDisplayTimeToIgnore = 0.7
 
 const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
@@ -86,6 +87,7 @@ const Mode2Display = () => {
           fetchTextById(selectedTextId);
         }
       }, [selectedTextId]);
+
 
     // useEffect(() => {
     //     const isCalibrated = sessionStorage.getItem('isCalibrated');
@@ -162,7 +164,7 @@ const Mode2Display = () => {
     // Function to calculate display time for a chunk
     const calculateDisplayTime = (chunk: string) => {
         const wordsPerSecond = WPM / 60;
-        const wordCount = chunk.length / 5;
+        const wordCount = chunk.length / 5; // Assume an average of 5 characters per word including white spaces
         // Return the display time in milliseconds
         return (wordCount / wordsPerSecond) * 1000;
     };
@@ -186,10 +188,8 @@ const Mode2Display = () => {
                     console.log(deltaX, deltaY, deltaT, speedX);
 
                     if (speedX < significantLeftSpeed) {
-                        console.log('Significant leftward movement detected');
                         consecutiveLeftMovements.current += 1;
                       } else {
-                        console.log('No significant leftward movement detected');
                         consecutiveLeftMovements.current = 0;
                       }
                     const Lefts = consecutiveLeftMovements.current
@@ -205,6 +205,7 @@ const Mode2Display = () => {
     }, [isWebGazerActive, isPaused]); // Depend on WebGazer's activity and pause state
     
 
+
     // Hook for managing word display based on chunk index, updating WPM based on gaze data
     useEffect(() => {
         let animationFrameId: number; // Used to store the request ID for cancellation
@@ -218,30 +219,29 @@ const Mode2Display = () => {
             const analyzeAndAdjust = () => {
                 const currentTime = performance.now();
                 const elapsedTime = currentTime - startTime;
-                console.log(`elapsed time: ${elapsedTime}`)
                 const chunkDisplayTime = calculateDisplayTime(wordChunks[currentChunkIndex]);
-    
-                // Ensure we're analyzing only after at least 60% of the expected chunk display time has passed
-                if (elapsedTime > chunkDisplayTime * 0.6) {
-                    console.log(`elapsed time - RELEVANT: ${elapsedTime}`)
+
+                // Ensure we're analyzing only after at least 70% of the expected chunk display time has passed
+                if (elapsedTime > chunkDisplayTime * percentageDisplayTimeToIgnore) {
+
                     // If significant leftward movement is detected
                     if (gazeDataRef.current.length > 0 && gazeDataRef.current[gazeDataRef.current.length - 1].Lefts >= 2) {
-                        console.log('Increasing WPM');
                         // Increase WPM and move to the next chunk
                         setWPM(prevWPM => Math.min(prevWPM + constIncreaseWPM, maxWPM));
                         setWpmValues(prevValues => [...prevValues, WPM]);
                         setCurrentChunkIndex(prevIndex => prevIndex + 1);
                         gazeDataRef.current = [];
                         consecutiveLeftMovements.current = 0;
+
                     } else if (elapsedTime >= chunkDisplayTime) {
                         // No leftward movement detected by the end of the chunk display time,
                         // possibly indicating the need to slow down
-                        console.log('Decreasing WPM or flipping due to timeout');
                         setWPM(prevWPM => Math.max(prevWPM - constDecreaseWPM, minWPM));
                         setWpmValues(prevValues => [...prevValues, WPM]);
                         setCurrentChunkIndex(prevIndex => prevIndex + 1);
                         gazeDataRef.current = [];
                         consecutiveLeftMovements.current = 0;
+
                     }
                 }
     
