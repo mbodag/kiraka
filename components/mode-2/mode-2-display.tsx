@@ -181,11 +181,14 @@ const Mode2Display = () => {
             extendedWindow.webgazer?.setGazeListener((data: any, elapsedTime: any) => {
                 // Proceed if there's gaze data and it includes an x-coordinate
                 if (data && data.x && data.y && elapsedTime) {
+                    const divWidth = document.querySelector('.wordDisplayDiv')?.clientWidth ?? 1;
+                    const normX = data.x/divWidth;
                     const deltaX = gazeDataRef.current.length > 0 ? data.x - gazeDataRef.current[gazeDataRef.current.length - 1].x : 0;
                     const deltaY = gazeDataRef.current.length > 0 ? data.y - gazeDataRef.current[gazeDataRef.current.length - 1].y : 0;
                     const deltaT = gazeDataRef.current.length > 0 ? elapsedTime - gazeDataRef.current[gazeDataRef.current.length - 1].elapsedTime : 0;
                     const speedX = deltaT > 0 ? deltaX/deltaT : 0;
-                    console.log(deltaX, deltaY, deltaT, speedX);
+                    console.log('x:', data.x, '|', 'y:', data.y, '|', 'elapsedTime:', elapsedTime, '|', 'deltaX:', deltaX, '|', 'deltaY:', deltaY, '|', 'deltaT:', deltaT, '|', 'speedX:', speedX);
+                    console.log('width', window.innerWidth, 'height', window.innerHeight)
 
                     if (speedX < significantLeftSpeed) {
                         consecutiveLeftMovements.current += 1;
