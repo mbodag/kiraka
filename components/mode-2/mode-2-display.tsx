@@ -298,6 +298,7 @@ const Mode2Display = () => {
                     text_id: selectedTextId, 
                     user_id: userId,
                     wpm: averageWpm,
+                    mode: 2
                 }),
             });
 

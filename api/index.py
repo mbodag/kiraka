@@ -369,8 +369,9 @@ def submit_reading_speed():
     text_id = data.get('text_id')  # Assuming text_id is provided
     user_id = data.get('user_id')  # Assuming user_id is provided
     wpm = data.get('wpm')
-    chunks = data.get('chunks_data') # Should be a list of lists of dictionaries
-
+    mode = data.get('mode', 'undefined')
+    chunks = data.get('chunks_data', [[]]) # Should be a list of lists of dictionaries
+    print(mode)
     # Validate the text_id as integer and user_id as string
     if not isinstance(text_id, int) or not isinstance(user_id, str):
         return jsonify({'error': 'Invalid text_id or user_id'}), 400
@@ -384,6 +385,7 @@ def submit_reading_speed():
         text_id=text_id,
         user_id=user_id,
         wpm=wpm,
+        mode = mode,
         timestamp=datetime.now(timezone.utc)  # Assuming current time as timestamp
     )
 
