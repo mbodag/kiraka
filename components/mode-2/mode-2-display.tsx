@@ -10,6 +10,9 @@ import { TbSquareLetterR } from "react-icons/tb";
 import { RiSpace } from "react-icons/ri";
 import  { usePracticeID } from '@/contexts/PracticeIDContext';
 import { useAuth } from "@clerk/nextjs";
+import { FaPlay, FaPause } from "react-icons/fa6";
+import { VscDebugRestart } from "react-icons/vsc";
+
 
 interface ExtendedWindow extends Window {
     webgazer?: {
@@ -160,32 +163,46 @@ const Mode2Display = () => {
       }, [countdown]);
 
 
+    // Function to handle restart action
+    const restartAction = () => {
+        setCurrentChunkIndex(0); // Restart from the first chunk
+        setIsPaused(true); // Pause the session
+        setWpmValues([]); // Reset the stored WPM values
+        setWPM(startWPM); // Reset the WPM value
+        setAverageWPM(null); // Reset the averageWPM value
+    };
+
+    // Function to toggle pause/play action
+    const togglePausePlayAction = () => {
+        if (isPaused) {
+            setCountdown(3); // Start a 3-second countdown
+        } else {
+            setIsPaused(true); // Pause immediately without a countdown
+        }
+    };
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
-            // Check if the calibration popup is shown; if true, return early to disable functionality
             if (showCalibrationPopup) {
                 return;
-              }
-
-            if (event.key === "ArrowRight") {
-                setWPM((prevWPM) => Math.min(prevWPM + constIncreaseWPM, maxWPM)); // Increase dynamicWPM
-            } else if (event.key === "ArrowLeft") {
-                setWPM((prevWPM) => Math.max(prevWPM - constDecreaseWPM, minWPM)); // Decrease dynamicWPM
-            } else if (event.key === "R" || event.key === "r") {
-                setCurrentChunkIndex(0); // Restart from the first chunk
-                setIsPaused(true); // Pause the session
-                setWpmValues([]); // Reset the stored WPM values
-                setWPM(startWPM); // Reset the WPM value
-                setAverageWPM(null); // Reset the averageWPM value
-            } else if (event.key === " ") {
-                event.preventDefault(); // Prevent default action (e.g., page scrolling)
-                if (isPaused) {
-                    // Start the countdown instead of unpausing immediately
-                    setCountdown(3); // Start a 3-second countdown
-                  } else {
-                    // Pause immediately without a countdown
-                    setIsPaused(true);
-                  }
+            }
+    
+            switch (event.key) {
+                case "ArrowRight":
+                    setWPM((prevWPM) => Math.min(prevWPM + constIncreaseWPM, maxWPM));
+                    break;
+                case "ArrowLeft":
+                    setWPM((prevWPM) => Math.max(prevWPM - constDecreaseWPM, minWPM));
+                    break;
+                case "R":
+                case "r":
+                    restartAction();
+                    break;
+                case " ":
+                    event.preventDefault();
+                    togglePausePlayAction();
+                    break;
+                default:
+                    break;
             }
         };
         window.addEventListener("keydown", handleKeyPress);
@@ -443,72 +460,101 @@ const Mode2Display = () => {
                 maxWidth: `calc(100% - var(--sidebar-width) - ${gapEdgeSize})`,
                 height: divheight,
                 display: "flex",
+                flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
                 }}
             >
-                <div className="centerContainer" style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    height: "100vh",
-                }}>
-                    {/* Countdown Display */}
-                    {countdown !== null && (
-                      <div style={{
-                        position: 'absolute',
-                        top: '50%', // Center vertically in the viewport
-                        left: '50%', // Center horizontally in the viewport
-                        transform: 'translate(-50%, -50%)',
-                        fontSize: '48px',
-                        zIndex: '1000',
-                        color: 'red',
-                        background: 'rgba(255, 255, 255, 0.8)', // Optional: add a light background for better visibility
-                        padding: '10px 20px',
-                        borderRadius: '10px'
-                      }}>
-                        {countdown > 0 ? countdown : 'Go!'}
-                      </div>
-                    )}
-                    {
-                        showCalibrationPopup && (
-                            <>
-                            <div className="modal-backdrop" style={{ zIndex: 500}}></div>
-                                <div className="modal-content" style={{ 
-                                    width: '30vw', 
-                                    display: 'flex', 
-                                    borderRadius: '20px' ,
-                                    flexDirection: 'column', // Stack children vertically
-                                    alignItems: 'center', // Center children horizontally
-                                    justifyContent: 'center', // Center children vertically
-                                    textAlign: 'center', // Ensures that text inside children elements is centered, if needed
-                                    }}> 
-                                    {!redirecting ? (
-                                    <>
-                                        <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
-                                            Click the button below to begin calibrating WebGazer and start your speed reading session!
-                                        </p>
-                                        <button className="GreenButton" onClick={handleGoToCalibration}>
-                                            Go to Calibration
-                                        </button>
-                                    </>
-                                    ) : (
-                                    <p style={{ fontSize: '18px', textAlign: 'center' }}>
-                                        Redirecting to Calibration Page
-                                        <span className="dot">.</span>
-                                        <span className="dot">.</span>
-                                        <span className="dot">.</span>
+                    
+                {/* Countdown Display */}
+                {countdown !== null && (
+                    <div style={{
+                    position: 'absolute',
+                    top: '50%', // Center vertically in the viewport
+                    left: '50%', // Center horizontally in the viewport
+                    transform: 'translate(-50%, -50%)',
+                    fontSize: '50px',
+                    zIndex: '1000',
+                    color: 'red',
+                    background: 'rgba(255, 255, 255, 0.8)', // Optional: add a light background for better visibility
+                    padding: '10px 20px',
+                    borderRadius: '10px'
+                    }}>
+                    {countdown > 0 ? countdown : 'Go!'}
+                    </div>
+                )}
+                {
+                    showCalibrationPopup && (
+                        <>
+                        <div className="modal-backdrop" style={{ zIndex: 500}}></div>
+                            <div className="modal-content" style={{ 
+                                width: '30vw', 
+                                display: 'flex', 
+                                borderRadius: '20px' ,
+                                flexDirection: 'column', // Stack children vertically
+                                alignItems: 'center', // Center children horizontally
+                                justifyContent: 'center', // Center children vertically
+                                textAlign: 'center', // Ensures that text inside children elements is centered, if needed
+                                }}> 
+                                {!redirecting ? (
+                                <>
+                                    <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
+                                        Click the button below to begin calibrating WebGazer and start your speed reading session!
                                     </p>
-                                )}
-                                </div>
-                            </>
-                        )
-                    }
+                                    <button className="GreenButton" onClick={handleGoToCalibration}>
+                                        Go to Calibration
+                                    </button>
+                                </>
+                                ) : (
+                                <p style={{ fontSize: '18px', textAlign: 'center' }}>
+                                    Redirecting to Calibration Page
+                                    <span className="dot">.</span>
+                                    <span className="dot">.</span>
+                                    <span className="dot">.</span>
+                                </p>
+                            )}
+                            </div>
+                        </>
+                    )
+                }
             
-                {/* The rest of your component's content, keeping the inline styles for alignment and sizing */}
-                <CounterDisplay count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
-                {/* <button onClick={downloadGazeData}>Download Gaze Data</button> */}
+                {/* Flex Container for CounterDisplay and Icons */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', position: 'relative' }}>
+                    {/* Centered Counter Display */}
+                    <CounterDisplay count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
+
+                    {/* Container for Play/Pause and Restart Icons aligned to the top right */}
+                    <div style={{ 
+                        position: 'absolute',
+                        top: 0, 
+                        right: 0,
+                        backgroundColor: 'white', 
+                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.15)', 
+                        padding: '10px 20px', 
+                        borderRadius: '10px', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '10px'  // Space between icons
+                    }} className={showCalibrationPopup ? 'blur-effect' : ''}>
+                        {/* Play/Pause Icon */}
+                        {isPaused ? (
+                            <button className="icon-button" onClick={togglePausePlayAction} style={{ border: 'none', background: 'none', color: 'rgb(90, 90, 90)' }}>
+                                <FaPlay size={20} />
+                            </button>
+                        ) : (
+                            <button className="icon-button" onClick={togglePausePlayAction} style={{ border: 'none', background: 'none', color: 'rgb(90, 90, 90)' }}>
+                                <FaPause size={20} />
+                            </button>
+                        )}
+                        
+                        {/* Restart Icon */}
+                        <button className="icon-button" onClick={restartAction} style={{ border: 'none', background: 'none', color: 'rgb(90, 90, 90)' }}>
+                            <VscDebugRestart size={24} />
+                        </button>
+
+                    </div>
+                </div>
+                {/* Mode 2: Chunk Display */}
                     <div className={`wordDisplay monospaced ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{ 
                         marginTop: "20px",
                         fontSize: `${fontSize}px`,
@@ -521,7 +567,7 @@ const Mode2Display = () => {
                     {wordChunks[currentChunkIndex]}
                     </div>
                 </div>
-            </div>
+            
 
 
             {/* Smaller divs on the right */}
