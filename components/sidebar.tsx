@@ -7,13 +7,12 @@ import Link from "next/link";
 import { UserButton, useUser } from "@clerk/nextjs";
 
 const Sidebar = () => {
-  const { setSelectedTextId } = useSelectedText();
-  const [activeId, setActiveId] = useState<number | null>(null);
+  const { selectedTextId, setSelectedTextId } = useSelectedText();
 
   // Array of texts with their IDs
   const texts = Array.from({ length: 7 }, (_, index) => ({
     id: index + 1,
-    title: `Day ${index + 1}`,
+    title: `Text ${index + 1}`,
   }));
 
   const { user } = useUser();
@@ -60,13 +59,12 @@ const Sidebar = () => {
           <button
             key={text.id}
             onClick={() => { 
-              setSelectedTextId(text.id); 
-              setActiveId(text.id); // Update the active ID
+              setSelectedTextId(text.id); // Update the global context
             }}
             className={`text-sm w-full max-w-xs p-2 font-medium rounded-lg transition sidebar-button-font 
-              ${text.id === activeId ? 'bg-gray-700' : 'hover:bg-gray-700'}`} // Apply active or hover class
+              ${text.id === selectedTextId ? 'bg-gray-700' : 'hover:bg-gray-700'}`} // Apply active or hover class
           >
-            Text {text.title?.match(/\d+/)?.[0] ?? 'Default'}
+            {text.title}
           </button>
         ))}
       </div>
