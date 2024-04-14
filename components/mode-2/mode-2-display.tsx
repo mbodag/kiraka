@@ -451,7 +451,7 @@ const Mode2Display = () => {
         <div
             className="flex justify-center items-start w-full"
             style={{ gap: gapBetweenSize }}
-          >
+        >
 
             {/* Div for Mode2 Display, taking more space */}
             <div
@@ -461,6 +461,7 @@ const Mode2Display = () => {
                 height: divheight,
                 display: "flex",
                 flexDirection: "column",
+                position: "relative",
                 alignItems: "center",
                 justifyContent: "center",
                 }}
@@ -476,7 +477,7 @@ const Mode2Display = () => {
                     fontSize: '50px',
                     zIndex: '1000',
                     color: 'red',
-                    background: 'rgba(255, 255, 255, 0.8)', // Optional: add a light background for better visibility
+                    background: 'rgba(255, 255, 255, 0.8)',
                     padding: '10px 20px',
                     borderRadius: '10px'
                     }}>
@@ -555,18 +556,34 @@ const Mode2Display = () => {
                     </div>
                 </div>
                 {/* Mode 2: Chunk Display */}
-                    <div className={`wordDisplay monospaced ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{ 
-                        marginTop: "20px",
-                        fontSize: `${fontSize}px`,
-                        fontWeight: "bold",
-                        maxWidth: "100vw",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                    }}>
+                <div className={`wordDisplay monospaced ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{ 
+                    marginTop: "20px",
+                    fontSize: `${fontSize}px`,
+                    fontWeight: "bold",
+                    maxWidth: "100vw",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                }}>
                     {wordChunks[currentChunkIndex]}
-                    </div>
                 </div>
+                
+                {/* Progress Bar */}
+                <div style={{ 
+                    position: 'absolute',
+                    bottom: '10px', // Set at the bottom of the parent div
+                    width: '95%',
+                    backgroundColor: '#f0f0f0',
+                    borderRadius: '10px'
+                }}>
+                    <div style={{
+                        height: '8px',
+                        borderRadius: '10px',
+                        backgroundColor: '#4CAF50',
+                        width: `${(currentChunkIndex + 1) / wordChunks.length * 100}%`
+                    }}></div>
+                </div>
+            </div>
             
 
 
