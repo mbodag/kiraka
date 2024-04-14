@@ -47,6 +47,8 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
         );
         return paragraph.match(regex) || [];
       };
+
+      return breakIntoWordsAndKeywordsInner(paragraph); // Call the inner function and return its result
     },
     [keywords]
   );
