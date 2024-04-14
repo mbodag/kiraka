@@ -50,12 +50,12 @@ const consecutiveWPMDecreaseThreshold = 7;
 
 const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
-    // const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. `;
+    const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. `;
 
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
     const [startWPM, setstartWPM] = useState(400); 
     const [WPM, setWPM] = useState(startWPM);
-    const [wpmValues, setWpmValues] = useState<number[]>([]); // To store the WPMs values and take their average at the end of the session; to be sent to the database
+    const WPMValues = useRef([startWPM]); // To store the WPMs values and take their average at the end of the session; to be sent to the database
     const [averageWPM, setAverageWPM] = useState<number | null>(null);
     const gazeDataRef = useRef<GazeDataPoint[]>([]);
     const consecutiveLeftMovements = useRef<number>(0);
@@ -68,7 +68,7 @@ const Mode2Display = () => {
 
     const [fontSize, setFontSize] = useState(44); // Start with a default font size
     const maxCharsPerChunk = wordsPerChunk * avgCharCountPerWord
-    const [shortStory, setShortStory] = useState("");
+    // const [shortStory, setShortStory] = useState("");
     const { selectedTextId } = useSelectedText(); // Use the ID from context
     const { userId } = useAuth()
     const wordChunks = shortStory.match(new RegExp('.{1,' + maxCharsPerChunk + '}(\\s|$)', 'g')) || [];
@@ -76,30 +76,32 @@ const Mode2Display = () => {
     // Accessing the current state of WebGazer
     const { isWebGazerActive } = useWebGazer();
     const [showCalibrationPopup, setShowCalibrationPopup] = useState(true);
-    const [redirecting, setRedirecting] = useState(false);
+    const [showCompletionPopup, setShowCompletionPopup] = useState(false);
+    const [redirectingToCalibration, setRedirectingToCalibration] = useState(false);
+    const [redirectingToQuiz, setRedirectingToQuiz] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
 
-    useEffect(() => {
-        const fetchTextById = async (textId: number) => {
-          try {
-            const response = await fetch(`/api/texts/${textId}`);
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            console.log(data.quiz_questions);
-            // Replace newlines (\n) with spaces and set the cleaned text
-            const cleanedText = data.text_content.replace(/\n+/g, ' ');
-            setShortStory(cleanedText);
-          } catch (error) {
-            console.error('Error fetching text:', error);
-          }
-        };
+    // useEffect(() => {
+    //     const fetchTextById = async (textId: number) => {
+    //       try {
+    //         const response = await fetch(`/api/texts/${textId}`);
+    //         if (!response.ok) {
+    //           throw new Error('Network response was not ok');
+    //         }
+    //         const data = await response.json();
+    //         console.log(data.quiz_questions);
+    //         // Replace newlines (\n) with spaces and set the cleaned text
+    //         const cleanedText = data.text_content.replace(/\n+/g, ' ');
+    //         setShortStory(cleanedText);
+    //       } catch (error) {
+    //         console.error('Error fetching text:', error);
+    //       }
+    //     };
     
-        if (selectedTextId) {
-          fetchTextById(selectedTextId);
-        }
-      }, [selectedTextId]);
+    //     if (selectedTextId) {
+    //       fetchTextById(selectedTextId);
+    //     }
+    //   }, [selectedTextId]);
 
 
     // useEffect(() => {
@@ -123,10 +125,16 @@ const Mode2Display = () => {
     }, [isWebGazerActive]);
 
     const handleGoToCalibration = () => {
-        setRedirecting(true); // Set redirecting state to true
+        setRedirectingToCalibration(true); // Set redirecting state to true
         setTimeout(() => {
             window.location.href = '/calibration'; // Redirect after a brief pause
         }, 1500); // Adjust this delay as needed
+    };
+    const handleContinueToQuiz = async () => {
+        setShowCompletionPopup(false);
+        setRedirectingToQuiz(true);
+        await submitReadingSpeed(averageWPM); // Ensure this is an async function if it makes server requests
+        window.location.href = '/quiz'; // Directly change the window location to navigate
     };
 
       
@@ -171,7 +179,7 @@ const Mode2Display = () => {
     const restartAction = () => {
         setCurrentChunkIndex(0); // Restart from the first chunk
         setIsPaused(true); // Pause the session
-        setWpmValues([]); // Reset the stored WPM values
+        WPMValues.current = [startWPM];
         setWPM(startWPM); // Reset the WPM value
         setAverageWPM(null); // Reset the averageWPM value
         setIsRestartActive(true); // Set active to true
@@ -189,7 +197,7 @@ const Mode2Display = () => {
     };
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
-            if (showCalibrationPopup) {
+            if (showCalibrationPopup || showCompletionPopup) {
                 return;
             }
     
@@ -318,8 +326,9 @@ const Mode2Display = () => {
                         // Increase WPM and move to the next chunk
                         const inferredWPM = calculateWPMFromDisplayTime(deltaTime, wordChunks[currentChunkIndex])
                         const gradualSpeedIncrement = getGradualSpeedIncrement(inferredWPM, maxWPM);
-                        setWPM(prevWPM => Math.round(Math.min(prevWPM + maxConstIncreaseWPM, inferredWPM + gradualSpeedIncrement, maxWPM)));
-                        setWpmValues(prevValues => [...prevValues, WPM]);
+                        const increasedWPM = Math.round(Math.min(WPM + maxConstIncreaseWPM, inferredWPM + gradualSpeedIncrement, maxWPM))
+                        setWPM(increasedWPM);
+                        WPMValues.current = [...WPMValues.current, increasedWPM];
                         setCurrentChunkIndex(prevIndex => prevIndex + 1);
                         gazeDataRef.current = [];
                         consecutiveLeftMovements.current = 0;
@@ -331,8 +340,9 @@ const Mode2Display = () => {
                     } else if (deltaTime >= chunkDisplayTime) {
                         // No leftward movement detected by the end of the chunk display time,
                         // possibly indicating the need to slow down
-                        setWPM(prevWPM => Math.max(prevWPM - constDecreaseWPM, minWPM));
-                        setWpmValues(prevValues => [...prevValues, WPM]);
+                        const decreasedWPM = Math.max(WPM - constDecreaseWPM, minWPM)
+                        setWPM(decreasedWPM);
+                        WPMValues.current = [...WPMValues.current, decreasedWPM];
                         setCurrentChunkIndex(prevIndex => prevIndex + 1);
                         gazeDataRef.current = [];
                         consecutiveLeftMovements.current = 0;
@@ -340,8 +350,8 @@ const Mode2Display = () => {
                         if (consecutiveWPMDecrease.current > consecutiveWPMDecreaseThreshold) {
                             setIsUserTired(true)
                             setIsPaused(true)
-                            console.log('TIRED')
-                            consecutiveWPMDecrease.current = 0;
+                            // console.log('TIRED')
+                            // consecutiveWPMDecrease.current = 0;
                         }
                         // console.log('TOO FAST - LEFT NOT DETECTED')
                         // console.log('WPM', WPM)
@@ -349,10 +359,9 @@ const Mode2Display = () => {
                     }
                 }
     
-                // If the chunk hasn't ended or been skipped, keep monitoring
                 if (currentChunkIndex < wordChunks.length && !isPaused) {
                     animationFrameId = requestAnimationFrame(analyzeAndAdjust);
-                }
+                } 
             };
     
             // Start the continuous analysis
@@ -365,7 +374,9 @@ const Mode2Display = () => {
 
         // When we reach the last chunk
         if (currentChunkIndex >= wordChunks.length - 1) {
-            calculateAndSubmitAverageWpm();
+            calculateAverageWPM();
+            setIsPaused(true)
+            setShowCompletionPopup(true);
         }
 
         return () => {
@@ -377,18 +388,20 @@ const Mode2Display = () => {
     }, [currentChunkIndex, isPaused, wordChunks, WPM, isWebGazerActive]);
 
 
-    const calculateAndSubmitAverageWpm = () => {
-        if (averageWPM !== null || wpmValues.length === 0) return;// Ensure there are recorded WPM values
+    const calculateAverageWPM = () => {
+        if (averageWPM !== null || WPMValues.current.length === 0) return;// Ensure there are recorded WPM values
     
-        const sum = wpmValues.reduce((acc, cur) => acc + cur, 0);
-        const calculatedAverageWpm = Math.round(sum / wpmValues.length);
+        const sum = WPMValues.current.reduce((acc, cur) => acc + cur, 0);
+        const calculatedAverageWPM = Math.round(sum / WPMValues.current.length);
+
+        // console.log('WPMValues', WPMValues.current)
+        // console.log('WPMValues length', WPMValues.current.length)
+        // console.log('word chunks', wordChunks.length)
 
         // Update state and submit.
-        setAverageWPM(calculatedAverageWpm);
-        submitReadingSpeed(calculatedAverageWpm); // Use the freshly calculated value.
-    
+        setAverageWPM(calculatedAverageWPM);
         // Reset WPM values for a new session.
-        setWpmValues([]);
+        WPMValues.current = [startWPM];
     };
 
     const { updatePracticeId } = usePracticeID(); // Accessing the updatePracticeId method from the global context
@@ -504,7 +517,7 @@ const Mode2Display = () => {
                                 justifyContent: 'center', // Center children vertically
                                 textAlign: 'center', // Ensures that text inside children elements is centered, if needed
                                 }}> 
-                                {!redirecting ? (
+                                {!redirectingToCalibration ? (
                                 <>
                                     <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
                                         Click the button below to begin calibrating WebGazer and start your speed reading session!
@@ -525,6 +538,50 @@ const Mode2Display = () => {
                         </>
                     )
                 }
+                {/* Completion Popup */}
+                {showCompletionPopup && (
+                    <>
+                        <div className="modal-backdrop" style={{ zIndex: 500 }}></div>
+                        <div className="modal-content" style={{ 
+                            width: '30vw', 
+                            display: 'flex', 
+                            borderRadius: '20px',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            textAlign: 'center',
+                            background: 'white',
+                            padding: '20px',
+                            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                        }}>
+                            <p style={{ fontSize: '18px', marginBottom: '20px' }}>
+                                Congratulations on completing your speed-reading session!
+                            </p>
+                            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                                {!redirectingToQuiz ? (
+                                    <>
+                                        <button className="GreenButton" onClick={() => {
+                                            restartAction();
+                                            setShowCompletionPopup(false);
+                                        }}>
+                                            Restart
+                                        </button>
+                                        <button className="GreenButton" onClick={handleContinueToQuiz}>
+                                            Continue to Quiz
+                                        </button>
+                                    </>
+                                ) : (
+                                    <p style={{ fontSize: '18px', textAlign: 'center' }}>
+                                        Redirecting to Quiz Page...
+                                        <span className="dot">.</span>
+                                        <span className="dot">.</span>
+                                        <span className="dot">.</span>
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    </>
+                )}
             
                 {/* Flex Container for CounterDisplay and Icons */}
                 <div style={{ 
