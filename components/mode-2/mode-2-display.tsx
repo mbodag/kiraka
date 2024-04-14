@@ -63,6 +63,9 @@ const Mode2Display = () => {
     const [isUserTired, setIsUserTired] = useState(false);
 
     const [isPaused, setIsPaused] = useState(true); // Add a state to track whether the flashing is paused
+    const [isRestartActive, setIsRestartActive] = useState(false);
+    const [isPausePlayActive, setIsPausePlayActive] = useState(false);
+
     const [fontSize, setFontSize] = useState(44); // Start with a default font size
     const maxCharsPerChunk = wordsPerChunk * avgCharCountPerWord
     const [shortStory, setShortStory] = useState("");
@@ -152,16 +155,17 @@ const Mode2Display = () => {
             setCountdown(countdown - 1);
           }, 1000);
         } else if (countdown === 0) {
-          // When countdown finishes, ensure the display starts
-          setIsPaused(false);
-          setCountdown(null); // Reset countdown to not counting down state
+            // Display "Go!" for a brief moment before resetting
+            timerId = setTimeout(() => {
+                setIsPaused(false);  // Ensure the display starts if it was paused
+                setCountdown(null);  // Reset countdown to not counting down state
+            }, 1000);  // Allow 1 second for "Go!" to be visible
         }
 
         return () => {
           clearTimeout(timerId); // Clean up the timer
         };
       }, [countdown]);
-
 
     // Function to handle restart action
     const restartAction = () => {
@@ -170,8 +174,9 @@ const Mode2Display = () => {
         setWpmValues([]); // Reset the stored WPM values
         setWPM(startWPM); // Reset the WPM value
         setAverageWPM(null); // Reset the averageWPM value
+        setIsRestartActive(true); // Set active to true
+        setTimeout(() => setIsRestartActive(false), 100); // Reset after 500ms
     };
-
     // Function to toggle pause/play action
     const togglePausePlayAction = () => {
         if (isPaused) {
@@ -179,6 +184,8 @@ const Mode2Display = () => {
         } else {
             setIsPaused(true); // Pause immediately without a countdown
         }
+        setIsPausePlayActive(true); // Set active to true
+        setTimeout(() => setIsPausePlayActive(false), 100); // Reset after 500ms
     };
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
@@ -476,10 +483,10 @@ const Mode2Display = () => {
                     transform: 'translate(-50%, -50%)',
                     fontSize: '50px',
                     zIndex: '1000',
-                    color: 'red',
+                    color: 'rgb(200, 0, 0)',
                     background: 'rgba(255, 255, 255, 0.8)',
                     padding: '10px 20px',
-                    borderRadius: '10px'
+                    borderRadius: '10px',
                     }}>
                     {countdown > 0 ? countdown : 'Go!'}
                     </div>
@@ -520,7 +527,14 @@ const Mode2Display = () => {
                 }
             
                 {/* Flex Container for CounterDisplay and Icons */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', position: 'relative' }}>
+                <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    width: '100%', 
+                    position: 'relative',
+                    paddingTop: '0px',
+                }}>
                     {/* Centered Counter Display */}
                     <CounterDisplay count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
 
@@ -538,26 +552,19 @@ const Mode2Display = () => {
                         gap: '10px'  // Space between icons
                     }} className={showCalibrationPopup ? 'blur-effect' : ''}>
                         {/* Play/Pause Icon */}
-                        {isPaused ? (
-                            <button className="icon-button" onClick={togglePausePlayAction} style={{ border: 'none', background: 'none', color: 'rgb(90, 90, 90)' }}>
-                                <FaPlay size={20} />
-                            </button>
-                        ) : (
-                            <button className="icon-button" onClick={togglePausePlayAction} style={{ border: 'none', background: 'none', color: 'rgb(90, 90, 90)' }}>
-                                <FaPause size={20} />
-                            </button>
-                        )}
-                        
+                        <button className={`icon-button ${isPausePlayActive ? 'active' : ''}`} onClick={togglePausePlayAction}>
+                            {isPaused ? <FaPlay size={20} /> : <FaPause size={20} />}
+                        </button>
+                                                                        
                         {/* Restart Icon */}
-                        <button className="icon-button" onClick={restartAction} style={{ border: 'none', background: 'none', color: 'rgb(90, 90, 90)' }}>
+                        <button className={`icon-button ${isRestartActive ? 'active' : ''}`} onClick={restartAction}>
                             <VscDebugRestart size={24} />
                         </button>
-
                     </div>
                 </div>
                 {/* Mode 2: Chunk Display */}
                 <div className={`wordDisplay monospaced ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{ 
-                    marginTop: "20px",
+                    marginTop: "30px",
                     fontSize: `${fontSize}px`,
                     fontWeight: "bold",
                     maxWidth: "100vw",
@@ -569,7 +576,7 @@ const Mode2Display = () => {
                 </div>
                 
                 {/* Progress Bar */}
-                <div style={{ 
+                <div className={showCalibrationPopup ? 'blur-effect' : ''} style={{ 
                     position: 'absolute',
                     bottom: '10px', // Set at the bottom of the parent div
                     width: '95%',
