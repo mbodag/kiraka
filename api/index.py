@@ -68,6 +68,22 @@ class PracticeResults(db.Model):
     
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    
+class Chunks(db.Model):
+    __tablename__ = 'Chunks'
+    chunk_id = db.Column(db.Integer, primary_key=True)
+    practice_id = db.Column(db.Integer, db.ForeignKey('PracticeResults.practice_id'), nullable=False)
+    chunk_position = db.Column(db.Integer) #Index position w.r.t this run's other chunks, so that they can be ordered
+
+class GazerPoints(db.Model):
+    __tablename__ = 'GazerPoints'
+    point_id = db.Column(db.Integer, primary_key=True)
+    chunk_id = db.Column(db.Integer, db.ForeignKey('Chunks.chunk_id'), nullable=False)
+    gazer_point_position = db.Column(db.Integer) #Index position w.r.t this chunk's other GazerPoints, so that they can be ordered
+    x_value = db.Column(db.Float) #x coordinate of the gaze point
+    y_value = db.Column(db.Float) #y coordinate of the gaze point
+    elapsed_time = db.Column(db.Float) #Time elapsed since the start of the chunk
+    
 
 def populate_texts():
     '''
@@ -353,7 +369,9 @@ def submit_reading_speed():
     text_id = data.get('text_id')  # Assuming text_id is provided
     user_id = data.get('user_id')  # Assuming user_id is provided
     wpm = data.get('wpm')
-
+    mode = data.get('mode', 'undefined')
+    chunks = data.get('chunks_data', [[]]) # Should be a list of lists of dictionaries
+    print(mode)
     # Validate the text_id as integer and user_id as string
     if not isinstance(text_id, int) or not isinstance(user_id, str):
         return jsonify({'error': 'Invalid text_id or user_id'}), 400
@@ -367,12 +385,30 @@ def submit_reading_speed():
         text_id=text_id,
         user_id=user_id,
         wpm=wpm,
+        mode = mode,
         timestamp=datetime.now(timezone.utc)  # Assuming current time as timestamp
     )
 
     # Add to the database session
     db.session.add(new_practice_result)
-
+    db.session.commit()
+    
+    for i in range(len(chunks)):
+        new_chunk = Chunks(
+            practice_id=new_practice_result.practice_id,
+            chunk_position=i
+        )
+        db.session.add(new_chunk)
+        db.session.commit()
+        for j in range(len(chunks[i])):
+            new_gazer_point = GazerPoints(
+                chunk_id=new_chunk.chunk_id,
+                gazer_point_position=j,
+                x_value=chunks[i][j]['x'],
+                y_value=chunks[i][j]['y'],
+                elapsed_time=chunks[i][j]['elapsedTime']
+            )
+            db.session.add(new_gazer_point)
     # Commit the new practice result to the database
     try:
         db.session.commit()
