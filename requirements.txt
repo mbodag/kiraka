@@ -6,6 +6,5 @@ mariadb==1.1.10
 PyMySQL==1.1.0
 requests==2.31.0
 SQLAlchemy==2.0.29
-numpy==1.24.4
 waitress==3.0.0
 
