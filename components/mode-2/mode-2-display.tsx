@@ -20,12 +20,15 @@ interface ExtendedWindow extends Window {
 
 interface GazeDataPoint {
     x: number;
+    normScaledX: number;
     y: number;
     elapsedTime: number;
     deltaX: number;
+    normScaledDeltaX: number;
     deltaY: number;
     deltaT: number;
     speedX: number;
+    normScaledSpeedX: number;
     Lefts: number;
 }
 
@@ -35,10 +38,12 @@ const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
 const minWPM = 200;
 const maxWPM = 800; // This is an approximation (~4.7 for English language)
-const significantLeftSpeed = -2;
-const constIncreaseWPM = 20;
-const constDecreaseWPM = 20;
-const percentageDisplayTimeToIgnore = 0.7
+const significantLeftNormSpeed = -2/1201*100; // defined experimentally, based on the mac word display width (1201px) at the time of the experiment, and the value of -2px/s for threshold speed. Scaled by 100 (giving percentage)
+const constIncreaseWPM = 30;
+const constDecreaseWPM = 25;
+const maxConstIncreaseWPM = 70;
+const gradualSpeedIncrement = 5;
+const percentageDisplayTimeToIgnore = 0.6 // chosen experimentally
 
 const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
@@ -161,12 +166,20 @@ const Mode2Display = () => {
 
 
 
-    // Function to calculate display time for a chunk
-    const calculateDisplayTime = (chunk: string) => {
+    // Function to calculate display time from WPM for a chunk
+    const calculateDisplayTimeFromWPM = (chunk: string) => {
         const wordsPerSecond = WPM / 60;
         const wordCount = chunk.length / 5; // Assume an average of 5 characters per word including white spaces
         // Return the display time in milliseconds
         return (wordCount / wordsPerSecond) * 1000;
+    };
+    // Function to calculate WPM from display time for a chunk
+    const calculateWPMFromDisplayTime = (displayTimeMs: number, chunk: string) => {
+        const displayTimeSeconds = displayTimeMs / 1000; // Convert milliseconds to seconds
+        const wordCount = chunk.length / 5; // Assume an average of 5 characters per word including white spaces
+        const wordsPerSecond = wordCount / displayTimeSeconds;
+        const WPM = wordsPerSecond * 60;
+        return WPM;
     };
     
     
@@ -182,22 +195,25 @@ const Mode2Display = () => {
                 // Proceed if there's gaze data and it includes an x-coordinate
                 if (data && data.x && data.y && elapsedTime) {
                     const divWidth = document.querySelector('.wordDisplayDiv')?.clientWidth ?? 1;
-                    const normX = data.x/divWidth;
+                    const normScaledX = data.x/divWidth*100;
                     const deltaX = gazeDataRef.current.length > 0 ? data.x - gazeDataRef.current[gazeDataRef.current.length - 1].x : 0;
+                    const normScaledDeltaX = gazeDataRef.current.length > 0 ? normScaledX - gazeDataRef.current[gazeDataRef.current.length - 1].normScaledX : 0;
                     const deltaY = gazeDataRef.current.length > 0 ? data.y - gazeDataRef.current[gazeDataRef.current.length - 1].y : 0;
                     const deltaT = gazeDataRef.current.length > 0 ? elapsedTime - gazeDataRef.current[gazeDataRef.current.length - 1].elapsedTime : 0;
                     const speedX = deltaT > 0 ? deltaX/deltaT : 0;
-                    console.log('x:', data.x, '|', 'y:', data.y, '|', 'elapsedTime:', elapsedTime, '|', 'deltaX:', deltaX, '|', 'deltaY:', deltaY, '|', 'deltaT:', deltaT, '|', 'speedX:', speedX);
-                    console.log('width', window.innerWidth, 'height', window.innerHeight)
+                    const normScaledSpeedX = deltaT > 0 ? normScaledDeltaX/deltaT : 0;
+                    console.log('x:', data.x, '|', 'normScaledX:', normScaledX, '|', 'y:', data.y, '|', 'elapsedTime:', elapsedTime, '|', 'deltaX:', deltaX, '|', 
+                    'normScaledDeltaX:', normScaledDeltaX, '|', 'deltaY:', deltaY, '|', 'deltaT:', deltaT, '|', 'speedX:', speedX, '|', 'normScaledSpeedX:', normScaledSpeedX);
 
-                    if (speedX < significantLeftSpeed) {
+                    if (normScaledSpeedX < significantLeftNormSpeed) {
                         consecutiveLeftMovements.current += 1;
                       } else {
                         consecutiveLeftMovements.current = 0;
                       }
                     const Lefts = consecutiveLeftMovements.current
 
-                    gazeDataRef.current.push({ x: data.x, y: data.y, elapsedTime, deltaX, deltaY, deltaT, speedX, Lefts });
+                    gazeDataRef.current.push({ x: data.x, normScaledX: normScaledX, y: data.y, elapsedTime, deltaX, normScaledDeltaX: normScaledDeltaX, 
+                        deltaY, deltaT, speedX, normScaledSpeedX: normScaledSpeedX, Lefts });
 
                 }
             });
@@ -217,26 +233,36 @@ const Mode2Display = () => {
         const monitorAndAdjust = () => {
             // The start time of monitoring the current chunk
             const startTime = performance.now();
+            console.log('monitorAndAdjust')
     
             // Function to analyze gaze data and decide whether to adjust WPM or move to the next chunk
             const analyzeAndAdjust = () => {
                 const currentTime = performance.now();
-                const elapsedTime = currentTime - startTime;
-                const chunkDisplayTime = calculateDisplayTime(wordChunks[currentChunkIndex]);
+                const deltaTime = currentTime - startTime;
+                const chunkDisplayTime = calculateDisplayTimeFromWPM(wordChunks[currentChunkIndex]);
+                console.log('one iteration')
+                console.log('WPM', WPM)
+                console.log('currentChunkIndex', currentChunkIndex)
+                console.log('chunkDisplayTime', chunkDisplayTime)
+                console.log('deltaTime', deltaTime)
 
-                // Ensure we're analyzing only after at least 70% of the expected chunk display time has passed
-                if (elapsedTime > chunkDisplayTime * percentageDisplayTimeToIgnore) {
-
+                // Ensure we're analyzing only after at least 60% of the expected chunk display time has passed
+                if (deltaTime > chunkDisplayTime * percentageDisplayTimeToIgnore) {
+                    console.log('entered 0.6T')
                     // If significant leftward movement is detected
                     if (gazeDataRef.current.length > 0 && gazeDataRef.current[gazeDataRef.current.length - 1].Lefts >= 2) {
                         // Increase WPM and move to the next chunk
-                        setWPM(prevWPM => Math.min(prevWPM + constIncreaseWPM, maxWPM));
+                        const inferredWPM = calculateWPMFromDisplayTime(deltaTime, wordChunks[currentChunkIndex])
+                        setWPM(prevWPM => Math.round(Math.min(prevWPM + maxConstIncreaseWPM, inferredWPM + gradualSpeedIncrement, maxWPM)));
                         setWpmValues(prevValues => [...prevValues, WPM]);
                         setCurrentChunkIndex(prevIndex => prevIndex + 1);
                         gazeDataRef.current = [];
                         consecutiveLeftMovements.current = 0;
+                        console.log('TOO SLOW - LEFT DETECTED')
+                        console.log('WPM', WPM)
+                        console.log('currentChunkIndex', currentChunkIndex)
 
-                    } else if (elapsedTime >= chunkDisplayTime) {
+                    } else if (deltaTime >= chunkDisplayTime) {
                         // No leftward movement detected by the end of the chunk display time,
                         // possibly indicating the need to slow down
                         setWPM(prevWPM => Math.max(prevWPM - constDecreaseWPM, minWPM));
@@ -244,7 +270,9 @@ const Mode2Display = () => {
                         setCurrentChunkIndex(prevIndex => prevIndex + 1);
                         gazeDataRef.current = [];
                         consecutiveLeftMovements.current = 0;
-
+                        console.log('TOO FAST - LEFT NOT DETECTED')
+                        console.log('WPM', WPM)
+                        console.log('currentChunkIndex', currentChunkIndex)
                     }
                 }
     
