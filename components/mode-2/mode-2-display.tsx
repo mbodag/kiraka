@@ -1,6 +1,6 @@
 "use client"; 
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo, FC } from "react";
 import { useSelectedText } from "@/contexts/SelectedTextContext";
 import CounterDisplay from "@/components/mode-1/counter-display";
 import styles from '@/app/(dashboard)/(routes)/dashboard/DashboardPage.module.css';
@@ -12,6 +12,11 @@ import  { usePracticeID } from '@/contexts/PracticeIDContext';
 import { useAuth } from "@clerk/nextjs";
 import { FaPlay, FaPause } from "react-icons/fa6";
 import { VscDebugRestart } from "react-icons/vsc";
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+
+// Register the necessary components for Chart.js
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 
 interface ExtendedWindow extends Window {
@@ -35,6 +40,12 @@ interface GazeDataPoint {
     Lefts: number;
 }
 
+interface ReadingSpeedChartProps {
+    wpmValues: number[];
+    averageWPM: number;
+  }
+  
+
 // Assuming you want a specific number of words per chunk, 
 // and estimating the average character count per word
 const wordsPerChunk = 10;
@@ -50,12 +61,12 @@ const consecutiveWPMDecreaseThreshold = 7;
 
 const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
-    const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. `;
+    // const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. `;
 
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
     const [startWPM, setstartWPM] = useState(400); 
     const [WPM, setWPM] = useState(startWPM);
-    const WPMValues = useRef([startWPM]); // To store the WPMs values and take their average at the end of the session; to be sent to the database
+    const WPMValues = useRef<number[]>([startWPM]); // To store the WPMs values and take their average at the end of the session; to be sent to the database
     const [averageWPM, setAverageWPM] = useState<number | null>(null);
     const gazeDataRef = useRef<GazeDataPoint[]>([]);
     const consecutiveLeftMovements = useRef<number>(0);
@@ -68,10 +79,12 @@ const Mode2Display = () => {
 
     const [fontSize, setFontSize] = useState(44); // Start with a default font size
     const maxCharsPerChunk = wordsPerChunk * avgCharCountPerWord
-    // const [shortStory, setShortStory] = useState("");
+    const [shortStory, setShortStory] = useState("");
     const { selectedTextId } = useSelectedText(); // Use the ID from context
-    const { userId } = useAuth()
-    const wordChunks = shortStory.match(new RegExp('.{1,' + maxCharsPerChunk + '}(\\s|$)', 'g')) || [];
+    const { userId } = useAuth();
+    const wordChunks = useMemo(() => {
+        return shortStory.match(new RegExp('.{1,' + maxCharsPerChunk + '}(\\s|$)', 'g')) || [];
+    }, [shortStory]);
 
     // Accessing the current state of WebGazer
     const { isWebGazerActive, setWebGazerActive } = useWebGazer();
@@ -81,27 +94,27 @@ const Mode2Display = () => {
     const [redirectingToQuiz, setRedirectingToQuiz] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
 
-    // useEffect(() => {
-    //     const fetchTextById = async (textId: number) => {
-    //       try {
-    //         const response = await fetch(`/api/texts/${textId}`);
-    //         if (!response.ok) {
-    //           throw new Error('Network response was not ok');
-    //         }
-    //         const data = await response.json();
-    //         console.log(data.quiz_questions);
-    //         // Replace newlines (\n) with spaces and set the cleaned text
-    //         const cleanedText = data.text_content.replace(/\n+/g, ' ');
-    //         setShortStory(cleanedText);
-    //       } catch (error) {
-    //         console.error('Error fetching text:', error);
-    //       }
-    //     };
+    useEffect(() => {
+        const fetchTextById = async (textId: number) => {
+          try {
+            const response = await fetch(`/api/texts/${textId}`);
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            console.log(data.quiz_questions);
+            // Replace newlines (\n) with spaces and set the cleaned text
+            const cleanedText = data.text_content.replace(/\n+/g, ' ');
+            setShortStory(cleanedText);
+          } catch (error) {
+            console.error('Error fetching text:', error);
+          }
+        };
     
-    //     if (selectedTextId) {
-    //       fetchTextById(selectedTextId);
-    //     }
-    //   }, [selectedTextId]);
+        if (selectedTextId) {
+          fetchTextById(selectedTextId);
+        }
+      }, [selectedTextId]);
 
 
     // useEffect(() => {
@@ -225,7 +238,9 @@ const Mode2Display = () => {
         return () => window.removeEventListener("keydown", handleKeyPress);
     }, [showCalibrationPopup, showCompletionPopup, isPaused]);
 
-
+    useEffect(() => {
+        console.log('Completion Popup State:', showCompletionPopup);
+    }, [showCompletionPopup]);
 
     // Function to calculate display time from WPM for a chunk
     const calculateDisplayTimeFromWPM = (chunk: string) => {
@@ -348,12 +363,12 @@ const Mode2Display = () => {
                         gazeDataRef.current = [];
                         consecutiveLeftMovements.current = 0;
                         consecutiveWPMDecrease.current += 1;
-                        if (consecutiveWPMDecrease.current > consecutiveWPMDecreaseThreshold) {
-                            setIsUserTired(true)
-                            setIsPaused(true)
-                            // console.log('TIRED')
-                            // consecutiveWPMDecrease.current = 0;
-                        }
+                        // if (consecutiveWPMDecrease.current > consecutiveWPMDecreaseThreshold) {
+                        //     setIsUserTired(true)
+                        //     setIsPaused(true)
+                        //     // console.log('TIRED')
+                        //     // consecutiveWPMDecrease.current = 0;
+                        // }
                         // console.log('TOO FAST - LEFT NOT DETECTED')
                         // console.log('WPM', WPM)
                         // console.log('currentChunkIndex', currentChunkIndex)
@@ -374,7 +389,7 @@ const Mode2Display = () => {
         }
 
         // When we reach the last chunk
-        if (currentChunkIndex >= wordChunks.length - 1) {
+        if (wordChunks.length > 0 && currentChunkIndex >= wordChunks.length - 1) {
             calculateAverageWPM();
             setIsPaused(true)
             setShowCompletionPopup(true);
@@ -401,8 +416,6 @@ const Mode2Display = () => {
 
         // Update state and submit.
         setAverageWPM(calculatedAverageWPM);
-        // Reset WPM values for a new session.
-        WPMValues.current = [startWPM];
     };
 
     const { updatePracticeId } = usePracticeID(); // Accessing the updatePracticeId method from the global context
@@ -458,11 +471,60 @@ const Mode2Display = () => {
         }
       }, [showCalibrationPopup]);
 
+
+
+    const ReadingSpeedChart: FC<{ wpmValues: number[], averageWPM: number }> = ({ wpmValues, averageWPM }) => {
+        const minWPM = Math.min(...wpmValues) - 50;
+        const maxWPM = Math.max(...wpmValues) + 50;
+
+        const data = {
+            labels: wpmValues.map((_, index) => `Chunk ${index + 1}`),
+            datasets: [
+                {
+                    label: 'WPM over Time',
+                    data: wpmValues,
+                    borderColor: 'rgb(0, 155, 155)',
+                    backgroundColor: 'rgba(0, 192, 192, 0.5)',
+                    fill: false,
+                },
+                {
+                    label: 'Average WPM',
+                    data: new Array(wpmValues.length).fill(averageWPM),
+                    borderColor: 'rgb(215, 0, 0)',
+                    borderDash: [5, 5],
+                    fill: false,
+                }
+            ],
+        };
+
+        const options = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    suggestedMin: minWPM,  // Dynamically set minimum
+                    suggestedMax: maxWPM,  // Dynamically set maximum
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top' as const, // This 'as const' assertion tells TypeScript this is a constant of type 'top'
+                }
+            }
+        };
+
+        return <div style={{ height: '100%', width: '100%' }}>
+            <Line data={data} options={options} />
+        </div>;
+    };
+
     
 
     const gapBetweenSize = '10px';
     const gapEdgeSize = '15px';
-    const divheight = '250px';
+    const divHeight = '250px';
+    const plotHeight = '350px';
 
     return (
     <div
@@ -484,7 +546,7 @@ const Mode2Display = () => {
                 className="wordDisplayDiv bg-white rounded-lg shadow-lg p-8 pt-2 my-2 flex-1"
                 style={{
                 maxWidth: `calc(100% - var(--sidebar-width) - ${gapEdgeSize})`,
-                height: divheight,
+                height: divHeight,
                 display: "flex",
                 flexDirection: "column",
                 position: "relative",
@@ -552,7 +614,7 @@ const Mode2Display = () => {
                             top: `-${gapBetweenSize}`, // Center it vertically
                             left: '50%', // Center it horizontally
                             transform: 'translate(-50%, -100%)', // Adjust the positioning to truly center the modal
-                            width: '45vw', // Adjust the width as needed, or use a fixed width
+                            width: '40vw', // Adjust the width as needed, or use a fixed width
                             display: 'flex',
                             borderRadius: '20px',
                             flexDirection: 'column',
@@ -667,7 +729,7 @@ const Mode2Display = () => {
                     flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "space-between", // This will evenly space the children vertically
-                    height: divheight,
+                    height: divHeight,
             }}>
 
                 {/* div 1 */}
@@ -768,6 +830,23 @@ const Mode2Display = () => {
                 </div>
             </div>
         </div>
+        {/* Chart display on completion */}
+        {showCompletionPopup && WPMValues.current.length > 0 && (
+            <div className="bg-white rounded-lg shadow-lg mx-2" style={{
+                width: `calc(100% - ${gapEdgeSize})`, // Ensure full width
+                height: plotHeight, 
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                position: "relative",
+                marginTop: '0.1rem',
+                padding: '30px', // Padding to prevent content from touching the edges
+                border: '2px solid gray',
+            }}>
+                <ReadingSpeedChart wpmValues={WPMValues.current} averageWPM={averageWPM || 0} />
+            </div>
+        )}
     </div>
 
     );
