@@ -308,10 +308,19 @@ body,
   0%, 100% { border-color: rgb(0, 200, 0); }
   50% { border-color: transparent; } /* 'Off' state */
 }
-
 .flash-green-border {
   animation: flashGreenBorder 1s infinite; /* Adjust timing as needed */
 }
+
+
+@keyframes flashOrangeBorder {
+  0%, 100% { border-color: orange; }
+  50% { border-color: transparent; } /* 'Off' state */
+}
+.flash-orange-border {
+  animation: flashOrangeBorder 1.5s infinite; /* Adjust timing as needed */
+}
+
 
 
 .scrollbar-hide::-webkit-scrollbar {

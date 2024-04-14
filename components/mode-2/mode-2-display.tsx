@@ -74,7 +74,7 @@ const Mode2Display = () => {
     const wordChunks = shortStory.match(new RegExp('.{1,' + maxCharsPerChunk + '}(\\s|$)', 'g')) || [];
 
     // Accessing the current state of WebGazer
-    const { isWebGazerActive } = useWebGazer();
+    const { isWebGazerActive, setWebGazerActive } = useWebGazer();
     const [showCalibrationPopup, setShowCalibrationPopup] = useState(true);
     const [showCompletionPopup, setShowCompletionPopup] = useState(false);
     const [redirectingToCalibration, setRedirectingToCalibration] = useState(false);
@@ -113,7 +113,7 @@ const Mode2Display = () => {
 
     useEffect(() => {
         // Directly check if WebGazer is not active to prompt for calibration.
-        if (!isWebGazerActive) {
+        if (!isWebGazerActive && !redirectingToQuiz) {
             // sessionStorage.setItem('isCalibrated', 'false');
             setShowCalibrationPopup(true);
         } else {
@@ -122,7 +122,7 @@ const Mode2Display = () => {
             // setShowCalibrationPopup(isCalibrated !== 'true');
             setShowCalibrationPopup(false);
         }
-    }, [isWebGazerActive]);
+    }, [isWebGazerActive, redirectingToQuiz]);
 
     const handleGoToCalibration = () => {
         setRedirectingToCalibration(true); // Set redirecting state to true
@@ -134,6 +134,7 @@ const Mode2Display = () => {
         setShowCompletionPopup(false);
         setRedirectingToQuiz(true);
         await submitReadingSpeed(averageWPM); // Ensure this is an async function if it makes server requests
+        setWebGazerActive(false)
         window.location.href = '/quiz'; // Directly change the window location to navigate
     };
 
@@ -167,7 +168,7 @@ const Mode2Display = () => {
             timerId = setTimeout(() => {
                 setIsPaused(false);  // Ensure the display starts if it was paused
                 setCountdown(null);  // Reset countdown to not counting down state
-            }, 1000);  // Allow 1 second for "Go!" to be visible
+            }, 500);  // Allow 1 second for "Go!" to be visible
         }
 
         return () => {
@@ -222,7 +223,7 @@ const Mode2Display = () => {
         };
         window.addEventListener("keydown", handleKeyPress);
         return () => window.removeEventListener("keydown", handleKeyPress);
-    }, [showCalibrationPopup, isPaused]);
+    }, [showCalibrationPopup, showCompletionPopup, isPaused]);
 
 
 
@@ -408,6 +409,11 @@ const Mode2Display = () => {
 
     // This function takes the average WPM and sends it to the backend.
     const submitReadingSpeed = async (averageWpm: number | null) => {
+        if (averageWpm === null) {
+            console.error('No average WPM available to submit.');
+            return; // Optionally show an error to the user
+        }
+        
         try {
             const response = await fetch("/api/save-reading-speed", {
                 method: "POST",
@@ -528,7 +534,7 @@ const Mode2Display = () => {
                                 </>
                                 ) : (
                                 <p style={{ fontSize: '18px', textAlign: 'center' }}>
-                                    Redirecting to Calibration Page
+                                    Redirecting to Calibration Page 
                                     <span className="dot">.</span>
                                     <span className="dot">.</span>
                                     <span className="dot">.</span>
@@ -541,38 +547,42 @@ const Mode2Display = () => {
                 {/* Completion Popup */}
                 {showCompletionPopup && (
                     <>
-                        <div className="modal-backdrop" style={{ zIndex: 500 }}></div>
-                        <div className="modal-content" style={{ 
-                            width: '30vw', 
-                            display: 'flex', 
+                        <div className="flash-orange-border" style={{ 
+                            position: 'absolute', // Position the modal absolutely relative to its nearest positioned ancestor
+                            top: `-${gapBetweenSize}`, // Center it vertically
+                            left: '50%', // Center it horizontally
+                            transform: 'translate(-50%, -100%)', // Adjust the positioning to truly center the modal
+                            width: '45vw', // Adjust the width as needed, or use a fixed width
+                            display: 'flex',
                             borderRadius: '20px',
                             flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center',
                             textAlign: 'center',
                             background: 'white',
-                            padding: '20px',
+                            padding: '10px',
+                            border: '3px solid orange',
                             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
                         }}>
                             <p style={{ fontSize: '18px', marginBottom: '20px' }}>
                                 Congratulations on completing your speed-reading session!
                             </p>
-                            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                                 {!redirectingToQuiz ? (
                                     <>
-                                        <button className="GreenButton" onClick={() => {
-                                            restartAction();
+                                        <button className="BlackButton" style={{ margin: '0' }}  onClick={() => {
                                             setShowCompletionPopup(false);
+                                            restartAction();
                                         }}>
                                             Restart
                                         </button>
-                                        <button className="GreenButton" onClick={handleContinueToQuiz}>
+                                        <button className="GreenButton" style={{ margin: '0' }}  onClick={handleContinueToQuiz}>
                                             Continue to Quiz
                                         </button>
                                     </>
                                 ) : (
                                     <p style={{ fontSize: '18px', textAlign: 'center' }}>
-                                        Redirecting to Quiz Page...
+                                        Redirecting to Quiz Page 
                                         <span className="dot">.</span>
                                         <span className="dot">.</span>
                                         <span className="dot">.</span>
