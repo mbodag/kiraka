@@ -418,7 +418,7 @@ const Mode2Display = () => {
         setAverageWPM(calculatedAverageWPM);
     };
 
-    const { updatePracticeId } = usePracticeID(); // Accessing the updatePracticeId method from the global context
+    const { practiceId, setPracticeId } = usePracticeID(); // Accessing the setPracticeId method from the global context
 
     // This function takes the average WPM and sends it to the backend.
     const submitReadingSpeed = async (averageWpm: number | null) => {
@@ -443,7 +443,8 @@ const Mode2Display = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                updatePracticeId(data.practice_id); // Update global practice ID
+                setPracticeId(data.practice_id); // Update global practice ID
+
             } else {
                 // Handle non-OK responses
                 console.error('Error submitting reading speed');
