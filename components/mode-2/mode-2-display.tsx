@@ -12,6 +12,7 @@ import  { usePracticeID } from '@/contexts/PracticeIDContext';
 import { useAuth } from "@clerk/nextjs";
 import { FaPlay, FaPause } from "react-icons/fa6";
 import { VscDebugRestart } from "react-icons/vsc";
+import { TbPlayerPause, TbPlayerPlay } from "react-icons/tb";
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 
@@ -50,7 +51,7 @@ interface ReadingSpeedChartProps {
 // and estimating the average character count per word
 const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
-const minWPM = 200;
+const minWPM = 180;
 const maxWPM = 800; // This is an approximation (~4.7 for English language)
 const significantLeftNormSpeed = -2/1201*100; // defined experimentally, based on the mac word display width (1201px) at the time of the experiment, and the value of -2px/s for threshold speed. Scaled by 100 (giving percentage)
 const constIncreaseWPM = 30;
@@ -64,7 +65,7 @@ const Mode2Display = () => {
     // const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. `;
 
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
-    const [startWPM, setstartWPM] = useState(400); 
+    const [startWPM, setstartWPM] = useState(300);
     const [WPM, setWPM] = useState(startWPM);
     const WPMValues = useRef<number[]>([startWPM]); // To store the WPMs values and take their average at the end of the session; to be sent to the database
     const [averageWPM, setAverageWPM] = useState<number | null>(null);
@@ -276,7 +277,6 @@ const Mode2Display = () => {
         if (isWebGazerActive && !isPaused && typeof window !== "undefined") {
             // Cast the window object to an ExtendedWindow type to access custom properties like webgazer
             const extendedWindow: ExtendedWindow = window as ExtendedWindow;
-
             // Use optional chaining to safely call setGazeListener if webgazer is defined
             extendedWindow.webgazer?.setGazeListener((data: any, elapsedTime: any) => {
                 // Proceed if there's gaze data and it includes an x-coordinate
@@ -627,7 +627,7 @@ const Mode2Display = () => {
                             border: '3px solid orange',
                             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
                         }}>
-                            <p style={{ fontSize: '18px', marginBottom: '20px' }}>
+                            <p style={{ fontSize: '18px', marginBottom: '20px', color: 'rgb(90, 90, 90)' }}>
                                 Congratulations on completing your speed-reading session!
                             </p>
                             <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
@@ -644,7 +644,7 @@ const Mode2Display = () => {
                                         </button>
                                     </>
                                 ) : (
-                                    <p style={{ fontSize: '18px', textAlign: 'center' }}>
+                                    <p style={{ fontSize: '18px', textAlign: 'center', color: 'rgb(90, 90, 90)' }}>
                                         Redirecting to Quiz Page 
                                         <span className="dot">.</span>
                                         <span className="dot">.</span>
@@ -683,7 +683,7 @@ const Mode2Display = () => {
                     }} className={showCalibrationPopup ? 'blur-effect' : ''}>
                         {/* Play/Pause Icon */}
                         <button className={`icon-button ${isPausePlayActive ? 'active' : ''}`} onClick={togglePausePlayAction}>
-                            {isPaused ? <FaPlay size={20} /> : <FaPause size={20} />}
+                            {isPaused ? <TbPlayerPlay size={24} /> : <TbPlayerPause size={24} />}
                         </button>
                                                                         
                         {/* Restart Icon */}
@@ -843,7 +843,7 @@ const Mode2Display = () => {
                 position: "relative",
                 marginTop: '0.1rem',
                 padding: '30px', // Padding to prevent content from touching the edges
-                border: '2px solid gray',
+                // border: '2px solid gray',
             }}>
                 <ReadingSpeedChart wpmValues={WPMValues.current} averageWPM={averageWPM || 0} />
             </div>
