@@ -142,7 +142,7 @@ export default function WebgazerCalibration() {
       if (extendedWindow) {
         // Shows prediction points, hides the video feed, and removes mouse event listeners
         extendedWindow.webgazer
-          .showPredictionPoints(true)
+          .showPredictionPoints(false)
           .showVideo(false)
           .removeMouseEventListeners();
       }
