@@ -41,6 +41,12 @@ interface GazeDataPoint {
     Lefts: number;
 }
 
+interface GazeDataToSend {
+    normScaledX: number;
+    y: number;
+    elapsedTime: number;
+}
+
 interface ReadingSpeedChartProps {
     wpmValues: number[];
     averageWPM: number;
@@ -58,6 +64,7 @@ const constIncreaseWPM = 30;
 const constDecreaseWPM = 20;
 const maxConstIncreaseWPM = 60;
 const percentageDisplayTimeToIgnore = 0.6 // chosen experimentally
+const consecutiveWPMIncreaseThreshold = 4;
 const consecutiveWPMDecreaseThreshold = 7;
 
 const Mode2Display = () => {
@@ -70,8 +77,10 @@ const Mode2Display = () => {
     const WPMValues = useRef<number[]>([startWPM]); // To store the WPMs values and take their average at the end of the session; to be sent to the database
     const [averageWPM, setAverageWPM] = useState<number | null>(null);
     const gazeDataRef = useRef<GazeDataPoint[]>([]);
+    const gazeDataByChunk = useRef<GazeDataToSend[][]>([]);
     const consecutiveLeftMovements = useRef<number>(0);
     const consecutiveWPMDecrease = useRef<number>(0);
+    const consecutiveWPMIncrease = useRef<number>(0);
     const [isUserTired, setIsUserTired] = useState(false);
 
     const [isPaused, setIsPaused] = useState(true); // Add a state to track whether the flashing is paused
@@ -195,6 +204,7 @@ const Mode2Display = () => {
         setCurrentChunkIndex(0); // Restart from the first chunk
         setIsPaused(true); // Pause the session
         WPMValues.current = [startWPM];
+        gazeDataByChunk.current = [];
         setWPM(startWPM); // Reset the WPM value
         setAverageWPM(null); // Reset the averageWPM value
         setIsRestartActive(true); // Set active to true
@@ -282,7 +292,7 @@ const Mode2Display = () => {
                 // Proceed if there's gaze data and it includes an x-coordinate
                 if (data && data.x && data.y && elapsedTime) {
                     const divWidth = document.querySelector('.wordDisplayDiv')?.clientWidth ?? 1;
-                    const normScaledX = data.x/divWidth*100;
+                    const normScaledX = data.x / divWidth * 100;
                     const deltaX = gazeDataRef.current.length > 0 ? data.x - gazeDataRef.current[gazeDataRef.current.length - 1].x : 0;
                     const normScaledDeltaX = gazeDataRef.current.length > 0 ? normScaledX - gazeDataRef.current[gazeDataRef.current.length - 1].normScaledX : 0;
                     const deltaY = gazeDataRef.current.length > 0 ? data.y - gazeDataRef.current[gazeDataRef.current.length - 1].y : 0;
@@ -302,13 +312,23 @@ const Mode2Display = () => {
                     gazeDataRef.current.push({ x: data.x, normScaledX: normScaledX, y: data.y, elapsedTime, deltaX, normScaledDeltaX: normScaledDeltaX, 
                         deltaY, deltaT, speedX, normScaledSpeedX: normScaledSpeedX, Lefts });
 
+
+                    const newGazeData: GazeDataToSend = {
+                        normScaledX: normScaledX,
+                        y: data.y,
+                        elapsedTime: elapsedTime
+                    };
+                    if (!gazeDataByChunk.current[currentChunkIndex]) {
+                        gazeDataByChunk.current[currentChunkIndex] = [];
+                    }
+                    gazeDataByChunk.current[currentChunkIndex].push(newGazeData);
                 }
             });
 
             // Cleanup function to clear the gaze listener when the component unmounts or dependencies change
             return () => extendedWindow.webgazer?.clearGazeListener();
         }
-    }, [isWebGazerActive, isPaused]); // Depend on WebGazer's activity and pause state
+    }, [isWebGazerActive, isPaused, currentChunkIndex]); // Depend on WebGazer's activity and pause state
     
 
 
@@ -437,10 +457,11 @@ const Mode2Display = () => {
                     text_id: selectedTextId, 
                     user_id: userId,
                     wpm: averageWpm,
-                    mode: 2
+                    mode: 2,
+                    chunks_data: gazeDataByChunk.current,
                 }),
             });
-
+            
             if (response.ok) {
                 const data = await response.json();
                 updatePracticeId(data.practice_id); // Update global practice ID
@@ -519,6 +540,24 @@ const Mode2Display = () => {
             <Line data={data} options={options} />
         </div>;
     };
+
+
+
+    const downloadGazeData = () => {
+        const fileName = "gazeDataByChunk.json";
+        const json = JSON.stringify(gazeDataByChunk.current, null, 2);
+        const blob = new Blob([json], {type: "application/json"});
+        const href = URL.createObjectURL(blob);
+      
+        const link = document.createElement('a');
+        link.href = href;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+      
+        document.body.removeChild(link);
+        URL.revokeObjectURL(href);
+      };
 
     
 
@@ -667,7 +706,7 @@ const Mode2Display = () => {
                 }}>
                     {/* Centered Counter Display */}
                     <CounterDisplay count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
-
+                    {/* <button onClick={downloadGazeData}>Download Gaze Data</button> */}
                     {/* Container for Play/Pause and Restart Icons aligned to the top right */}
                     <div style={{ 
                         position: 'absolute',
@@ -682,12 +721,12 @@ const Mode2Display = () => {
                         gap: '10px'  // Space between icons
                     }} className={showCalibrationPopup ? 'blur-effect' : ''}>
                         {/* Play/Pause Icon */}
-                        <button className={`icon-button ${isPausePlayActive ? 'active' : ''}`} onClick={togglePausePlayAction}>
+                        <button className={`icon-button ${isPausePlayActive ? 'active' : ''}`} onClick={togglePausePlayAction} disabled={showCalibrationPopup}>
                             {isPaused ? <TbPlayerPlay size={24} /> : <TbPlayerPause size={24} />}
                         </button>
                                                                         
                         {/* Restart Icon */}
-                        <button className={`icon-button ${isRestartActive ? 'active' : ''}`} onClick={restartAction}>
+                        <button className={`icon-button ${isRestartActive ? 'active' : ''}`} onClick={restartAction} disabled={showCalibrationPopup}>
                             <VscDebugRestart size={24} />
                         </button>
                     </div>
