@@ -5,7 +5,7 @@ import styles from './AnalyticsPage.module.css';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Line, Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js/auto';
 import { useAuth } from "@clerk/nextjs";
 
 
