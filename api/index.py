@@ -515,6 +515,18 @@ def store_user_data():
     db.session.commit()
     return jsonify(success=True, message="User added successfully.")
 
+@app.route('/api/practiced_texts', methods=['GET'])
+def get_practiced_texts():
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify(success=False, message="User ID is required."), 400
+    
+    practiced_texts = PracticeResults.query.filter_by(user_id=user_id).all()
+    if practiced_texts:
+        # Serialize and return practiced texts
+        text_ids = list(set([text.text_id for text in practiced_texts]))
+        return jsonify(text_ids=text_ids), 200
+
 
 with app.app_context():
     db.create_all()
