@@ -95,26 +95,26 @@ const Mode2Display = () => {
     const [countdown, setCountdown] = useState<number | null>(null);
 
     useEffect(() => {
-        const fetchTextById = async (textId: number) => {
-          try {
-            const response = await fetch(`/api/texts/${textId}`);
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            console.log(data.quiz_questions);
-            // Replace newlines (\n) with spaces and set the cleaned text
-            const cleanedText = data.text_content.replace(/\n+/g, ' ');
-            setShortStory(cleanedText);
-          } catch (error) {
-            console.error('Error fetching text:', error);
+      const fetchTextById = async (textId: number) => {
+        try {
+          const response = await fetch(`/api/texts/${textId}`);
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
           }
-        };
-    
-        if (selectedTextId) {
-          fetchTextById(selectedTextId);
+          const data = await response.json();
+          console.log(data.quiz_questions);
+          // Replace newlines (\n) with spaces and set the cleaned text
+          const cleanedText = data.text_content.replace(/\n+/g, " ");
+          setShortStory(cleanedText);
+        } catch (error) {
+          console.error("Error fetching text:", error);
         }
-      }, [selectedTextId]);
+      };
+
+      if (selectedTextId) {
+        fetchTextById(selectedTextId);
+      }
+    }, [selectedTextId]);
 
 
     // useEffect(() => {
