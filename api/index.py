@@ -522,10 +522,10 @@ def get_practiced_texts():
         return jsonify(success=False, message="User ID is required."), 400
     
     practiced_texts = PracticeResults.query.filter_by(user_id=user_id).all()
-    if practiced_texts:
-        # Serialize and return practiced texts
-        text_ids = list(set([text.text_id for text in practiced_texts]))
-        return jsonify(text_ids=text_ids), 200
+    # Serialize and return practiced texts
+    read_texts = list(set([text.text_id for text in practiced_texts]))
+    return jsonify(read_texts=read_texts), 200
+
 
 
 with app.app_context():

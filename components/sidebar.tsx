@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelectedText } from '../contexts/SelectedTextContext';
 import Image from "next/legacy/image";
 import Link from "next/link";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { UserButton, useUser, useAuth } from "@clerk/nextjs";
 
 const Sidebar = () => {
   const { selectedTextId, setSelectedTextId } = useSelectedText();
+  const [readTexts, setReadTexts] = useState<number[]>([]);
 
   // Array of texts with their IDs
   const texts = Array.from({ length: 7 }, (_, index) => ({
@@ -16,6 +17,26 @@ const Sidebar = () => {
   }));
 
   const { user } = useUser();
+  const { userId } = useAuth();
+
+  useEffect(() => {
+    const fetchReadTexts = async (userId: string | null | undefined) => {
+      try {
+        const response = await fetch(`/api/practiced_texts/?user_id=${userId}`);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        const read_texts = data.read_texts;
+        setReadTexts(read_texts); // Update the state with the fetched data
+      } catch (error) {
+        console.error("Error fetching text:", error);
+      }
+    };
+ {
+  fetchReadTexts(userId);
+    }
+  }, []);
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-r border-gray-700">
@@ -59,8 +80,9 @@ const Sidebar = () => {
           <button
             key={text.id}
             onClick={() => { 
+              if (!readTexts.includes(text.id)){
               setSelectedTextId(text.id); // Update the global context
-            }}
+            }}}
             className={`text-sm w-full max-w-xs p-2 font-medium rounded-lg transition sidebar-button-font 
               ${text.id === selectedTextId ? 'bg-gray-700' : 'hover:bg-gray-700'}`} // Apply active or hover class
           >
