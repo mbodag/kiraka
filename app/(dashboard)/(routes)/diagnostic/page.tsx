@@ -12,7 +12,7 @@ const DiagnosticPage = () => {
       className={`${styles.diagnosticBg} flex flex-col items-center pt-10 pb-8 min-h-screen analytics-font`}
     >
       <div className="self-start absolute top-4 left-4">
-        <Link href="/dashboard">
+        <Link href="/webgazer-mode-2">
           <Button className="ml-4 shadow bg-lime-50/60 hover:bg-lime-50/100 text-gray-900 bold">
             Back
           </Button>
@@ -25,23 +25,24 @@ const DiagnosticPage = () => {
         <div className="text-left">
           <p>
             This diagnostic test is designed to measure your reading speed and
-            comprehension skills across a variety of text difficulties. Here’s
-            how it works:
+            comprehension skills across a variety of text difficulties.
+            Here&apos;s how it works:
           </p>
           <ol className="mt-2">
             <li>
               You will be presented with 5 texts, each increasing in difficulty.
             </li>
             <li>
-              For each text, click "Start" to begin reading and "Done" once you
-              finish. Your reading time will be recorded.
+              For each text, click &quot;Start &quot; to begin reading and
+              &quot;Done&quot; once you finish. Your reading time will be
+              recorded.
             </li>
             <li>
-              After each text, you'll take a short quiz to test your
-              comprehension of what you've just read.
+              After each text, you&apos;ll take a short quiz to test your
+              comprehension of what you&apos;ve just read.
             </li>
             <li>
-              Based on your reading speed and quiz scores, we'll provide
+              Based on your reading speed and quiz scores, we&apos;ll provide
               personalized recommendations to improve your reading skills.
             </li>
           </ol>

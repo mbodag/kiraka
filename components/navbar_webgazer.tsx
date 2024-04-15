@@ -37,9 +37,9 @@ const NavbarWebGazer: React.FC = () => {
         }}>
             <div className="flex-1 flex items-center"> {/* Container for left side */}
                 <MobileSidebar />
-                <Link href="/quiz" passHref>
+                {/* <Link href="/quiz" passHref>
                     <Button className="ml-4 bg-green-200/30 hover:bg-green-200/50 text-white navbar-dashboard-font">Quiz</Button>
-                </Link>
+                </Link> */}
                 <Link href="/analytics" passHref>
                     <Button className="ml-4 bg-green-200/30 hover:bg-green-200/50 text-white navbar-dashboard-font">Analytics</Button>
                 </Link>
@@ -49,8 +49,8 @@ const NavbarWebGazer: React.FC = () => {
         </div>
             <div className="flex-1 flex justify-end items-center"> {/* Container for right side */}
                 <Button className={webGazerButtonClass} onClick={handleWebGazerButtonClick}>WebGazer</Button>
-                <Button className="bg-green-200/30 hover:bg-green-200/50 text-white mr-2 text-sm">▶</Button> {/* Start button */}
-                <Button className="bg-green-200/30 hover:bg-green-200/50 text-white text-sm"><FaPause /></Button> {/* Pause button */}
+                {/* <Button className="bg-green-200/30 hover:bg-green-200/50 text-white mr-2 text-sm">▶</Button> Start button */}
+                {/* <Button className="bg-green-200/30 hover:bg-green-200/50 text-white text-sm"><FaPause /></Button> Pause button */}
             </div>
         </div>
     );

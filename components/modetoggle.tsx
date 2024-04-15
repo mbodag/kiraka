@@ -8,11 +8,11 @@ const ModeToggle = () => {
     <div className="flex flex-row justify-center space-x-2">
       {" "}
       {/* Adjusted space-x value for a small space */}
-      <Link href="/dashboard">
+      {/* <Link href="/dashboard">
         <Button className="bg-green-200/30 hover:bg-green-200/50 text-white navbar-dashboard-font">
           KeyMode
         </Button>{" "}
-      </Link>
+      </Link> */}
       {/* Semi-transparent green buttons */}
       <Link href="/webgazer-mode-2">
         <Button className="bg-green-200/30 hover:bg-green-200/50 text-white navbar-dashboard-font">
