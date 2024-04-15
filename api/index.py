@@ -500,16 +500,15 @@ def get_info():
 
 @app.route('/api/store-user-data', methods=['POST'])
 def store_user_data():
-    print("testing")
-    user_data = request.get_json()
-    if not user_data or 'user_id' not in user_data:
+    user_id = request.json.get('user_id')
+    if not user_id:
         return jsonify(success=False, message="User ID is required."), 400
     
-    user_id = user_data['user_id']
+    # user_id = user_data['user_id']
     # Check if user already exists to avoid duplicates
     existing_user = Users.query.filter_by(user_id=user_id).first()
     if existing_user:
-        return jsonify(success=False, message="User already exists."), 400
+        return jsonify(success=False, message="User already exists."), 409
     
     new_user = Users(user_id=user_id)
     db.session.add(new_user)
