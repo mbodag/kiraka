@@ -220,8 +220,8 @@ const AnalyticsPage: React.FC = () => {
       </div>)}
       
       {/* Scrollable Navigation bar for user selection, centered */}
-      <div className="flex justify-center items-center gap-4 mb-4">
-        <button onClick={() => scrollUsers("left")}>&lt;</button>
+      {isAdmin && <div className="flex justify-center items-center gap-4 mb-4">
+      <button onClick={() => scrollUsers("left")}>&lt;</button>
         <div
           ref={scrollContainerRef}
           className="flex gap-4 overflow-auto scroll-smooth scrollbar-hide scrollbar-hide"
@@ -237,8 +237,8 @@ const AnalyticsPage: React.FC = () => {
             </button>
           ))}
         </div>
-        <button onClick={() => scrollUsers("right")}>&gt;</button>
-      </div>
+         <button onClick={() => scrollUsers("right")}>&gt;</button>
+      </div> ``}
 
       {/* Display user-specific plot or a prompt to select a user */}
       <div className="flex-1 flex justify-center items-center text-gray-600">
