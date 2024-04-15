@@ -14,7 +14,7 @@ const ContactPage = () => {
           <p>Kyoya Higashino (kh123@ic.ac.uk)</p>
           <p>Evangelos Georgiadis (eg923@ic.ac.uk)</p>
           <p>Matis Bodaghi (mrb23@ic.ac.uk)</p>
-          <p>Jack Hau (hh23@ic.ac.uk)</p>
+          <p>Jack Hau (jhh23@ic.ac.uk)</p>
         </div>
       </div>
     </div>
