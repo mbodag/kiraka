@@ -308,10 +308,19 @@ body,
   0%, 100% { border-color: rgb(0, 200, 0); }
   50% { border-color: transparent; } /* 'Off' state */
 }
-
 .flash-green-border {
   animation: flashGreenBorder 1s infinite; /* Adjust timing as needed */
 }
+
+
+@keyframes flashOrangeBorder {
+  0%, 100% { border-color: orange; }
+  50% { border-color: transparent; } /* 'Off' state */
+}
+.flash-orange-border {
+  animation: flashOrangeBorder 1.5s infinite; /* Adjust timing as needed */
+}
+
 
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -412,7 +421,7 @@ body,
 
 .BlueButton:hover {
   background-color: #1c197af4;
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2); 
 }
 
 
@@ -440,4 +449,15 @@ body,
 
 .dot:nth-child(3) {
   animation-delay: 0.4s;
+}
+
+
+.icon-button {
+  color: rgb(90, 90, 90);
+}
+.icon-button:hover {
+  color: rgb(200, 0, 0); /* Bright red color on hover */
+}
+.icon-button.active {
+  color: rgb(200, 0, 0); /* Active state color */
 }

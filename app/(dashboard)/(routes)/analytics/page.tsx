@@ -21,7 +21,8 @@ interface UserRecord {
 }
 
 interface UserData {
-  [userName: string]: UserRecord[];
+  usersData: { [key: string]: UserRecord[] };
+  isAdmin: boolean;
 }
 
 interface UserPlotProps {
@@ -55,7 +56,7 @@ const AnalyticsPage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState<string[]>([]);
-  const [userData, setUserData] = useState<UserData>({});
+  const [userData, setUserData] = useState<{ [key: string]: UserRecord[] }>({});
   const [filteredUsers, setFilteredUsers] = useState(users);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { userId } = useAuth();
@@ -198,10 +199,8 @@ const AnalyticsPage: React.FC = () => {
       className={`${styles.analyticsBg} flex flex-col items-center pt-10 pb-8 min-h-screen analytics-font`}
     >
       <div className="self-start absolute top-4 left-4">
-        <Link href="/dashboard">
-          <Button className="ml-4 shadow bg-lime-50/60 hover:bg-lime-50/100 text-gray-900 bold">
-            Back
-          </Button>
+        <Link href="/webgazer-mode-2">
+          <Button className="ml-4 shadow bg-lime-50/60 hover:bg-lime-50/100 text-gray-900 bold">Back</Button>
         </Link>
       </div>
 
