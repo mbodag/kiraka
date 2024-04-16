@@ -61,11 +61,11 @@ const minWPM = 180;
 const maxWPM = 800; // This is an approximation (~4.7 for English language)
 const significantLeftNormSpeed = -2/1201*100; // defined experimentally, based on the mac word display width (1201px) at the time of the experiment, and the value of -2px/s for threshold speed. Scaled by 100 (giving percentage)
 const constIncreaseWPM = 30;
-const constDecreaseWPM = 25;
+const constDecreaseWPM = 30;
 const maxConstIncreaseWPM = 60;
-const minConstDecreaseWPM = 10;
+const minConstDecreaseWPM = 15;
 const cumulativeIncreaseThreshold = maxConstIncreaseWPM * 1.5;
-const dampenedIncreaseWPM = 5;
+const dampenedIncreaseWPM = -5;
 const decreaseAdjustmentStep = 2;
 const percentageDisplayTimeToIgnoreExperimental = 0.6 // chosen experimentally
 const consecutiveWPMIncreaseThreshold = 2;
@@ -770,7 +770,7 @@ const Mode2Display = () => {
                         position: 'absolute',
                         top: 0, 
                         right: 0,
-                        backgroundColor: 'white', 
+                        backgroundColor: 'white',
                         boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.15)', 
                         padding: '10px 20px', 
                         borderRadius: '10px', 

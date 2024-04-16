@@ -83,7 +83,7 @@ const Sidebar = () => {
               setSelectedTextId(text.id); // Update the global context
             }}
             className={`text-sm w-full max-w-xs p-2 font-medium rounded-lg transition sidebar-button-font 
-              ${text.id === selectedTextId ? 'bg-gray-700' : 'hover:bg-gray-700'}
+              ${text.id === selectedTextId ? 'bg-gray-700' : 'hover:bg-gray-800'}
               ${readTexts.includes(text.id) ? 'text-green-600' : ''}`} // Apply active or hover class
           >
             {text.title}
