@@ -3,6 +3,7 @@
 import React from "react";
 import StandardNavbar from "@/components/navbar";
 import StandardWebGazerNavbar from "@/components/navbar_webgazer";
+import StandardInstructionsNavbar from "@/components/navbar_instructions";
 import QuizNavbar from "@/components/quiz-navbar";
 import Sidebar from "@/components/sidebar";
 import QuizSidebar from "@/components/quiz-sidebar";
@@ -11,7 +12,7 @@ import { WebGazerProvider } from "@/contexts/WebGazerContext";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  navbarType?: 'standard-manual' | 'quiz' | 'standard-auto';
+  navbarType?: 'standard-manual' | 'quiz' | 'standard-auto' | 'instructions';
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, navbarType }) => {
@@ -23,6 +24,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, navbarType 
   switch (navbarType) {
     case 'standard-manual':
       navbar = <StandardNavbar />;
+      sidebar = <Sidebar />;
+      break;
+    case 'instructions':
+      navbar = <StandardInstructionsNavbar />;
       sidebar = <Sidebar />;
       break;
     case 'standard-auto':

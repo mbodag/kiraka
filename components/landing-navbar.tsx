@@ -58,7 +58,7 @@ export const LandingNavbar = () => {
       </div>
       <div className="flex item-center gap-x-2">
         <div>
-          <Link href={isSignedIn ? "/webgazer-mode-2" : "/sign-up"}>
+          <Link href={isSignedIn ? "/instructions" : "/sign-up"}>
             <Button
               variant="outline"
               className="rounded-full border-none hover:bg-green-100"
@@ -68,7 +68,7 @@ export const LandingNavbar = () => {
           </Link>
         </div>
         <div>
-          <Link href={isSignedIn ? "/webgazer-mode-2" : "/sign-in"}>
+          <Link href={isSignedIn ? "/instructions" : "/sign-in"}>
             <Button
               variant="outline"
               className="rounded-full border-none hover:bg-green-100"
