@@ -300,7 +300,7 @@ def get_user_analytics():
         users = Users.query.all()
     for user in users:
         user_id = user.user_id 
-        username = user.username if logged_user.admin else "Your data"
+        username = user.user_id if logged_user.admin else "Your data"
         user_results = []
         practice_results = PracticeResults.query.filter_by(user_id=user_id).all()
         if practice_results:
