@@ -80,11 +80,11 @@ const Sidebar = () => {
           <button
             key={text.id}
             onClick={() => { 
-              if (!readTexts.includes(text.id)){
               setSelectedTextId(text.id); // Update the global context
-            }}}
+            }}
             className={`text-sm w-full max-w-xs p-2 font-medium rounded-lg transition sidebar-button-font 
-              ${text.id === selectedTextId ? 'bg-gray-700' : 'hover:bg-gray-700'}`} // Apply active or hover class
+              ${text.id === selectedTextId ? 'bg-gray-700' : 'hover:bg-gray-700'}
+              ${readTexts.includes(text.id) ? 'bg-blue-200' : ''}`} // Apply active or hover class
           >
             {text.title}
           </button>
