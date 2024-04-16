@@ -462,7 +462,7 @@ body,
   color: rgb(200, 0, 0); /* Active state color */
 }
 .icon-button:disabled {
-  background-color: #cccccc;
-  color: #666666;
+  /* background-color: #cccccc;
+  color: #666666; */
   cursor: not-allowed;
 }

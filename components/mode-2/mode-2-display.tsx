@@ -61,11 +61,16 @@ const minWPM = 180;
 const maxWPM = 800; // This is an approximation (~4.7 for English language)
 const significantLeftNormSpeed = -2/1201*100; // defined experimentally, based on the mac word display width (1201px) at the time of the experiment, and the value of -2px/s for threshold speed. Scaled by 100 (giving percentage)
 const constIncreaseWPM = 30;
-const constDecreaseWPM = 20;
+const constDecreaseWPM = 25;
 const maxConstIncreaseWPM = 60;
-const percentageDisplayTimeToIgnore = 0.6 // chosen experimentally
-const consecutiveWPMIncreaseThreshold = 4;
+const minConstDecreaseWPM = 10;
+const cumulativeIncreaseThreshold = maxConstIncreaseWPM * 1.5;
+const dampenedIncreaseWPM = 5;
+const decreaseAdjustmentStep = 2;
+const percentageDisplayTimeToIgnoreExperimental = 0.6 // chosen experimentally
+const consecutiveWPMIncreaseThreshold = 2;
 const consecutiveWPMDecreaseThreshold = 7;
+const maxCutOffTime = 1500;
 
 const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
@@ -204,6 +209,9 @@ const Mode2Display = () => {
         setCurrentChunkIndex(0); // Restart from the first chunk
         setIsPaused(true); // Pause the session
         WPMValues.current = [startWPM];
+        consecutiveLeftMovements.current = 0;
+        consecutiveWPMDecrease.current = 0;
+        consecutiveWPMIncrease.current = 0;
         gazeDataByChunk.current = [];
         setWPM(startWPM); // Reset the WPM value
         setAverageWPM(null); // Reset the averageWPM value
@@ -253,6 +261,7 @@ const Mode2Display = () => {
         console.log('Completion Popup State:', showCompletionPopup);
     }, [showCompletionPopup]);
 
+    
     // Function to calculate display time from WPM for a chunk
     const calculateDisplayTimeFromWPM = (chunk: string) => {
         const wordsPerSecond = WPM / 60;
@@ -268,14 +277,23 @@ const Mode2Display = () => {
         const WPM = wordsPerSecond * 60;
         return WPM;
     };
+    // Function to calculate percentageDisplayTimeToIgnore for a chunk
+    const calculatePercentageDisplayTimeToIgnore = (displayTimeMs: number): number => {
+        const baseTime = 10 * 60 * 1000; // Base time for 10 minutes in milliseconds (assuming 10 words per chunk -- equivalent to the maximum of 50 characters per chunk)
+        const minScaledDisplayTime = baseTime / minWPM;
+        const maxScaledDisplayTime = baseTime / maxWPM;
+        const normalisedTime = (displayTimeMs - minScaledDisplayTime) / (maxScaledDisplayTime - minScaledDisplayTime);
+        const percentageToIgnore = 0.35 + normalisedTime * (0.75 - 0.35);
+        return Math.max(0.35, Math.min(percentageToIgnore, 0.75));
+    };
 
     const getGradualSpeedIncrement = (inferredWPM: number, maxWPM: number) => {
-        const threshold = 300;  // WPM difference to start scaling down the increment
+        const gapThreshold = 400;  // WPM difference to start scaling down the increment
         const baseIncrement = 8; // Default increment
         const minimumIncrement = 4; // Minimum increment when close to maxWPM
         const gap = maxWPM - inferredWPM;
-        if (gap <= threshold) {
-          return minimumIncrement + (baseIncrement - minimumIncrement) * (gap / threshold);
+        if (gap <= gapThreshold) {
+          return minimumIncrement + (baseIncrement - minimumIncrement) * (gap / gapThreshold);
         }
         return baseIncrement;
       };
@@ -347,6 +365,11 @@ const Mode2Display = () => {
                 const currentTime = performance.now();
                 const deltaTime = currentTime - startTime;
                 const chunkDisplayTime = calculateDisplayTimeFromWPM(wordChunks[currentChunkIndex]);
+                let percentageDisplayTimeToIgnore = calculatePercentageDisplayTimeToIgnore(chunkDisplayTime);
+                let displayTimeToIgnore = chunkDisplayTime * percentageDisplayTimeToIgnore;
+                if (currentChunkIndex === 0) {
+                    displayTimeToIgnore = 500;
+                }
                 // console.log('one iteration')
                 // console.log('WPM', WPM)
                 // console.log('currentChunkIndex', currentChunkIndex)
@@ -354,17 +377,40 @@ const Mode2Display = () => {
                 // console.log('deltaTime', deltaTime)
 
                 // Ensure we're analyzing only after at least 60% of the expected chunk display time has passed
-                if (deltaTime > chunkDisplayTime * percentageDisplayTimeToIgnore) {
+                if (deltaTime > Math.min(displayTimeToIgnore, maxCutOffTime)) {
                     // console.log('entered 0.6T')
 
                     // If significant leftward movement is detected
-                    if (gazeDataRef.current.length > 0 && gazeDataRef.current[gazeDataRef.current.length - 1].Lefts >= 2) {
+                    if (gazeDataRef.current.length > 0 && gazeDataRef.current[gazeDataRef.current.length - 1].Lefts >= 1) {
                         // Increase WPM and move to the next chunk
                         const inferredWPM = calculateWPMFromDisplayTime(deltaTime, wordChunks[currentChunkIndex])
                         const gradualSpeedIncrement = getGradualSpeedIncrement(inferredWPM, maxWPM);
                         const increasedWPM = Math.round(Math.min(WPM + maxConstIncreaseWPM, inferredWPM + gradualSpeedIncrement, maxWPM))
-                        setWPM(increasedWPM);
-                        WPMValues.current = [...WPMValues.current, increasedWPM];
+
+                        // Track consecutive increases
+                        if (increasedWPM > WPM) {
+                            consecutiveWPMIncrease.current += 1;
+                        } else {
+                            consecutiveWPMIncrease.current = 0; // Reset if WPM does not increase
+                        }
+                        
+                         // Check for uncontrolled increase
+                        if (consecutiveWPMIncrease.current >= consecutiveWPMIncreaseThreshold) {
+                            const prevWPMIncrease = WPMValues.current[WPMValues.current.length - 1] - WPMValues.current[WPMValues.current.length - 2];
+                            const currentWPMIncrease = increasedWPM - WPMValues.current[WPMValues.current.length - 1];
+                            // if (currentWPMIncrease >= prevWPMIncrease * 0.5) {
+                            if (currentWPMIncrease + prevWPMIncrease > cumulativeIncreaseThreshold) {
+                                // Apply damping
+                                const dampenedWPM = WPM + dampenedIncreaseWPM; // Example damping: Smaller increment
+                                setWPM(dampenedWPM);
+                                WPMValues.current = [...WPMValues.current, dampenedWPM];
+                                consecutiveWPMIncrease.current = 0;
+                            }
+                        } else {
+                            setWPM(increasedWPM);
+                            WPMValues.current = [...WPMValues.current, increasedWPM];
+                        }
+            
                         setCurrentChunkIndex(prevIndex => prevIndex + 1);
                         gazeDataRef.current = [];
                         consecutiveLeftMovements.current = 0;
@@ -376,13 +422,24 @@ const Mode2Display = () => {
                     } else if (deltaTime >= chunkDisplayTime) {
                         // No leftward movement detected by the end of the chunk display time,
                         // possibly indicating the need to slow down
-                        const decreasedWPM = Math.max(WPM - constDecreaseWPM, minWPM)
+                        // Gradually reduce the decrease factor based on the number of chunks read -- this is to boost speed reading
+                        const chunksReadFactor = Math.floor(currentChunkIndex / (wordChunks.length/10));
+                        const adjustedDecreaseWPM = Math.max(constDecreaseWPM - chunksReadFactor * decreaseAdjustmentStep, minConstDecreaseWPM);
+                        const decreasedWPM = Math.max(WPM - adjustedDecreaseWPM, minWPM)
+
+                        // Track consecutive decreases
+                        if (decreasedWPM < WPM) {
+                            consecutiveWPMDecrease.current += 1;
+                        } else {
+                            consecutiveWPMDecrease.current = 0; // Reset if WPM does not decrease
+                        }
+
                         setWPM(decreasedWPM);
                         WPMValues.current = [...WPMValues.current, decreasedWPM];
                         setCurrentChunkIndex(prevIndex => prevIndex + 1);
                         gazeDataRef.current = [];
                         consecutiveLeftMovements.current = 0;
-                        consecutiveWPMDecrease.current += 1;
+                        consecutiveWPMIncrease.current = 0;
                         // if (consecutiveWPMDecrease.current > consecutiveWPMDecreaseThreshold) {
                         //     setIsUserTired(true)
                         //     setIsPaused(true)
@@ -391,7 +448,7 @@ const Mode2Display = () => {
                         // }
                         // console.log('TOO FAST - LEFT NOT DETECTED')
                         // console.log('WPM', WPM)
-                        // console.log('currentChunkIndex', currentChunkIndex)
+                        // console.log('currentChunkIndex', currentChunkIndex)   wordChunks
                     }
                 }
     
@@ -680,7 +737,7 @@ const Mode2Display = () => {
                                             Restart
                                         </button>
                                         <button className="GreenButton" style={{ margin: '0' }}  onClick={handleContinueToQuiz}>
-                                            Continue to Quiz
+                                            Save Results & Start Quiz
                                         </button>
                                     </>
                                 ) : (
@@ -706,7 +763,7 @@ const Mode2Display = () => {
                     paddingTop: '0px',
                 }}>
                     {/* Centered Counter Display */}
-                    <CounterDisplay count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
+                    <CounterDisplay key={WPM} count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
                     {/* <button onClick={downloadGazeData}>Download Gaze Data</button> */}
                     {/* Container for Play/Pause and Restart Icons aligned to the top right */}
                     <div style={{ 
@@ -722,12 +779,12 @@ const Mode2Display = () => {
                         gap: '10px'  // Space between icons
                     }} className={showCalibrationPopup ? 'blur-effect' : ''}>
                         {/* Play/Pause Icon */}
-                        <button className={`icon-button ${isPausePlayActive ? 'active' : ''}`} onClick={togglePausePlayAction} disabled={showCalibrationPopup}>
+                        <button className={`icon-button ${isPausePlayActive ? 'active' : ''}`} onClick={togglePausePlayAction} disabled={showCompletionPopup}>
                             {isPaused ? <TbPlayerPlay size={24} /> : <TbPlayerPause size={24} />}
                         </button>
                                                                         
                         {/* Restart Icon */}
-                        <button className={`icon-button ${isRestartActive ? 'active' : ''}`} onClick={restartAction} disabled={showCalibrationPopup}>
+                        <button className={`icon-button ${isRestartActive ? 'active' : ''}`} onClick={restartAction} disabled={showCompletionPopup}>
                             <VscDebugRestart size={24} />
                         </button>
                     </div>
