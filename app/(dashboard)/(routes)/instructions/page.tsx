@@ -52,7 +52,7 @@ export default async function InstructionPage() {
                             After your session, you can save your performance and tackle our custom quiz to test your understanding of the content.
                         </li>
                         <li>
-                            To start speed reading, go to FlashMode by clicking on the button at the top of the page, then select the text you want to read from the left sidebar.
+                            <strong>To start speed reading,</strong> go to FlashMode by clicking on the button at the top of the page, then select the text you want to read from the left sidebar.
                         </li>
                     </ul>
                 </div>
