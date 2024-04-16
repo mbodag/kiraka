@@ -60,14 +60,12 @@ const AnalyticsPage: React.FC = () => {
   useEffect(() => {
     const fetchAnalyticsData = async () => {
       const response = await getAnalytics(userId)
-      console.log('Response:', response);
       setUserData(response.usersData);
       setUsers(Object.keys(response.usersData));
       setAdmin(response.isAdmin)
       if (!response.isAdmin){
         setSelectedUser('Your data')
       }
-      console.log('Updated state:', userData, users, isAdmin);
         };
     fetchAnalyticsData();
   }, [userId]); // Empty dependency array means this effect runs once on mount and not on updates
