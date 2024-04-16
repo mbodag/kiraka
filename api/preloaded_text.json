@@ -2,33 +2,58 @@
     "text_1": {
         "title": "The Luminous Depths: Exploring Bioluminescence in Deep Sea Creatures",
         "content": "Bioluminescence, the ability of living organisms to emit light, remains one of nature's most fascinating phenomena. This natural marvel is particularly prevalent in the realm of deep-sea creatures, a world shrouded in perpetual darkness. In the deep ocean, where sunlight cannot penetrate, bioluminescence serves a variety of crucial functions for survival, communication, and predation. From tiny plankton to large predators like the anglerfish, countless organisms have evolved to produce light, creating a mesmerizing display that has captivated scientists and laypeople alike.\n\nOne of the primary functions of bioluminescence in deep-sea organisms is camouflage. Many species have developed the ability to emit light that matches the faint glow filtering down from the surface, effectively rendering themselves invisible to predators below. This form of counterillumination helps creatures blend seamlessly into their environment, allowing them to evade detection and ambush unsuspecting prey.\n\nIn addition to camouflage, bioluminescence plays a vital role in communication among deep-sea organisms. Some species use flashes of light to attract mates or signal danger, while others employ complex patterns of bioluminescent emissions to coordinate group movements or establish territory. These displays are often species-specific, with each organism possessing its own unique light-producing structures and behaviors.\n\nFurthermore, bioluminescence serves as a potent weapon in the arms race between predators and prey. Many deep-sea predators, such as the infamous anglerfish, utilize bioluminescent lures to attract unsuspecting prey within striking distance. These lures dangle in front of the predator's jaws, mimicking the appearance of small prey animals or exploiting the curiosity of other creatures drawn to the light. Once a victim comes too close, the predator strikes with lightning speed, securing its next meal in the darkness of the abyss.\n\nBeyond its role in survival and predation, bioluminescence also holds immense scientific potential. Researchers have long been fascinated by the biochemical mechanisms underlying this phenomenon, seeking to unlock its secrets for applications ranging from medical imaging to environmental monitoring. By studying the genes and proteins responsible for bioluminescence in various organisms, scientists hope to develop new technologies and therapies that harness the power of light for human benefit.\n\nMoreover, bioluminescence has captured the imagination of artists and storytellers throughout history, inspiring countless works of literature, art, and cinema. From ancient myths of glowing sea monsters to modern-day depictions of alien worlds, the eerie beauty of bioluminescent organisms has fueled the creative imagination, prompting speculation about the mysteries lurking in the depths of the ocean and beyond.\n\nDespite centuries of study, bioluminescence continues to surprise and mystify scientists with its sheer diversity and complexity. With each new discovery, researchers uncover fresh insights into the evolution, ecology, and physiology of these extraordinary creatures, shedding light on the hidden wonders of the deep sea. As technology advances and exploration techniques improve, we can only imagine what further marvels await discovery in the dark, uncharted depths of the ocean.",
-        "questions": [
-        {
-          "question": "What is bioluminescence?",
-          "options": ["The absorption of light by deep-sea creatures", "The ability of living organisms to emit light", "The reflection of light by underwater plants", "The production of light through electrical means"],
-          "correct_answer": "The ability of living organisms to emit light"
-        },
-        {
-          "question": "What are the two key components required for the bioluminescent reaction?",
-          "options": ["Oxygen and carbon dioxide", "Luciferin and luciferase", "Hydrogen and nitrogen", "ATP and chlorophyll"],
-          "correct_answer": "Luciferin and luciferase"
-        },
-        {
-          "question": "For what purpose do deep sea creatures like the anglerfish use bioluminescence?",
-          "options": ["For camouflage", "For hunting", "For photosynthesis", "For communication"],
-          "correct_answer": "For hunting"
-        },
-        {
-          "question": "Which creature releases a cloud of bioluminescent mucus when disturbed?",
-          "options": ["The dragonfish", "The vampire squid", "The jellyfish", "The anglerfish"],
-          "correct_answer": "The vampire squid"
-        },
-        {
-          "question": "What significant impact has the study of bioluminescence had on human life?",
-          "options": ["It has improved deep-sea fishing techniques", "It has led to the development of underwater lighting", "It has become a vital tool in biomedical research", "It has contributed to advancements in renewable energy"],
-          "correct_answer": "It has become a vital tool in biomedical research"
-        }
-      ]
+            "questions": [
+                {
+                "question": "What is one of the primary functions of bioluminescence in deep-sea organisms?",
+                "options": [
+                    "Attracting sunlight for photosynthesis",
+                    "Camouflage",
+                    "Enhancing vision in darkness",
+                    "Regulating body temperature"
+                ],
+                "correct_answer": "Camouflage"
+            },
+            {
+                "question": "How do deep-sea predators like the anglerfish use bioluminescence?",
+                "options": [
+                    "To communicate with other predators",
+                    "To illuminate their path",
+                    "To attract mates",
+                    "To lure unsuspecting prey"
+                ],
+                "correct_answer": "To lure unsuspecting prey"
+            },
+            {
+                "question": "What role does bioluminescence play in communication among deep-sea organisms?",
+                "options": [
+                    "Providing warmth",
+                    "Attracting sunlight",
+                    "Establishing territory",
+                    "Signaling danger or attracting mates"
+                ],
+                "correct_answer": "Signaling danger or attracting mates"
+            },
+            {
+                "question": "What scientific potential does bioluminescence hold?",
+                "options": [
+                    "Generating electricity",
+                    "Producing heat",
+                    "Environmental conservation",
+                    "Medical imaging and therapy"
+                ],
+                "correct_answer": "Medical imaging and therapy"
+            },
+            {
+                "question": "How has bioluminescence influenced human creativity?",
+                "options": [
+                    "By inspiring literature, art, and cinema",
+                    "By fueling technological advancements",
+                    "By providing new sources of energy",
+                    "By serving as a food source"
+                ],
+                "correct_answer": "By inspiring literature, art, and cinema"
+            }
+        ]
     },
     "text_2": {
         "title": "The Secret Life of Honeybees: Understanding Their Role in Our Ecosystem",
@@ -177,14 +202,14 @@
                 "correct_answer": "During the winter months in low-light areas"
             },
             {
-                "question": "What altitude affects the colors of the Aurora?",
+                "question": "How has the Aurora Borealis contributed to economic activity?",
                 "options": [
-                    "Sea level",
-                    "The stratosphere",
-                    "The troposphere",
-                    "The mesosphere"
+                    "By causing disruptions in communication systems",
+                    "By attracting tourists to aurora-prone regions",
+                    "By increasing pollution levels in the Arctic",
+                    "By reducing agricultural productivity"
                 ],
-                "correct_answer": "The mesosphere"
+                "answer": "By attracting tourists to aurora-prone regions"
             },
             {
                 "question": "What primarily determines the color of the Aurora Borealis?",
