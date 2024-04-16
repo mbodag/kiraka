@@ -60,7 +60,6 @@ const QuizDisplay: React.FC = () => {
           text_id: question.text_id,
           score: 0,
           selected_answer: '',
-          practice_id: 1
         }));
         setQuizQuestions(formattedQuestions);
       } catch (error) {
