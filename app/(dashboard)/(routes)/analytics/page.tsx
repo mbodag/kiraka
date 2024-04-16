@@ -5,7 +5,7 @@ import styles from './AnalyticsPage.module.css';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Line, Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js/auto';
 import { useAuth } from "@clerk/nextjs";
 
 
@@ -18,11 +18,6 @@ interface UserRecord {
   textId: number;
   avgWPM: number;
   quizScore: number;
-}
-
-interface UserData {
-  usersData: { [key: string]: UserRecord[] };
-  isAdmin: boolean;
 }
 
 interface UserPlotProps {
@@ -58,15 +53,22 @@ const AnalyticsPage: React.FC = () => {
   const [users, setUsers] = useState<string[]>([]);
   const [userData, setUserData] = useState<{ [key: string]: UserRecord[] }>({});
   const [filteredUsers, setFilteredUsers] = useState(users);
+  const [isAdmin, setAdmin] = useState(false)
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { userId } = useAuth();
 
   useEffect(() => {
     const fetchAnalyticsData = async () => {
-      const response = await getAnalytics(userId);
+      const response = await getAnalytics(userId)
+      console.log('Response:', response);
       setUserData(response.usersData);
       setUsers(Object.keys(response.usersData));
-    };
+      setAdmin(response.isAdmin)
+      if (!response.isAdmin){
+        setSelectedUser('Your data')
+      }
+      console.log('Updated state:', userData, users, isAdmin);
+        };
     fetchAnalyticsData();
   }, [userId]); // Empty dependency array means this effect runs once on mount and not on updates
 
@@ -207,7 +209,7 @@ const AnalyticsPage: React.FC = () => {
       <h1 className="text-5xl font-bold mb-4">Dashboard Analytics</h1>
 
       {/* Search bar for filtering plots, with reduced width */}
-      <div className="flex justify-center mt-6 mb-6">
+      {isAdmin && (<div className="flex justify-center mt-6 mb-6">
         <input
           type="text"
           placeholder="Search for a user..."
@@ -215,11 +217,11 @@ const AnalyticsPage: React.FC = () => {
           style={{ width: "100%" }} // Reduced width of the search bar
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-      </div>
-
+      </div>)}
+      
       {/* Scrollable Navigation bar for user selection, centered */}
-      <div className="flex justify-center items-center gap-4 mb-4">
-        <button onClick={() => scrollUsers("left")}>&lt;</button>
+      {isAdmin && <div className="flex justify-center items-center gap-4 mb-4">
+      <button onClick={() => scrollUsers("left")}>&lt;</button>
         <div
           ref={scrollContainerRef}
           className="flex gap-4 overflow-auto scroll-smooth scrollbar-hide scrollbar-hide"
@@ -235,8 +237,8 @@ const AnalyticsPage: React.FC = () => {
             </button>
           ))}
         </div>
-        <button onClick={() => scrollUsers("right")}>&gt;</button>
-      </div>
+         <button onClick={() => scrollUsers("right")}>&gt;</button>
+      </div> }
 
       {/* Display user-specific plot or a prompt to select a user */}
       <div className="flex-1 flex justify-center items-center text-gray-600">

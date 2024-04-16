@@ -461,3 +461,35 @@ body,
 .icon-button.active {
   color: rgb(200, 0, 0); /* Active state color */
 }
+.icon-button:disabled {
+  /* background-color: #cccccc;
+  color: #666666; */
+  cursor: not-allowed;
+}
+
+
+.home-container {
+  color: #333; /* Dark color for text for better readability */
+  padding: 20px;
+}
+
+.home-container h1 {
+  color: #ffff; /* Gives a theme color to headings */
+}
+
+.home-container p {
+  margin: 20px 10px;
+}
+
+.home-container ul {
+  max-width: 50vw; 
+  margin: auto; /* Centers the list */
+  background-color: white; /* Background for contrast */
+  border-radius: 15px; /* Rounded corners for list */
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2); 
+}
+
+.home-container li {
+  text-align: left; /* Aligns text to the left */
+  padding: 12px 10px; /* Adds vertical padding for spacing between items */
+}

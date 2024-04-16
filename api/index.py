@@ -300,7 +300,7 @@ def get_user_analytics():
         users = Users.query.all()
     for user in users:
         user_id = user.user_id 
-        username = user.username if logged_user.admin else "Your data"
+        username = user.user_id if logged_user.admin else "Your data"
         user_results = []
         practice_results = PracticeResults.query.filter_by(user_id=user_id).all()
         if practice_results:
@@ -371,7 +371,7 @@ def submit_reading_speed():
     wpm = data.get('wpm')
     mode = data.get('mode', 'undefined')
     chunks = data.get('chunks_data', [[]]) # Should be a list of lists of dictionaries
-    print(mode)
+    print(chunks)
     # Validate the text_id as integer and user_id as string
     if not isinstance(text_id, int) or not isinstance(user_id, str):
         return jsonify({'error': 'Invalid text_id or user_id'}), 400
@@ -404,7 +404,7 @@ def submit_reading_speed():
             new_gazer_point = GazerPoints(
                 chunk_id=new_chunk.chunk_id,
                 gazer_point_position=j,
-                x_value=chunks[i][j]['x'],
+                x_value=chunks[i][j]['normScaledX'],
                 y_value=chunks[i][j]['y'],
                 elapsed_time=chunks[i][j]['elapsedTime']
             )
