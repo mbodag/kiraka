@@ -315,9 +315,9 @@ def get_user_analytics():
                         num_questions += 1
                         num_corrects += quiz_result.score
                     score = 100 * num_corrects / num_questions
-                practice_result_dict = {'textId': practice_result.text_id, 'avgWPM': practice_result.wpm, 'timestamp': practice_result.timestamp.strftime('%d/%m/%Y'), 'quizScore': score}
+                practice_result_dict = {'textId': practice_result.text_id, 'avgWPM': practice_result.wpm, 'timestamp': practice_result.timestamp, 'quizScore': score}
                 user_results.append(practice_result_dict)
-            user_results = sorted(user_results, key=lambda x: x['timestamp'], reverse=True)
+            user_results = sorted(user_results, key=lambda x: x['timestamp'], reverse=False)
         users_data[username] = user_results          
     return jsonify({'usersData': users_data, 'isAdmin': logged_user.admin})
 
