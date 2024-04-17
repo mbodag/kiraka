@@ -209,7 +209,7 @@
                     "By increasing pollution levels in the Arctic",
                     "By reducing agricultural productivity"
                 ],
-                "answer": "By attracting tourists to aurora-prone regions"
+                "correct_`answer": "By attracting tourists to aurora-prone regions"
             },
             {
                 "question": "What primarily determines the color of the Aurora Borealis?",
@@ -304,12 +304,12 @@
                 "correct_answer": "Eight"
             },
             {
-                "question": "What was significant about Phelps's performance in the 2008 Olympics compared to Mark Spitz's 1972 achievements?",
+                "question": "What was significant about Phelps's performance in the 2008 Olympics?",
                 "options": [
-                    "Phelps won more silver medals.",
+                    "Phelps won the most silver medals.",
                     "Phelps broke the record for total medals.",
-                    "Phelps surpassed Spitz's record of seven golds in a single Olympics.",
-                    "Phelps competed in more events."
+                    "Phelps broke the record for gold medals in a single Olympics.",
+                    "Phelps competed in the most events."
                 ],
                 "correct_answer": "Phelps surpassed Spitz's record of seven golds in a single Olympics."
             },

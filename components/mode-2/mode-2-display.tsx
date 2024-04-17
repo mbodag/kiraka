@@ -324,9 +324,7 @@ const Mode2Display = () => {
                     const deltaT = gazeDataRef.current.length > 0 ? elapsedTime - gazeDataRef.current[gazeDataRef.current.length - 1].elapsedTime : 0;
                     const speedX = deltaT > 0 ? deltaX/deltaT : 0;
                     const normScaledSpeedX = deltaT > 0 ? normScaledDeltaX/deltaT : 0;
-                    console.log('x:', data.x, '|', 'normScaledX:', normScaledX, '|', 'y:', data.y, '|', 'elapsedTime:', elapsedTime, '|', 'deltaX:', deltaX, '|', 
-                    'normScaledDeltaX:', normScaledDeltaX, '|', 'deltaY:', deltaY, '|', 'deltaT:', deltaT, '|', 'speedX:', speedX, '|', 'normScaledSpeedX:', normScaledSpeedX);
-
+                
                     if (normScaledSpeedX < significantLeftNormSpeed) {
                         consecutiveLeftMovements.current += 1;
                       } else {
