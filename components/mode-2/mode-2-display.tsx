@@ -218,6 +218,16 @@ const Mode2Display = () => {
         setIsRestartActive(true); // Set active to true
         setTimeout(() => setIsRestartActive(false), 100); // Reset after 500ms
     };
+    
+    useEffect(() => {
+        if (selectedTextId !== null) {
+            if (showCompletionPopup) {
+                setShowCompletionPopup(false);  // Hide the popup if it's visible
+            }
+            restartAction();  // Then call the restart action
+        }
+    }, [selectedTextId]);
+
     // Function to toggle pause/play action
     const togglePausePlayAction = () => {
         if (isPaused) {
@@ -228,6 +238,7 @@ const Mode2Display = () => {
         setIsPausePlayActive(true); // Set active to true
         setTimeout(() => setIsPausePlayActive(false), 100); // Reset after 500ms
     };
+
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
             if (showCalibrationPopup || showCompletionPopup) {

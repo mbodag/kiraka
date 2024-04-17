@@ -42,6 +42,11 @@ const Sidebar = () => {
     window.location.href = 'https://forms.gle/nijvaqhDHYo3QE2v5'; // Link to google feedback form
   };
 
+  const handleTextClick = (textId: any) => {
+    setSelectedTextId(textId);  // Set the selected text ID
+    // window.location.reload();    // Force a full page reload
+  };
+
   return (
     <div className="flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-r border-gray-700">
       {/* Logo, company name, and horizontal line */}
@@ -83,9 +88,7 @@ const Sidebar = () => {
         {texts.map((text) => (
           <button
             key={text.id}
-            onClick={() => { 
-              setSelectedTextId(text.id); // Update the global context
-            }}
+            onClick={() => handleTextClick(text.id)}
             className={`text-sm w-full max-w-xs p-2 font-medium rounded-lg transition sidebar-button-font 
               ${text.id === selectedTextId ? 'bg-gray-700' : 'hover:bg-gray-800'}
               ${readTexts.includes(text.id) ? 'text-green-600' : ''}`} // Apply active or hover class
