@@ -538,7 +538,9 @@ const Mode2Display = () => {
                     chunks_data: gazeDataByChunk.current,
                 }),
             });
-            
+            if (response.status === 207) {
+                console.log(response);
+            }
             if (response.ok) {
                 const data = await response.json();
                 setPracticeId(data.practice_id); // Update global practice ID
