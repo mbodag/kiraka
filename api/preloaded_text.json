@@ -258,14 +258,14 @@
                 "correct_answer": "Ingenuity"
             },
             {
-                "question": "Which of the following statements about Perseverance's sample caching system is NOT true?",
+                "question": "Which of the following instruments aboard Perseverance is capable of identifying the chemical composition of rocks and minerals from a distance?",
                 "options": [
-                    "It collects and stores rock and soil samples for future retrieval.",
-                    "It enables detailed analysis of samples on Earth.",
-                    "It is the first time such a system has been used on Mars.",
-                    "It ensures that only the most promising samples are preserved."
+                    "Mastcam-Z",
+                    "PIXL",
+                    "SHERLOC",
+                    "SuperCam"
                 ],
-                "correct_answer": "It is the first time such a system has been used on Mars."
+                "correct_answer": "SuperCam"
             },
             {
                 "question": "What is the primary objective of NASA's Mars 2020 Perseverance rover mission?",
