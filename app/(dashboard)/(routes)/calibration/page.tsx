@@ -86,7 +86,7 @@ export default function WebgazerCalibration() {
             var yprediction = data.y; // Extract the y-coordinate
 
             // gaze listener
-            console.log("X prediction:", xprediction, "Y prediction:", yprediction, "Elapsed Time:", elapsedTime);
+            //console.log("X prediction:", xprediction, "Y prediction:", yprediction, "Elapsed Time:", elapsedTime);
           })
           .begin(); // Starts the WebGazer eye-tracking
       
