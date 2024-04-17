@@ -39,19 +39,19 @@
                     "Generating electricity",
                     "Producing heat",
                     "Environmental conservation",
-                    "Medical imaging and therapy"
+                    "Medical imaging"
                 ],
                 "correct_answer": "Medical imaging and therapy"
             },
             {
                 "question": "How has bioluminescence influenced human creativity?",
                 "options": [
-                    "By inspiring literature, art, and cinema",
-                    "By fueling technological advancements",
-                    "By providing new sources of energy",
-                    "By serving as a food source"
-                ],
-                "correct_answer": "By inspiring literature, art, and cinema"
+                    "It has inspired new forms of energy production",
+                    "It has sparked artistic and storytelling endeavors",
+                    "It has led to the development of innovative cooking techniques",
+                    "It has influenced fashion design"
+                  ],
+                "correct_answer": "It has sparked artistic and storytelling endeavors"
             }
         ]
     },
@@ -70,25 +70,25 @@
                 "correct_answer": "Pollinating plants"
             },
             {
-                "question": "What is the structure of a bee colony?",
+                "question": "What is the primary function of drones in a bee colony?",
                 "options": [
-                    "Only worker bees and drones",
-                    "Only queen bees and workers",
-                    "Queen, workers, and drones",
-                    "Multiple queens and workers"
+                  "Foraging for nectar",
+                  "Defending the hive",
+                  "Mating with the queen",
+                  "Tending to the young"
                 ],
-                "correct_answer": "Queen, workers, and drones"
-            },
-            {
-                "question": "From what do bees make honey?",
+                "correct_answer": "Mating with the queen"
+              },
+              {
+                "question": "How many flowers can a single bee colony pollinate in a day?",
                 "options": [
-                    "Pollen",
-                    "Tree sap",
-                    "Flower petals",
-                    "Nectar"
+                  "10 million",
+                  "100 million",
+                  "300 million",
+                  "500 million"
                 ],
-                "correct_answer": "Nectar"
-            },
+                "correct_answer": "300 million"
+              },
             {
                 "question": "What is a significant threat to honeybee populations?",
                 "options": [
