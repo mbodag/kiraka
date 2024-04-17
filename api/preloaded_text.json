@@ -39,19 +39,19 @@
                     "Generating electricity",
                     "Producing heat",
                     "Environmental conservation",
-                    "Medical imaging and therapy"
+                    "Medical imaging"
                 ],
                 "correct_answer": "Medical imaging and therapy"
             },
             {
                 "question": "How has bioluminescence influenced human creativity?",
                 "options": [
-                    "By inspiring literature, art, and cinema",
-                    "By fueling technological advancements",
-                    "By providing new sources of energy",
-                    "By serving as a food source"
-                ],
-                "correct_answer": "By inspiring literature, art, and cinema"
+                    "It has inspired new forms of energy production",
+                    "It has sparked artistic and storytelling endeavors",
+                    "It has led to the development of innovative cooking techniques",
+                    "It has influenced fashion design"
+                  ],
+                "correct_answer": "It has sparked artistic and storytelling endeavors"
             }
         ]
     },
