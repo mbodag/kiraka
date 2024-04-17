@@ -39,7 +39,7 @@ const Sidebar = () => {
   }, [userId]);
 
   const handleFeedbackClick = () => {
-    window.location.href = 'https://forms.gle/nijvaqhDHYo3QE2v5'; // Link to google feedback form
+    window.open('https://forms.gle/nijvaqhDHYo3QE2v5', '_blank'); // Opens the link in a new tab
   };
 
   const handleTextClick = (textId: any) => {
