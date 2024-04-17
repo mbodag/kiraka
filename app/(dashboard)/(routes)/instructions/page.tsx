@@ -52,7 +52,7 @@ export default async function InstructionPage() {
                             <strong>Adjusting for Accuracy:</strong> If you notice unusual results with WPM adjustments, it may indicate a need to <span style={{ color: 'rgb(200, 0, 0)', fontWeight: 'bold' }}>recalibrate the gaze tracking system</span>. To recalibrate, simply press the WebGazer button located on the top right corner while in FlashMode.
                         </li>
                         <li>
-                            After your session, you can <span style={{ color: 'rgb(0, 150, 250)', fontWeight: 'bold' }}>save your performance and tackle our custom quiz to test your understanding of the content.</span>
+                            After your session, you can <span style={{ color: 'rgb(0, 100, 250)', fontWeight: 'bold' }}>save your performance and tackle our custom quiz to test your understanding of the content.</span>
                         </li>
                         <li>
                             <strong>To start speed reading,</strong> go to FlashMode by clicking on the button at the top of the page, then select the text you want to read from the left sidebar.
