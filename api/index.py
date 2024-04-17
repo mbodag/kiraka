@@ -371,7 +371,7 @@ def submit_reading_speed():
     wpm = data.get('wpm')
     mode = data.get('mode', 'undefined')
     chunks = data.get('chunks_data', [[]]) # Should be a list of lists of dictionaries
-    print(chunks)
+
     # Validate the text_id as integer and user_id as string
     if not isinstance(text_id, int) or not isinstance(user_id, str):
         return jsonify({'error': 'Invalid text_id or user_id'}), 400
@@ -508,7 +508,7 @@ def store_user_data():
     # Check if user already exists to avoid duplicates
     existing_user = Users.query.filter_by(user_id=user_id).first()
     if existing_user:
-        return jsonify(success=False, message="User already exists."), 409
+        return jsonify(success=False, message="User already exists."), 200
     
     new_user = Users(user_id=user_id)
     db.session.add(new_user)

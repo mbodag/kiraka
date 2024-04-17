@@ -117,7 +117,7 @@ const Mode2Display = () => {
             throw new Error("Network response was not ok");
           }
           const data = await response.json();
-          console.log(data.quiz_questions);
+
           // Replace newlines (\n) with spaces and set the cleaned text
           const cleanedText = data.text_content.replace(/\n+/g, " ");
           setShortStory(cleanedText);
