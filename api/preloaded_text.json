@@ -55,62 +55,65 @@
             }
         ]
     },
+
     "text_2": {
-        "title": "The Secret Life of Honeybees: Understanding Their Role in Our Ecosystem",
-        "content": "Honeybees are indeed remarkable creatures, embodying a delicate yet essential link in the intricate tapestry of life on our planet. Beyond their reputation as producers of delicious honey, they serve as indispensable pollinators, contributing immeasurably to the health and sustainability of ecosystems worldwide. Their significance cannot be overstated, as evidenced by the staggering statistic that a single bee colony can pollinate up to 300 million flowers each day. This phenomenal feat underscores their pivotal role in the reproductive cycles of countless plant species, ensuring the proliferation of fruits, nuts, and vegetables that form the foundation of our diets.\n\nDelving deeper into the fascinating world of bees as pollinators unveils the intricate mechanisms by which they facilitate the transfer of pollen between flowers, a process essential for fertilization and subsequent fruit and seed production. Without bees, the diversity and nutritional richness of our food supply would be severely compromised, highlighting the profound impact these tiny insects have on global food security.\n\nCentral to the functionality of a bee colony is its meticulously structured hierarchy, comprising three distinct castes: the queen, workers, and drones. The queen bee reigns supreme, laying the eggs that sustain the colony's population. Meanwhile, the industrious worker bees tirelessly undertake a myriad of tasks essential for the colony's survival, from foraging for nectar and pollen to tending to the young and defending the hive. In contrast, the drones, their numbers few and their existence transient, serve the singular purpose of mating with the queen to ensure the colony's continuation.\n\nA cornerstone of the bee's industriousness lies in its remarkable ability to transform floral nectar into the golden elixir we know as honey. Within the hive, bees employ a complex alchemy, regurgitating and reingesting nectar while employing enzymatic processes to convert it into honey—a nutrient-rich food source vital for sustaining the colony through lean times.\n\nDespite their critical importance, honeybees face an array of existential threats that jeopardize their survival. Pervasive pesticide use, habitat loss due to urbanization and agricultural expansion, and the spread of diseases and parasites pose significant challenges to bee populations worldwide. The alarming decline in bee numbers not only imperils their own existence but also reverberates throughout entire ecosystems, disrupting the delicate balance upon which biodiversity depends.\n\nIn response to these threats, concerted efforts to conserve and protect honeybee populations have emerged, driven by a recognition of their irreplaceable ecological contributions. Initiatives aimed at reducing pesticide usage, establishing bee-friendly habitats through the planting of diverse floral resources, and supporting local beekeepers in sustainable beekeeping practices have gained momentum in recent years.\n\nIn conclusion, the intricate interplay between honeybees and their environment underscores the profound interconnectedness of all living beings on our planet. As stewards of the Earth, it is incumbent upon us to recognize the invaluable services provided by these remarkable insects and take concerted action to ensure their continued well-being. By safeguarding honeybee populations and the ecosystems they inhabit, we not only protect biodiversity but also secure the foundation of our food systems for generations to come. Let us embrace the imperative of conservation and cultivate a harmonious coexistence with the natural world, recognizing that the fate of the humble honeybee is inexorably intertwined with our own.",
+        "title": "Evolutionary Mismatch: Concepts and Consequences",
+        "content": "Evolutionary mismatch occurs when the environment in which an organism lives changes so rapidly that its evolved traits are no longer advantageous and may, in fact, become maladaptive. This phenomenon is particularly relevant to humans, whose technological and social advancements have far outpaced biological evolution. The concept of evolutionary mismatch helps explain numerous modern health and psychological issues, suggesting that they arise because our bodies and minds are adapted to conditions that are dramatically different from today’s environment.\n\nHistorically, humans evolved to survive and reproduce in harsh environments with scarce food resources, which led to the development of traits such as strong preferences for sugar and fat—valuable energy sources during periods of food scarcity. However, in today's world of abundant and readily available food, these once-adaptive traits contribute to widespread health issues like obesity, diabetes, and heart disease.\n\nPhysical activity patterns also exemplify evolutionary mismatch. Ancestors spent much of their day engaged in moderate to vigorous physical activity, which was necessary for hunting, gathering, and survival. The modern sedentary lifestyle, with prolonged periods of sitting, contrasts sharply with this past, leading to a myriad of health problems, including musculoskeletal disorders, cardiovascular diseases, and a decreased mental health state.\n\nAnother area where evolutionary mismatch is evident is our exposure to natural light and dark cycles. Historically, humans were active during the day and rested at night, guided by the natural light of the sun. The invention of artificial lighting has significantly altered these patterns, affecting circadian rhythms and contributing to sleep disorders and various forms of depression.\n\nPsychologically, the mismatch theory suggests that many emotional disorders may be linked to changes in our social and physical environments that are out of sync with the conditions under which our cognitive faculties evolved. For instance, social anxiety and phobias may stem from our evolved sensitivity to potentially threatening social situations, which in the ancestral environment could have had serious reproductive consequences.\n\nSocial structures themselves have evolved. In small, close-knit groups, behaviors like altruism and cooperation were likely easier to manage and more advantageous compared to today’s large, impersonal societies. This shift could explain the prevalence of feelings of isolation and the breakdown of community-oriented values, potentially contributing to the increase in mental health issues.\n\nIn summary, the theory of evolutionary mismatch provides a framework for understanding a range of modern ailments by highlighting how rapid changes in our environment can outstrip our biological ability to adapt. By recognizing these mismatches, it may be possible to mitigate some of their negative impacts through lifestyle adjustments that more closely mimic ancestral conditions.",
         "questions": [
             {
-                "question": "What primary role do honeybees play in ecosystems?",
+                "question": "What dietary preferences are considered an evolutionary mismatch in today's society?",
                 "options": [
-                    "Producing honey",
-                    "Pollinating plants",
-                    "Eliminating pests",
-                    "Aerating soil"
+                    "Lean proteins",
+                    "Fresh fruits and vegetables",
+                    "High sugar and fat",
+                    "Whole grains"
                 ],
-                "correct_answer": "Pollinating plants"
+                "correct_answer": "C) High sugar and fat"
             },
             {
-                "question": "What is the structure of a bee colony?",
+                "question": "Which modern condition is NOT typically associated with the evolutionary mismatch related to physical activity?",
                 "options": [
-                    "Only worker bees and drones",
-                    "Only queen bees and workers",
-                    "Queen, workers, and drones",
-                    "Multiple queens and workers"
+                    "Obesity",
+                    "Anxiety disorders",
+                    "Cardiovascular diseases",
+                    "Musculoskeletal disorders"
                 ],
-                "correct_answer": "Queen, workers, and drones"
+                "correct_answer": "B) Anxiety disorders"
             },
             {
-                "question": "From what do bees make honey?",
+                "question": "How has artificial lighting contributed to evolutionary mismatch?",
                 "options": [
-                    "Pollen",
-                    "Tree sap",
-                    "Flower petals",
-                    "Nectar"
+                    "By enhancing physical performance",
+                    "By disrupting natural sleep patterns",
+                    "By increasing vitamin D synthesis",
+                    "By improving night vision"
                 ],
-                "correct_answer": "Nectar"
+                "correct_answer": "B) By disrupting natural sleep patterns"
             },
             {
-                "question": "What is a significant threat to honeybee populations?",
+                "question": "What psychological disorder might be explained by an evolutionary mismatch in our social environment?",
                 "options": [
-                    "Over-pollination",
-                    "Pesticides",
-                    "Excessive honey production",
-                    "Loud noises"
+                    "Bipolar disorder",
+                    "Schizophrenia",
+                    "Social anxiety",
+                    "Obsessive-compulsive disorder"
                 ],
-                "correct_answer": "Pesticides"
+                "correct_answer": "C) Social anxiety"
             },
             {
-                "question": "Why is conserving bee populations important?",
+                "question": "What is a proposed benefit of aligning modern lifestyle choices more closely with those of our ancestors?",
                 "options": [
-                    "To maintain honey supplies",
-                    "To ensure pollination for various plants",
-                    "To beautify gardens",
-                    "To increase beeswax production"
+                    "Increased technological dependence",
+                    "Decreased educational attainment",
+                    "Reduction in modern ailments",
+                    "Higher energy consumption"
                 ],
-                "correct_answer": "To ensure pollination for various plants"
+                "correct_answer": "C) Reduction in modern ailments"
             }
         ]
     },
+
+    
     "text_3": {
         "title": "Unveiling the Power of Tungsten: A Metal That Forges Our Modern World",
         "content": "In the realm of elements, few possess the remarkable blend of strength, durability, and versatility exhibited by tungsten. Known for its robustness and a myriad of industrial applications, tungsten stands as a stalwart cornerstone in modern technology and innovation. From lighting our path to propelling us into the future, let's delve into the captivating world of tungsten and uncover its profound significance.\n\n Tungsten, denoted by the symbol W on the periodic table, derives its name from the Swedish words 'tung sten', meaning heavy stone. True to its name, tungsten boasts an impressive density, ranking among the densest elements known to humankind. This density, combined with its remarkable hardness, renders tungsten an indispensable component in various industrial and technological endeavors.\n\nOne of the most renowned applications of tungsten lies in the realm of lighting. Tungsten filaments, commonly found in incandescent light bulbs, emit a warm, inviting glow when electrified. The unparalleled resilience of tungsten allows these filaments to withstand the intense heat generated during operation, thereby ensuring prolonged illumination and reliability. Although increasingly supplanted by more energy-efficient alternatives, tungsten's contribution to lighting remains etched in history as a beacon of innovation.\n\nBeyond the realm of illumination, tungsten finds widespread utility in the manufacturing of cutting tools and abrasives. Due to its exceptional hardness and resistance to wear, tungsten carbide, a compound derived from tungsten and carbon, serves as the backbone of countless industrial applications. From drills and saw blades to milling cutters and mining tools, tungsten carbide tools empower industries to carve, shape, and excavate with unparalleled precision and efficiency.\n\nMoreover, tungsten's high melting point — a staggering 3,422 degrees Celsius — renders it an ideal candidate for applications requiring extreme heat resistance. In aerospace and defense, tungsten alloys fortify missiles, aircraft components, and armor-piercing projectiles, ensuring their integrity and functionality even in the harshest of environments. Furthermore, the use of tungsten in radiation shielding and medical imaging underscores its pivotal role in safeguarding lives and advancing healthcare technologies.\n\nThe electronic landscape also owes a debt of gratitude to tungsten, as it serves as a critical component in the production of semiconductors and electronic devices. Tungsten's low coefficient of thermal expansion and exceptional conductivity make it an ideal material for fabricating integrated circuits, microprocessors, and high-performance electronics. As our reliance on electronic devices continues to burgeon, tungsten remains steadfast as a linchpin in the foundation of modern technology.\n\nHowever, despite its myriad applications and intrinsic value, the extraction and processing of tungsten pose significant environmental and ethical challenges. Tungsten mining operations, particularly in regions like China, have raised concerns regarding labor rights, environmental degradation, and resource sustainability. Efforts to promote responsible mining practices and explore alternative sources of tungsten are thus imperative to mitigate these issues and ensure a more sustainable future.\n\nIn conclusion, tungsten stands as a testament to the ingenuity and resilience of humanity. From illuminating our homes to revolutionizing industries and powering technological advancements, tungsten's influence reverberates across diverse facets of our lives. As we navigate the complexities of a rapidly evolving world, let us harness the power of tungsten responsibly, mindful of its profound impact on our present and future endeavors.",
