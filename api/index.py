@@ -315,9 +315,9 @@ def get_user_analytics():
                         num_questions += 1
                         num_corrects += quiz_result.score
                     score = 100 * num_corrects / num_questions
-                practice_result_dict = {'textId': practice_result.text_id, 'avgWPM': practice_result.wpm, 'timestamp': practice_result.timestamp.strftime('%d/%m/%Y'), 'quizScore': score}
+                practice_result_dict = {'textId': practice_result.text_id, 'avgWPM': practice_result.wpm, 'timestamp': practice_result.timestamp, 'quizScore': score}
                 user_results.append(practice_result_dict)
-            user_results = sorted(user_results, key=lambda x: x['timestamp'], reverse=True)
+            user_results = sorted(user_results, key=lambda x: x['timestamp'], reverse=False)
         users_data[username] = user_results          
     return jsonify({'usersData': users_data, 'isAdmin': logged_user.admin})
 
@@ -392,23 +392,32 @@ def submit_reading_speed():
     # Add to the database session
     db.session.add(new_practice_result)
     db.session.commit()
-    
+    chunk_errors = 0
+    gazer_point_errors = 0
     for i in range(len(chunks)):
-        new_chunk = Chunks(
+        try: 
+            new_chunk = Chunks(
             practice_id=new_practice_result.practice_id,
             chunk_position=i
         )
-        db.session.add(new_chunk)
-        db.session.commit()
-        for j in range(len(chunks[i])):
-            new_gazer_point = GazerPoints(
-                chunk_id=new_chunk.chunk_id,
-                gazer_point_position=j,
-                x_value=chunks[i][j]['normScaledX'],
-                y_value=chunks[i][j]['y'],
-                elapsed_time=chunks[i][j]['elapsedTime']
-            )
-            db.session.add(new_gazer_point)
+            db.session.add(new_chunk)
+            db.session.commit()
+            for j in range(len(chunks[i])):
+                try:
+                    new_gazer_point = GazerPoints(
+                    chunk_id=new_chunk.chunk_id,
+                    gazer_point_position=j,
+                    x_value=chunks[i][j]['normScaledX'],
+                    y_value=chunks[i][j]['y'],
+                    elapsed_time=chunks[i][j]['elapsedTime']
+                )
+                    db.session.add(new_gazer_point)
+                except:
+                    db.session.rollback()
+                    gazer_point_errors += 1
+        except:
+            db.session.rollback()
+            chunk_errors += 1
     # Commit the new practice result to the database
     try:
         db.session.commit()
@@ -416,9 +425,12 @@ def submit_reading_speed():
         db.session.rollback()  # Roll back in case of error
         return jsonify({'error': f'Failed to add new reading speed record: {str(e)}'}), 500
 
+    if chunk_errors == 0 and gazer_point_errors == 0:
     # Return success message
-    return jsonify({'message': 'New reading speed record added successfully!', 'practice_id': new_practice_result.practice_id}), 201
-
+        return jsonify({'message': 'New reading speed record added successfully!', 'practice_id': new_practice_result.practice_id}), 201
+    else:
+        return jsonify({'message': f'New reading speed record added with {chunk_errors} chunk errors and {gazer_point_errors} gazer point errors', 'practice_id': new_practice_result.practice_id}), 207
+    
 @app.route('/api/save-quiz-results', methods=['POST'])
 def submit_quiz_results():
     # Check if the request is in JSON format

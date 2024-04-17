@@ -39,19 +39,19 @@
                     "Generating electricity",
                     "Producing heat",
                     "Environmental conservation",
-                    "Medical imaging and therapy"
+                    "Medical imaging"
                 ],
                 "correct_answer": "Medical imaging and therapy"
             },
             {
                 "question": "How has bioluminescence influenced human creativity?",
                 "options": [
-                    "By inspiring literature, art, and cinema",
-                    "By fueling technological advancements",
-                    "By providing new sources of energy",
-                    "By serving as a food source"
-                ],
-                "correct_answer": "By inspiring literature, art, and cinema"
+                    "It has inspired new forms of energy production",
+                    "It has sparked artistic and storytelling endeavors",
+                    "It has led to the development of innovative cooking techniques",
+                    "It has influenced fashion design"
+                  ],
+                "correct_answer": "It has sparked artistic and storytelling endeavors"
             }
         ]
     },
@@ -70,25 +70,25 @@
                 "correct_answer": "Pollinating plants"
             },
             {
-                "question": "What is the structure of a bee colony?",
+                "question": "What is the primary function of drones in a bee colony?",
                 "options": [
-                    "Only worker bees and drones",
-                    "Only queen bees and workers",
-                    "Queen, workers, and drones",
-                    "Multiple queens and workers"
+                  "Foraging for nectar",
+                  "Defending the hive",
+                  "Mating with the queen",
+                  "Tending to the young"
                 ],
-                "correct_answer": "Queen, workers, and drones"
-            },
-            {
-                "question": "From what do bees make honey?",
+                "correct_answer": "Mating with the queen"
+              },
+              {
+                "question": "How many flowers can a single bee colony pollinate in a day?",
                 "options": [
-                    "Pollen",
-                    "Tree sap",
-                    "Flower petals",
-                    "Nectar"
+                  "10 million",
+                  "100 million",
+                  "300 million",
+                  "500 million"
                 ],
-                "correct_answer": "Nectar"
-            },
+                "correct_answer": "300 million"
+              },
             {
                 "question": "What is a significant threat to honeybee populations?",
                 "options": [
@@ -258,14 +258,14 @@
                 "correct_answer": "Ingenuity"
             },
             {
-                "question": "Which of the following statements about Perseverance's sample caching system is NOT true?",
+                "question": "Which of the following instruments aboard Perseverance is capable of identifying the chemical composition of rocks and minerals from a distance?",
                 "options": [
-                    "It collects and stores rock and soil samples for future retrieval.",
-                    "It enables detailed analysis of samples on Earth.",
-                    "It is the first time such a system has been used on Mars.",
-                    "It ensures that only the most promising samples are preserved."
+                    "Mastcam-Z",
+                    "PIXL",
+                    "SHERLOC",
+                    "SuperCam"
                 ],
-                "correct_answer": "It is the first time such a system has been used on Mars."
+                "correct_answer": "SuperCam"
             },
             {
                 "question": "What is the primary objective of NASA's Mars 2020 Perseverance rover mission?",
@@ -279,62 +279,65 @@
             }
         ]
     },
+    
     "text_6": {
         "title": "Michael Phelps: A Swimming Legend",
-        "content": "Michael Phelps, often hailed as the greatest swimmer of all time, has left an indelible mark on the world of sports. Born on June 30, 1985, in Baltimore, Maryland, Phelps began swimming at the age of seven, partly due to the influence of his sisters and as a way to channel his energy as he battled ADHD.\n\nPhelps's ascent in the swimming world was meteoric. By the age of 15, he had already made his mark by qualifying for the 2000 Sydney Olympics, making him one of the youngest male swimmers ever to make the U.S. Olympic team. Although he didn't win a medal in Sydney, this experience was crucial in setting the stage for his future successes.\n\nThe 2004 Athens Olympics were a breakthrough event for Phelps. He won six gold medals and two bronzes, showcasing his versatility and dominance across different swimming styles. However, it was the 2008 Beijing Olympics that truly cemented his legendary status. There, Phelps won eight gold medals, breaking Mark Spitz's 1972 record of seven golds in a single Olympics. His performance in Beijing included seven world records, highlighting his peak physical condition and technical prowess.\n\nPhelps's training regimen was as extraordinary as his performances. He trained for around five to six hours a day, six days a week, consuming up to 12,000 calories daily to fuel his intense workouts. His physical attributes, including his long arms, large hands, and exceptional lung capacity, complemented his rigorous training routine, making him a formidable competitor.\n\nBeyond the pool, Phelps has been an advocate for mental health, openly discussing his struggles with depression and anxiety, particularly after competing in the Olympics. His openness about mental health has helped destigmatize these issues among athletes.\n\nPhelps retired after the 2016 Rio de Janeiro Olympics with a record-breaking tally of 23 Olympic gold medals, more than any other Olympian in history. His legacy extends beyond his medal count, as he has inspired countless swimmers around the world and contributed significantly to the sport's popularity.",
+        "content": "Michael Phelps, often hailed as the greatest swimmer of all time, has left an indelible mark on the world of sports. Born on June 30, 1985, in Baltimore, Maryland, Phelps began swimming at the age of seven, partly due to the influence of his sisters and to manage his ADHD. His journey in competitive swimming started early, and by 15, he had qualified for the 2000 Sydney Olympics, becoming one of the youngest U.S. male swimmers ever to compete at the Olympics.\n\nThough he did not win any medals in Sydney, this experience was pivotal in shaping his future successes. Phelps's breakthrough came at the 2004 Athens Olympics, where he claimed six gold medals and two bronze, setting world records and showcasing his prowess across various styles. The 2008 Beijing Olympics, however, was where Phelps achieved legendary status by securing eight gold medals, surpassing Mark Spitz's 1972 record for the most golds in a single Olympics. His Beijing feats included setting seven world records, demonstrating unparalleled speed and endurance.\n\nPhelps's training regimen was extraordinarily rigorous. He trained up to six hours a day, six days a week, consuming around 12,000 calories daily to fuel his strenuous workouts. His physical attributes, such as his long arms, large hands, and exceptional lung capacity, were perfectly suited to swimming, giving him a significant advantage over competitors. Phelps's size 14 feet acted almost like flippers, propelling him through water with powerful thrusts.\n\nBeyond his physical talents and rigorous training, Phelps's psychological resilience played a crucial role in his success. He was known for his fierce competitiveness and ability to perform under pressure, qualities that helped him secure numerous world records and Olympic medals.\n\nRetiring after the 2016 Rio Olympics, Phelps concluded his career with 23 Olympic gold medals—the most in the history of the Olympics. His impact on the sport extends beyond his medal counts, as he has inspired millions and contributed significantly to swimming's global popularity. Post-retirement, Phelps has become an advocate for mental health, sharing his own struggles with depression and anxiety to destigmatize these issues among athletes and beyond.\n\nPhelps's legacy is not just about the records or medals, but about overcoming adversity, pushing the boundaries of human performance, and inspiring the next generation of athletes.",
         "questions": [
             {
-                "question": "What year did Michael Phelps qualify for his first Olympics?",
+                "question": "What aspect of Phelps's physicality is noted for acting like flippers in the water?",
+                "options": [
+                    "His long arms",
+                    "His large hands",
+                    "His lung capacity",
+                    "His size 14 feet"
+                ],
+                "correct_answer": "His size 14 feet"
+            },
+            {
+                "question": "How many calories did Michael Phelps reportedly consume daily during peak training?",
+                "options": [
+                    "6,000 calories",
+                    "8,000 calories",
+                    "10,000 calories",
+                    "12,000 calories"
+                ],
+                "correct_answer": "12,000 calories"
+            },
+            {
+                "question": "What year marked Michael Phelps's first Olympic appearance?",
                 "options": [
                     "1996",
-                    "1998",
                     "2000",
-                    "2002"
+                    "2004",
+                    "2008"
                 ],
                 "correct_answer": "2000"
             },
             {
-                "question": "How many gold medals did Michael Phelps win at the 2008 Beijing Olympics?",
+                "question": "How many total Olympic gold medals did Phelps win by the end of his career?",
                 "options": [
-                    "Six",
-                    "Seven",
-                    "Eight",
-                    "Nine"
+                    "19",
+                    "21",
+                    "23",
+                    "25"
                 ],
-                "correct_answer": "Eight"
+                "correct_answer": "23"
             },
             {
-                "question": "What was significant about Phelps's performance in the 2008 Olympics compared to Mark Spitz's 1972 achievements?",
+                "question": "Which Olympics saw Phelps surpass Mark Spitz's previous record of seven gold medals in a single Games?",
                 "options": [
-                    "Phelps won more silver medals.",
-                    "Phelps broke the record for total medals.",
-                    "Phelps surpassed Spitz's record of seven golds in a single Olympics.",
-                    "Phelps competed in more events."
+                    "Athens 2004",
+                    "Beijing 2008",
+                    "London 2012",
+                    "Rio 2016"
                 ],
-                "correct_answer": "Phelps surpassed Spitz's record of seven golds in a single Olympics."
-            },
-            {
-                "question": "Which of the following is NOT a physical attribute that contributed to Phelps's success in swimming?",
-                "options": [
-                    "Long arms",
-                    "Large hands",
-                    "Exceptional lung capacity",
-                    "Extraordinary leg length"
-                ],
-                "correct_answer": "Extraordinary leg length"
-            },
-            {
-                "question": "Why did Michael Phelps consume up to 12,000 calories daily during training?",
-                "options": [
-                    "To gain weight",
-                    "To fuel his intense workouts",
-                    "To increase his water resistance",
-                    "To improve his mental health"
-                ],
-                "correct_answer": "To fuel his intense workouts"
+                "correct_answer": "Beijing 2008"
             }
         ]
     },
+    
+    
     "text_7": {
         "title": "Exercise, Mental Health, and Longevity",
         "content": "The relationship between physical exercise and mental health is well-documented, offering compelling evidence that regular physical activity contributes significantly to longevity and mental well-being. Engaging in regular exercise can dramatically improve life expectancy and reduce the incidence of various mental health issues, including depression, anxiety, and cognitive decline.\n\nPhysiologically, exercise stimulates the release of neurotransmitters such as endorphins, serotonin, and dopamine, which are crucial for mood regulation and a general sense of well-being. Endorphins, often known as the body's natural painkillers, not only alleviate pain but also enhance pleasure, creating a natural 'high'—a phenomenon often referred to as the \"runner's high.\"\n\nFurther, exercise has been shown to reduce levels of the body's stress hormones, such as adrenaline and cortisol, which plays a crucial role in fostering resilience against stress. Regular physical activity also contributes to the enhancement of the brain's plasticity by stimulating the creation of new connections between nerve cells and even the development of new brain cells, a process known as neurogenesis. This neuroplasticity is especially important in aging populations, as it helps maintain cognitive functions and deters neurodegenerative diseases.\n\nFrom a psychological perspective, exercise offers a structured routine that can help people combat depression and anxiety by instilling a sense of progress and achievement. Moreover, group sports or fitness classes provide valuable social interactions that combat loneliness and boost mood through shared experiences.\n\nThe link between exercise and longevity is equally significant. Studies consistently show that regular physical activity reduces the risk of dying early from leading causes of death, like heart disease and cancer. Exercise improves cardiovascular health by increasing heart efficiency, reducing blood pressure, and improving cholesterol levels. It also enhances respiratory function and boosts the immune system, making the body more adept at fighting infections and diseases.\n\nIn terms of mental health, regular physical activity is a potent antidote to stress, anxiety, and depression. It is often used as a complementary therapy for mental health disorders due to its ability to provide a natural and side-effect-free boost to the brain's chemistry. For elderly individuals, maintaining a regular exercise regimen is crucial as it contributes to maintaining independence and a higher quality of life by enhancing mobility, flexibility, and balance.\n\nIn summary, the integration of regular physical activity into daily life is a powerful strategy for enhancing mental health, promoting longevity, and improving overall quality of life. As the research continues to evolve, the message remains clear: exercise is not just about physical health; it's a cornerstone of psychological well-being and a longer, healthier life.",
