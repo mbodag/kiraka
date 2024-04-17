@@ -11,7 +11,7 @@ const Sidebar = () => {
   const [readTexts, setReadTexts] = useState<number[]>([]);
 
   // Array of texts with their IDs
-  const texts = Array.from({ length: 7 }, (_, index) => ({
+  const texts = Array.from({ length: 5 }, (_, index) => ({
     id: index + 1,
     title: `Text ${index + 1}`,
   }));
