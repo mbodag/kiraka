@@ -5,7 +5,7 @@ import { useSelectedText } from "@/contexts/SelectedTextContext";
 import CounterDisplay from "@/components/mode-1/counter-display";
 import styles from '@/app/(dashboard)/(routes)/dashboard/DashboardPage.module.css';
 import '@/app/globals.css';
-import { useWebGazer } from '@/contexts/WebGazerContext';
+import { useWebGazer } from '@/contexts/WebGazerContext.tsx';
 import { TbSquareLetterR } from "react-icons/tb";
 import { RiSpace } from "react-icons/ri";
 import  { usePracticeID } from '@/contexts/PracticeIDContext';
@@ -324,6 +324,8 @@ const Mode2Display = () => {
                     const deltaT = gazeDataRef.current.length > 0 ? elapsedTime - gazeDataRef.current[gazeDataRef.current.length - 1].elapsedTime : 0;
                     const speedX = deltaT > 0 ? deltaX/deltaT : 0;
                     const normScaledSpeedX = deltaT > 0 ? normScaledDeltaX/deltaT : 0;
+                    console.log('x:', data.x, '|', 'normScaledX:', normScaledX, '|', 'y:', data.y, '|', 'elapsedTime:', elapsedTime, '|', 'deltaX:', deltaX, '|', 
+                    'normScaledDeltaX:', normScaledDeltaX, '|', 'deltaY:', deltaY, '|', 'deltaT:', deltaT, '|', 'speedX:', speedX, '|', 'normScaledSpeedX:', normScaledSpeedX);
                 
                     if (normScaledSpeedX < significantLeftNormSpeed) {
                         consecutiveLeftMovements.current += 1;

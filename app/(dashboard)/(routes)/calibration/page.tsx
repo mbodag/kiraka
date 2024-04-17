@@ -169,10 +169,10 @@ export default function WebgazerCalibration() {
     <div>
       {/* Initialise WebGazer Button */}
       <button
-        onClick={initWebgazer} // Calls the initWebgazer function when clicked
-        className="GreenButton"
+        onClick={allCalibrated ? startCalibration : initWebgazer} // Calls the initWebgazer function when clicked
+        className={allCalibrated ? "OrangeButton" : "GreenButton"}
       >
-        Initialise WebGazer
+        {allCalibrated ? "Re-calibrate WebGazer" : "Initialise WebGazer"}
       </button>
 
       {/* Conditionally rendered Start Calibration Button */}
