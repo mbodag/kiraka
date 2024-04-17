@@ -2,12 +2,11 @@ from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy.sql.expression import func
-from datetime import datetime
+from datetime import datetime, timezone
 import requests
 import random
-from config import DATABASE_URI, PORT, ADMIN_ID
 import json
-
+from api.config import DATABASE_URI, ADMIN_ID
 
 app = Flask(__name__)
 CORS(app) # See what this does
@@ -24,13 +23,13 @@ class Texts(db.Model):
     text_id = db.Column(db.Integer, primary_key=True)
     keywords = db.Column(db.Text)
     text_content = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'))
+    user_id = db.Column(db.String(50), db.ForeignKey('Users.user_id'))
     quiz_questions = db.relationship('Questions', backref='text', lazy=True)
     title = db.Column(db.Text)
     
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-    
+
 class Questions(db.Model): 
     __tablename__ = 'Questions'
     question_id = db.Column(db.Integer, primary_key=True)
@@ -41,9 +40,10 @@ class Questions(db.Model):
     
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    
 class Users(db.Model):
     __tablename__ = 'Users'
-    user_id = db.Column(db.Integer, primary_key=True) #If clerk_id this might need to be a string
+    user_id = db.Column(db.String(50), primary_key=True, nullable=False) #If clerk_id this might need to be a string
     username = db.Column(db.Text)
     texts = db.relationship('Texts', backref='user', lazy=True)
     admin = db.Column(db.Boolean, default=False)
@@ -60,11 +60,30 @@ class PracticeResults(db.Model):
     __tablename__ = 'PracticeResults'
     practice_id = db.Column(db.Integer, primary_key=True)
     text_id = db.Column(db.Integer, db.ForeignKey('Texts.text_id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
+    user_id = db.Column(db.String(50), db.ForeignKey('Users.user_id'), nullable=False)
     wpm = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, default=datetime.today())
     quiz_results = db.relationship('QuizResults', backref='practice', lazy=True)
     mode = db.Column(db.Text)
+    
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    
+class Chunks(db.Model):
+    __tablename__ = 'Chunks'
+    chunk_id = db.Column(db.Integer, primary_key=True)
+    practice_id = db.Column(db.Integer, db.ForeignKey('PracticeResults.practice_id'), nullable=False)
+    chunk_position = db.Column(db.Integer) #Index position w.r.t this run's other chunks, so that they can be ordered
+
+class GazerPoints(db.Model):
+    __tablename__ = 'GazerPoints'
+    point_id = db.Column(db.Integer, primary_key=True)
+    chunk_id = db.Column(db.Integer, db.ForeignKey('Chunks.chunk_id'), nullable=False)
+    gazer_point_position = db.Column(db.Integer) #Index position w.r.t this chunk's other GazerPoints, so that they can be ordered
+    x_value = db.Column(db.Float) #x coordinate of the gaze point
+    y_value = db.Column(db.Float) #y coordinate of the gaze point
+    elapsed_time = db.Column(db.Float) #Time elapsed since the start of the chunk
+    
 
 def populate_texts():
     '''
@@ -96,8 +115,9 @@ def populate_texts():
         db.session.rollback()
         print(f'Error: {str(e)}')
 
+
 def add_admin():
-    user_zero = Users(user_id = 1, username = 'admin', admin=True)
+    user_zero = Users(user_id = "1", username = 'admin', admin=True)
     db.session.add(user_zero)
     db.session.commit()
 
@@ -117,7 +137,7 @@ def text_content_is_valid(text_content):
     return text_content and isinstance(text_content, str) and len(text_content) >= 100
 
 def user_id_is_valid(user_id):
-    return isinstance(user_id, int) and user_id > 0
+    return isinstance(user_id, int) and user_id > 0 # Outdated
 
 def username_is_valid(username):
     return username and isinstance(username, str) and len(username) <= 100
@@ -170,6 +190,28 @@ def get_random_text():
         return jsonify(text_data)
     else:
         return jsonify({'message': 'No texts found'}), 404
+    
+# Fetch specific text by text_id
+@app.route('/api/texts/<int:text_id>', methods=['GET'])
+def get_text_by_id(text_id):
+    '''
+    Fetches a specific text from the database by text_id and returns it as JSON
+    '''
+    # Fetch the text from the database using the provided text_id
+    text = Texts.query.get(text_id)
+
+    # If the text is found, return its details
+    if text:
+        text_data = {
+            'text_id': text.text_id,
+            'text_content': text.text_content,
+            'quiz_questions': [question.to_dict() for question in text.quiz_questions]
+        }
+        return jsonify(text_data)
+    
+    # If the text is not found, return a 404 not found error
+    else:
+        return jsonify({'message': 'Text not found'}), 404
 
 
 @app.route('/api/texts/user', methods=['GET'])
@@ -209,9 +251,7 @@ def delete_text(text_id):
     
 @app.route('/api/texts/summarize', methods=['POST'])
 def summarize_text():
-    g = {"text":"What is the Point of Decentralized AI? Traditionally, the development of AI systems has remained siloed among a handful of technology vendors like Google and OpenAI, who have had the financial resources necessary to develop the infrastructure and resources necessary to build and process large datasets.\nHowever, the centralization of AI development in the industry has meant that organizations need to have significant funding to be able to develop and process the data necessary to compete in the market.\nLikewise, it’s also incentivized vendors to pursue a black box approach to AI development, giving users and regulators little to no transparency over how an organization’s AI models operate and make decisions. This makes it difficult to identify inaccuracies, bias, prejudice, and misinformation.\nDecentralized AI applications address these shortcomings by providing a solution to move AI development away from centralized providers and toward smaller researchers who innovate as part of an open-source community.\nAt the same time, users can unlock the benefits of AI-driven decision-making locally without needing to share their personal data with third parties.\nFederated Learning vs. Decentralised AI\nFederated learning is the name given to an approach where two or more AI models are trained on different computers, using a decentralized dataset. Under a federated learning methodology, machine-learning models are trained on data stored within a user device without that data being shared with the upstream provider.\nWhile this sounds similar to decentralized AI, there is a key difference. Under federated learning, an organization has centralized control over the AI model used to process the datasets, while under a decentralized AI system, there is no central entity in charge of processing the data.\nThus federated learning is typically used by organizations looking to build a centralized AI model that makes decisions based on data that has been processed on a decentralized basis (usually to maintain user privacy), whereas decentralized AI solutions have no central authority in charge of the underlying model that processes the data.\nAs Patricia Thaine, co-founder and CEO of Private AI, explained to Techopedia, “Federated learning tends to have a centralized model that gets updated based on the learnings of distributed models. A decentralized system would have multiple nodes that come to a consensus, with no central model as an authority.\nBenefits of Decentralized AI\nUsing a decentralized AI architecture offers some key benefits to both AI developers and users alike. Some of these are:\nUsers can benefit from AI-based decision-making without sharing their data;\nMore transparency and accountability over how AI-based decisions are made;\nIndependent researchers have more opportunities to contribute to AI development;\nBlockchain technology provides new opportunities for encryption;\nDecentralization unlocks new opportunities for integrations with Web3 and the metaverse \nDemocratizing AI Development\nWhile decentralized AI is still in its infancy, it has the potential to democratize AI development, providing more opportunities for open-source model developers to interact with users independent of a centralized authority.\nIf enough vendors support decentralized AI models, this could significantly reduce the amount of control that proprietary model developers have in the market and increase transparency over AI development as a whole."}
-    input_text = g['text']
-    #input_text = request.json.get('text', '')
+    input_text = request.json.get('text', '')
     if not text_content_is_valid(input_text):
         return jsonify({'error': 'Invalid text provided'}), 400
     headers = {"Authorization": f"Bearer {API_TOKEN}"}
@@ -247,21 +287,20 @@ def get_logout_info():
 def delete_user_data():
     pass
 
-@app.route('/api/analytics', methods=['GET'])
+@app.route('/api/analytics', methods=['POST'])
 def get_user_analytics():
-    if not request.is_json:
-        return jsonify({'error': 'Request must be JSON'}), 400
-    user_ids = request.json.get('user_ids')
-    if not isinstance(user_ids, list):
-        return jsonify({'error': 'Invalid format, user_ids should be a list'}), 400
+    user_id = request.json.get('user_id')
     users_data = {}
-    for user_id in user_ids:
-        if not user_id_is_valid(user_id):
-            return jsonify({'error': f'Invalid user_id: {user_id}'}), 400
-        user = Users.query.filter_by(user_id=user_id).first()
-        if not user:
-            return jsonify({'error': f'User with id {user_id} not found'}), 404
-        username = user.username
+    logged_user = Users.query.filter_by(user_id=user_id).first()
+    if not logged_user:
+        return jsonify({'error': f'User with id {user_id} not found'}), 404
+    elif not logged_user.admin:  
+        users = [logged_user] 
+    elif logged_user.admin:
+        users = Users.query.all()
+    for user in users:
+        user_id = user.user_id 
+        username = user.user_id if logged_user.admin else "Your data"
         user_results = []
         practice_results = PracticeResults.query.filter_by(user_id=user_id).all()
         if practice_results:
@@ -276,16 +315,17 @@ def get_user_analytics():
                         num_questions += 1
                         num_corrects += quiz_result.score
                     score = 100 * num_corrects / num_questions
-                practice_result_dict = {'textId': practice_result.text_id, 'avgWPM': practice_result.wpm, 'timestamp': practice_result.timestamp.strftime('%d/%m/%Y'), 'quizScore': score}
+                practice_result_dict = {'textId': practice_result.text_id, 'avgWPM': practice_result.wpm, 'timestamp': practice_result.timestamp, 'quizScore': score}
                 user_results.append(practice_result_dict)
-            user_results = sorted(user_results, key=lambda x: x['timestamp'], reverse=True)
-        users_data[username] = user_results
-    return jsonify(users_data)
+            user_results = sorted(user_results, key=lambda x: x['timestamp'], reverse=False)
+        users_data[username] = user_results          
+    return jsonify({'usersData': users_data, 'isAdmin': logged_user.admin})
 
 @app.route('/api/analytics/fake', methods=['POST'])
 def populate_with_fake_analytics():
     usernames = ['Fadi', 'Jack', 'Kyoya', 'Konstantinos', 'Evangelos', 'Matis']
     texts = ['This is a test text', 'This is another test text', 'This is a third test text']
+    questions = ['What is the capital of France?', 'What is the capital of Germany?', 'What is the capital of Italy?']
     user_ids = []
     for i in range(2, 2+len(usernames)):
         user = Users(username=usernames[i-2])
@@ -299,17 +339,205 @@ def populate_with_fake_analytics():
             db.session.commit()
             print(f'Text {j} added successfully!')
             text_id = text.text_id
+            for m in range(3):
+                question = Questions(text_id=text_id, question_content=questions[m], multiple_choices='a;b;c;d', correct_answer='a')
+                db.session.add(question)
+                db.session.commit()
+                print(f'Question {m} added successfully!')
             for k in range(3):
                 practice = PracticeResults(text_id=text_id, user_id=i, wpm=random.randint(100, 300), timestamp=datetime.today())
                 db.session.add(practice)
                 db.session.commit()
                 print(f'Practice {k} added successfully!')
                 for l in range(5):
-                    quiz = QuizResults(practice_id=practice.practice_id, answer='a', score=random.randint(0, 1))
+                    quiz = QuizResults(practice_id=practice.practice_id, question_id = question.question_id, answer='a', score=random.randint(0, 1))
                     db.session.add(quiz)
                     db.session.commit()  
                     print(f'Quiz {l} added successfully!')
     return jsonify(user_ids)
+
+@app.route('/api/save-reading-speed', methods=['POST'])
+def submit_reading_speed():
+    # Check if the request is in JSON format
+    if not request.is_json:
+        return jsonify({'error': 'Request must be JSON'}), 400
+
+    # Parse data from the request
+    data = request.get_json()
+
+    # Extract text_id, user_id, and wpm
+    text_id = data.get('text_id')  # Assuming text_id is provided
+    user_id = data.get('user_id')  # Assuming user_id is provided
+    wpm = data.get('wpm')
+    mode = data.get('mode', 'undefined')
+    chunks = data.get('chunks_data', [[]]) # Should be a list of lists of dictionaries
+
+    # Validate the text_id as integer and user_id as string
+    if not isinstance(text_id, int) or not isinstance(user_id, str):
+        return jsonify({'error': 'Invalid text_id or user_id'}), 400
+
+    # Validate the wpm as a non-negative number
+    if not isinstance(wpm, (int, float)) or wpm < 0:
+        return jsonify({'error': 'Invalid wpm'}), 400
+
+    # Create a new PracticeResults object
+    new_practice_result = PracticeResults(
+        text_id=text_id,
+        user_id=user_id,
+        wpm=wpm,
+        mode = mode,
+        timestamp=datetime.now(timezone.utc)  # Assuming current time as timestamp
+    )
+
+    # Add to the database session
+    db.session.add(new_practice_result)
+    db.session.commit()
+    chunk_errors = 0
+    gazer_point_errors = 0
+    for i in range(len(chunks)):
+        try: 
+            new_chunk = Chunks(
+            practice_id=new_practice_result.practice_id,
+            chunk_position=i
+        )
+            db.session.add(new_chunk)
+            db.session.commit()
+            for j in range(len(chunks[i])):
+                try:
+                    new_gazer_point = GazerPoints(
+                    chunk_id=new_chunk.chunk_id,
+                    gazer_point_position=j,
+                    x_value=chunks[i][j]['normScaledX'],
+                    y_value=chunks[i][j]['y'],
+                    elapsed_time=chunks[i][j]['elapsedTime']
+                )
+                    db.session.add(new_gazer_point)
+                except:
+                    db.session.rollback()
+                    gazer_point_errors += 1
+        except:
+            db.session.rollback()
+            chunk_errors += 1
+    # Commit the new practice result to the database
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()  # Roll back in case of error
+        return jsonify({'error': f'Failed to add new reading speed record: {str(e)}'}), 500
+
+    if chunk_errors == 0 and gazer_point_errors == 0:
+    # Return success message
+        return jsonify({'message': 'New reading speed record added successfully!', 'practice_id': new_practice_result.practice_id}), 201
+    else:
+        return jsonify({'message': f'New reading speed record added with {chunk_errors} chunk errors and {gazer_point_errors} gazer point errors', 'practice_id': new_practice_result.practice_id}), 207
+    
+@app.route('/api/save-quiz-results', methods=['POST'])
+def submit_quiz_results():
+    # Check if the request is in JSON format
+    if not request.is_json:
+        return jsonify({'error': 'Request must be JSON'}), 400
+    
+    # Parse data from the request
+    json_data = request.get_json()
+    
+    quiz_data = json_data.get('quiz_results')
+    user_id = json_data.get('user_id')
+    practice_id = json_data.get('practice_id')
+    text_id = json_data.get('text_id')
+    
+    # Validate that quiz_data is a non-empty list
+    if not isinstance(quiz_data, list) or not quiz_data:
+        return jsonify({'error': 'Invalid input, expected a non-empty list'}), 400
+
+    for data in quiz_data:
+        # Validate the score as a non-negative number
+        score = data.get('score')
+        if not isinstance(score, (int, float)) or not (0 <= score <= 1):
+            return jsonify({'error': 'Invalid score, must be between 0 and 1 inclusive'}), 400
+
+        #Create a new PracticeSession if it doesn't exist
+        if practice_id == None:
+            new_practice_session = PracticeResults(
+                user_id = user_id,
+                text_id = text_id
+            )
+            db.session.add(new_practice_session)
+            try:
+                db.session.commit()
+                print(f"New practice session ({new_practice_session.practice_id}) created")
+            except Exception as e:
+                db.session.rollback()
+                app.logger.error(f'Failed to submit practice result: {e}')
+                return jsonify({'error': f'Failed to submit practice result: {str(e)}'}), 500
+            practice_id = new_practice_session.practice_id
+                
+        PracticeResults.query.filter_by(practice_id=practice_id).first()
+        # Create a new QuizResults object
+        new_quiz_result = QuizResults(
+            practice_id=practice_id,
+            question_id=data['question_id'],
+            answer=data['selected_answer'],
+            score=score
+        )
+
+        # Add to the database session
+        db.session.add(new_quiz_result)
+
+    # Commit the session to save all new quiz results to the database
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f'Failed to submit quiz results: {e}')
+        return jsonify({'error': f'Failed to submit quiz results: {str(e)}'}), 500
+
+    # Return success message
+    return jsonify({'message': 'Quiz results submitted successfully!'}), 201
+
+
+@app.route('/api/get_info', methods=['GET'])
+def get_info():
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify(success=False, message="User ID is required."), 400
+
+    user_data = Users.query.filter_by(user_id=user_id).first()
+    if user_data:
+        # User exists, serialize and return user data
+        return jsonify(success=True, user_exists=True, user_data=user_data.to_dict())
+    else:
+        # User does not exist
+        return jsonify(success=False, user_exists=False, message="User not found.")
+
+
+@app.route('/api/store-user-data', methods=['POST'])
+def store_user_data():
+    user_id = request.json.get('user_id')
+    if not user_id:
+        return jsonify(success=False, message="User ID is required."), 400
+    
+    # user_id = user_data['user_id']
+    # Check if user already exists to avoid duplicates
+    existing_user = Users.query.filter_by(user_id=user_id).first()
+    if existing_user:
+        return jsonify(success=False, message="User already exists."), 200
+    
+    new_user = Users(user_id=user_id)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify(success=True, message="User added successfully.")
+
+@app.route('/api/practiced_texts', methods=['GET'])
+def get_practiced_texts():
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify(success=False, message="User ID is required."), 400
+    
+    practiced_texts = PracticeResults.query.filter_by(user_id=user_id).all()
+    # Serialize and return practiced texts
+    read_texts = list(set([text.text_id for text in practiced_texts]))
+    return jsonify(read_texts=read_texts), 200
+
 
 
 with app.app_context():
@@ -321,4 +549,5 @@ with app.app_context():
         populate_texts()
 
 if __name__ == '__main__':
-    app.run(debug=True, port = PORT)
+    app.run(debug=True, port = 8000)
+

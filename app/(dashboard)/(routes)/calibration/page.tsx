@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useWebGazer } from '@/contexts/WebGazerContext';
+import { SiTarget } from "react-icons/si";
 // import webgazer from "webgazer";
 
 // Type definitions for extended window object and calibration points
@@ -23,6 +24,8 @@ export default function WebgazerCalibration() {
   const [calibrationPoints, setCalibrationPoints] = useState<CalibrationPoints>({});
   const [showInstructions, setShowInstructions] = useState(true);
   const [allCalibrated, setAllCalibrated] = useState(false);
+  const [showInitButton, setShowInitButton] = useState(true);
+  const [showCalibrationButton, setShowCalibrationButton] = useState(true);
 
   // Accessing setWebgazerActive from context
   const { isWebGazerActive, setWebGazerActive } = useWebGazer();
@@ -30,6 +33,7 @@ export default function WebgazerCalibration() {
   // Function to start the calibration process
   const startCalibration = () => {
     setCalibrationStarted(true);
+    setShowCalibrationButton(false);
     if (extendedWindow && extendedWindow.webgazer) {
       // Show prediction points if WebGazer is available
       extendedWindow.webgazer.showPredictionPoints(true).addMouseEventListeners();
@@ -82,14 +86,12 @@ export default function WebgazerCalibration() {
             var yprediction = data.y; // Extract the y-coordinate
 
             // gaze listener
-            console.log("X prediction:", xprediction, "Y prediction:", yprediction, "Elapsed Time:", elapsedTime);
+            //console.log("X prediction:", xprediction, "Y prediction:", yprediction, "Elapsed Time:", elapsedTime);
           })
           .begin(); // Starts the WebGazer eye-tracking
       
-      // Marks WebGazer as initialised
       console.log("Initialising WebGazer...");
       setWebgazerInitialized(true);
-      setWebGazerActive(true); // Update context to reflect active state
     } catch (error) {
       console.error("Failed to initialise WebGazer:", error);
       setWebGazerActive(false); // Ensure context is updated on failure
@@ -103,13 +105,13 @@ export default function WebgazerCalibration() {
     setCalibrationPoints({
       // Each point is positioned relative to the screen's width and height
       // and initialised with 0 clicks
-      Pt1: { x: 350, y: 50, clicks: 0 },
-      Pt2: { x: window.innerWidth / 2, y: 50, clicks: 0 },
-      Pt3: { x: window.innerWidth -50, y: 50, clicks: 0 },
-      Pt4: { x: 50, y: window.innerHeight / 2, clicks: 0 },
+      Pt1: { x: 350, y: 30, clicks: 0 },
+      Pt2: { x: window.innerWidth / 2, y: 30, clicks: 0 },
+      Pt3: { x: window.innerWidth -50, y: 30, clicks: 0 },
+      Pt4: { x: 30, y: window.innerHeight / 2, clicks: 0 },
       Pt5: { x: window.innerWidth / 2, y: window.innerHeight / 2, clicks: 0 },
       Pt6: { x: window.innerWidth - 50, y: window.innerHeight / 2, clicks: 0 }, // Top-center
-      Pt7: { x: 50, y: window.innerHeight - 50, clicks: 0 }, // Right-center
+      Pt7: { x: 30, y: window.innerHeight - 50, clicks: 0 }, // Right-center
       Pt8: { x: window.innerWidth / 2, y: window.innerHeight - 50, clicks: 0 }, // Bottom-center
       Pt9: { x: window.innerWidth - 50, y: window.innerHeight - 50, clicks: 0 }, // Left-center
     });
@@ -132,13 +134,15 @@ export default function WebgazerCalibration() {
 
     // If all points are calibrated, logs the completion and updates state
     if (allCalibrated) {
-      console.log("All calibration points complete");
+      console.log("WebGazer is fully calibrated and ready.");
       setAllCalibrated(true); // Marks all points as calibrated
       setCalibrationStarted(false); // Stops the calibration process
+      setWebGazerActive(true); // Now updates context to reflect active state after calibration is complete
+
       if (extendedWindow) {
         // Shows prediction points, hides the video feed, and removes mouse event listeners
         extendedWindow.webgazer
-          .showPredictionPoints(true)
+          .showPredictionPoints(false)
           .showVideo(false)
           .removeMouseEventListeners();
       }
@@ -165,73 +169,57 @@ export default function WebgazerCalibration() {
     <div>
       {/* Initialise WebGazer Button */}
       <button
-        onClick={initWebgazer} // Calls the initWebgazer function when clicked
-        style={{
-          backgroundColor: "#4CAF50", // Green background
-          color: "white", // White text
-          padding: "10px 20px", // Padding around text
-          margin: "10px", // Margin around the button
-          border: "none", // No border
-          borderRadius: "5px", // Rounded corners
-          cursor: "pointer", // Cursor changes to a pointer on hover
-          fontSize: "16px", // Font size
-          transition: "background-color 0.3s ease", // Smooth transition for background color
-        }}
+        onClick={allCalibrated ? startCalibration : initWebgazer} // Calls the initWebgazer function when clicked
+        className={allCalibrated ? "OrangeButton" : "GreenButton"}
       >
-        Initialise WebGazer
+        {allCalibrated ? "Re-calibrate WebGazer" : "Initialise WebGazer"}
       </button>
+
       {/* Conditionally rendered Start Calibration Button */}
-      {webgazerInitialized && (
+      {webgazerInitialized && showCalibrationButton && (
         <button
           onClick={startCalibration} // Calls the startCalibration function when clicked
-          style={{
-            position: "absolute",
-            top: "10px",
-            right: "10px",
-            backgroundColor: "#008CBA", // Blue background
-            color: "white", // White text
-            padding: "10px 20px", // Padding around text
-            border: "none", // No border
-            borderRadius: "5px", // Rounded corners
-            cursor: "pointer", // Cursor changes to a pointer on hover
-            fontSize: "16px", // Font size
-            transition: "background-color 0.3s ease", // Smooth transition for background color
-          }}
+          className="BlueButton"
         >
           Start Calibration
         </button>
       )}
+
       {/* Calibration Points Buttons */}
       {calibrationStarted &&
         Object.entries(calibrationPoints).map(([pointId, point]) => (
           <button
-            key={pointId} // React key for list items
-            onClick={() => handleCalibrationClick(pointId)} // Calls handleCalibrationClick with pointId
+            key={pointId}
+            onClick={() => handleCalibrationClick(pointId)}
             style={{
               position: "absolute",
               left: `${point.x}px`,
               top: `${point.y}px`,
-              backgroundColor: point.clicks >= 5 ? "yellow" : "red", // Color changes based on click count
-              // Additional styling as needed
+              background: 'none', // Make the button background transparent
+              border: 'none', // Remove button border
+              cursor: "pointer",
+              zIndex: 9999,
             }}
-            disabled={point.clicks >= 5} // Disables button after 5 clicks
+            disabled={point.clicks >= 5}
           >
-            {pointId}
+            <SiTarget style={{ color: point.clicks >= 5 ? "blue" : "red", fontSize: "20px" }} />
           </button>
         ))}
+
       {/* Link to Dashboard if All Calibrated */}
       {allCalibrated && (
         <Link href="../webgazer-mode-2">
           <Button>Go Back</Button>
         </Link>
       )}
+
       {/* Instructions Overlay */}
       {showInstructions && (
         <div
           style={{
             position: "absolute",
             width: "600px",
-            height: "200px",
+            // height: "200px",
             backgroundColor: "white",
             padding: "20px",
             borderRadius: "10px",
@@ -242,28 +230,34 @@ export default function WebgazerCalibration() {
             textAlign: "center",
           }}
         >
-          <p style={{ color: "black" }}>
-            Please follow the on-screen points and click on each one to
-            calibrate the eye-tracking system. Ensure you are in a well-lit area
-            and maintain a consistent position during calibration.
+          <p style={{ 
+            color: "black" ,
+            paddingTop: "5px",
+            paddingBottom: "10px",
+            }}>
+            Click each on-screen target point <em>at least 5 times</em> until it changes colour to calibrate the eye-tracking system.<br /><br />
+            <strong>While clicking, focus your gaze on the center of each target</strong>.<br /><br />
+            For best results, remain in a well-lit area, keep your head still during calibration, and avoid significant changes to your environment while using WebGazer.
           </p>
-          <button
-            onClick={handleGotItClick}
-            style={{
-              position: "absolute",
-              bottom: "10px",
-              right: "10px",
-              backgroundColor: "#4CAF50",
-              color: "white",
-              padding: "5px 10px",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-              fontSize: "14px",
-            }}
-          >
-            Got it
-          </button>
+          <div style={{ display: "flex", justifyContent: "center", gap: "5px" }}>
+            {/* Got it Button */}
+            <button
+              onClick={handleGotItClick}
+              className="GreenButton"
+            >
+              Got it
+            </button>
+            {/* Back Button */}
+            <button
+              onClick={() => {
+                // Change to the desired route, and then force a reload
+                window.location.href = '/webgazer-mode-2';
+              }}
+              className="BlackButton"
+            >
+              Go Back
+            </button>
+          </div>
         </div>
       )}
     </div>

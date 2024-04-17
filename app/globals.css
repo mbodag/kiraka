@@ -122,12 +122,57 @@ body,
   font-weight: bold;
 }
 
-.monospaced {
+
+/* Define CSS classes for monospaced fonts */
+.monospace-roboto-mono {
+  font-family: 'Roboto Mono', monospace;
+}
+
+.monospace-source-code-pro {
+  font-family: 'Source Code Pro', monospace;
+}
+
+.monospace-fira-code {
+  font-family: 'Fira Code', monospace;
+}
+
+.monospace-space-mono {
   font-family: 'Space Mono', monospace;
+}
+
+.monospace-jetbrains-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.monospace-cousine {
+  font-family: 'Cousine', monospace;
+}
+
+.monospace-inconsolata {
+  font-family: 'Inconsolata', monospace;
+}
+
+.monospace-pt-mono {
+  font-family: 'PT Mono', monospace;
+}
+
+.monospace-ubuntu-mono {
+  font-family: 'Ubuntu Mono', monospace;
+}
+
+.monospaced {
+  font-family: 'Inconsolata', monospace;
 }
 
 .monospaced2 {
   font-family: monospace;
+}
+
+/* End of Defining CSS classes for monospaced fonts */
+
+
+.landing-font {
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .analytics-font {
@@ -168,7 +213,7 @@ body,
 }
 
 .fancyButton:hover {
-  background-color: #45a049;
+  background-color: #3a873e;
   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 }
 
@@ -207,7 +252,7 @@ body,
   border-radius: 25px;
   padding: 25px;
   text-align: center;
-  max-width: 400px; /* Adjust as needed */
+  max-width: 30vw; /* Adjust as needed */
   margin: 20px auto;
 }
 
@@ -263,13 +308,208 @@ body,
   0%, 100% { border-color: rgb(0, 200, 0); }
   50% { border-color: transparent; } /* 'Off' state */
 }
-
 .flash-green-border {
   animation: flashGreenBorder 1s infinite; /* Adjust timing as needed */
 }
+
+
+@keyframes flashOrangeBorder {
+  0%, 100% { border-color: orange; }
+  50% { border-color: transparent; } /* 'Off' state */
+}
+.flash-orange-border {
+  animation: flashOrangeBorder 1.5s infinite; /* Adjust timing as needed */
+}
+
 
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
 
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0);
+  /* background-color: rgba(0, 0, 0, 0.5); */
+  z-index: 1040;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.modal-content {
+  position: fixed;
+  top: 50%;
+  left: calc(var(--sidebar-width) + (100vw - var(--sidebar-width)) / 2);
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+  background-color: #e5e5e5;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+  border: 1px solid #074309;
+  outline: none;
+}
+
+.blur-effect {
+  filter: blur(8px);
+}
+
+
+
+.GreenButton {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+
+.GreenButton:hover {
+  background-color: #3a873e;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.BlackButton {
+  background-color: #000000; /* Green */
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+
+.BlackButton:hover {
+  background-color: #3a3939;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.BlueButton {
+  background-color: #3933ea; /* Blue */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+
+.BlueButton:hover {
+  background-color: #1c197af4;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2); 
+}
+
+.OrangeButton {
+  background-color: #cb7206; /* Green */
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+
+.OrangeButton:hover {
+  background-color: #f3931e;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+/* For sidebar width: */
+:root {
+  --sidebar-width: 15rem; /* Equivalent to w-64 in TailwindCSS (1rem = 4, so 64/4 = 16rem) */
+  --modal-content-width: calc(100vw - var(--sidebar-width)); /* Example calculation for modal width */
+}
+
+
+
+@keyframes blink-animation {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.dot {
+  animation: blink-animation 1.2s infinite both;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+
+.icon-button {
+  color: rgb(90, 90, 90);
+}
+.icon-button:hover {
+  color: rgb(200, 0, 0); /* Bright red color on hover */
+}
+.icon-button.active {
+  color: rgb(200, 0, 0); /* Active state color */
+}
+.icon-button:disabled {
+  /* background-color: #cccccc;
+  color: #666666; */
+  cursor: not-allowed;
+}
+
+
+.home-container {
+  color: #333; /* Dark color for text for better readability */
+  padding: 20px;
+}
+
+.home-container h1 {
+  color: #ffff; /* Gives a theme color to headings */
+}
+
+.home-container p {
+  margin: 20px 10px;
+}
+
+.home-container ul {
+  max-width: 60vw; 
+  margin: auto; /* Centers the list */
+  background-color: white; /* Background for contrast */
+  border-radius: 15px; /* Rounded corners for list */
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2); 
+}
+
+.home-container li {
+  text-align: left; /* Aligns text to the left */
+  padding: 12px 10px; /* Adds vertical padding for spacing between items */
+}

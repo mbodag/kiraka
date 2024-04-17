@@ -17,6 +17,16 @@ const NavbarWebGazer: React.FC = () => {
     // Combine base button classes with conditional border classes
     const webGazerButtonClass = `bg-green-200/30 hover:bg-green-200/50 text-white mr-2 text-sm ${webGazerButtonBorderClass}`;
     
+    // Handle click event based on WebGazer state
+    const handleWebGazerButtonClick = () => {
+        if (isWebGazerActive) {
+            // Refresh the page if WebGazer is active
+            window.location.reload();
+        } else {
+            // Navigate to the calibration page if WebGazer is not active
+            window.location.href = '/calibration'; // Navigate and reload page
+        }
+    };
 
     return (
         <div className="flex justify-between items-center py-4 px-8 w-full"
@@ -27,9 +37,9 @@ const NavbarWebGazer: React.FC = () => {
         }}>
             <div className="flex-1 flex items-center"> {/* Container for left side */}
                 <MobileSidebar />
-                <Link href="/quiz" passHref>
+                {/* <Link href="/quiz" passHref>
                     <Button className="ml-4 bg-green-200/30 hover:bg-green-200/50 text-white navbar-dashboard-font">Quiz</Button>
-                </Link>
+                </Link> */}
                 <Link href="/analytics" passHref>
                     <Button className="ml-4 bg-green-200/30 hover:bg-green-200/50 text-white navbar-dashboard-font">Analytics</Button>
                 </Link>
@@ -38,11 +48,9 @@ const NavbarWebGazer: React.FC = () => {
             <ModeToggle />
         </div>
             <div className="flex-1 flex justify-end items-center"> {/* Container for right side */}
-                <Link href="/calibration" passHref>
-                    <Button className={webGazerButtonClass}>WebGazer</Button> {/* Button's class updated based on WebGazer state */}
-                </Link>
-                <Button className="bg-green-200/30 hover:bg-green-200/50 text-white mr-2 text-sm">▶</Button> {/* Start button */}
-                <Button className="bg-green-200/30 hover:bg-green-200/50 text-white text-sm"><FaPause /></Button> {/* Pause button */}
+                <Button className={webGazerButtonClass} onClick={handleWebGazerButtonClick}>WebGazer</Button>
+                {/* <Button className="bg-green-200/30 hover:bg-green-200/50 text-white mr-2 text-sm">▶</Button> Start button */}
+                {/* <Button className="bg-green-200/30 hover:bg-green-200/50 text-white text-sm"><FaPause /></Button> Pause button */}
             </div>
         </div>
     );

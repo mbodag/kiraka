@@ -4,11 +4,13 @@ import { ArrowLeftSquare, ArrowRightSquare } from 'lucide-react';
 interface CounterDisplayProps {
   count: number;
   fontSize?: string;
+  className?: string;
 }
 
 const CounterDisplay: React.FC<CounterDisplayProps> = ({
   count,
   fontSize = "14px",
+  className = "",
 }) => {
   const [leftArrowActive, setLeftArrowActive] = useState(false);
   const [rightArrowActive, setRightArrowActive] = useState(false);
@@ -45,7 +47,7 @@ const CounterDisplay: React.FC<CounterDisplayProps> = ({
 
   return (
     // Outer container with white background and shadow
-    <div style={{ 
+    <div className={className} style={{ 
         backgroundColor: 'white', 
         boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)', 
         padding: '10px 50px', 
