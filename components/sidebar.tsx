@@ -33,10 +33,19 @@ const Sidebar = () => {
         console.error("Error fetching text:", error);
       }
     };
- {
-  fetchReadTexts(userId);
+    if (userId) {
+      fetchReadTexts(userId);
     }
-  }, []);
+  }, [userId]);
+
+  const handleFeedbackClick = () => {
+    window.location.href = 'https://forms.gle/nijvaqhDHYo3QE2v5'; // Link to google feedback form
+  };
+
+  const handleTextClick = (textId: any) => {
+    setSelectedTextId(textId);  // Set the selected text ID
+    // window.location.reload();    // Force a full page reload
+  };
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-r border-gray-700">
@@ -79,16 +88,24 @@ const Sidebar = () => {
         {texts.map((text) => (
           <button
             key={text.id}
-            onClick={() => { 
-              setSelectedTextId(text.id); // Update the global context
-            }}
+            onClick={() => handleTextClick(text.id)}
             className={`text-sm w-full max-w-xs p-2 font-medium rounded-lg transition sidebar-button-font 
-              ${text.id === selectedTextId ? 'bg-gray-700' : 'hover:bg-gray-700'}
+              ${text.id === selectedTextId ? 'bg-gray-700' : 'hover:bg-gray-800'}
               ${readTexts.includes(text.id) ? 'text-green-600' : ''}`} // Apply active or hover class
           >
             {text.title}
           </button>
         ))}
+        {readTexts.length >= 2 && (
+          <div className="pt-8">  {/* This div wraps the button and applies a top margin */}
+          <button
+            className="text-sm w-full max-w-xs p-2 font-medium rounded-lg bg-green-900 hover:bg-green-700 transition sidebar-button-font"
+            onClick={handleFeedbackClick}
+          >
+            Give Feedback
+          </button>
+        </div>
+      )}
       </div>
 
       {/* User button at the bottom */}

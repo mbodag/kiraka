@@ -58,12 +58,12 @@ interface ReadingSpeedChartProps {
 const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
 const minWPM = 180;
-const maxWPM = 800; // This is an approximation (~4.7 for English language)
+const maxWPM = 700; // This is an approximation (~4.7 for English language)
 const significantLeftNormSpeed = -2/1201*100; // defined experimentally, based on the mac word display width (1201px) at the time of the experiment, and the value of -2px/s for threshold speed. Scaled by 100 (giving percentage)
 const constIncreaseWPM = 30;
-const constDecreaseWPM = 25;
+const constDecreaseWPM = 30;
 const maxConstIncreaseWPM = 60;
-const minConstDecreaseWPM = 10;
+const minConstDecreaseWPM = 15;
 const cumulativeIncreaseThreshold = maxConstIncreaseWPM * 1.5;
 const dampenedIncreaseWPM = 5;
 const decreaseAdjustmentStep = 2;
@@ -156,7 +156,7 @@ const Mode2Display = () => {
         setRedirectingToCalibration(true); // Set redirecting state to true
         setTimeout(() => {
             window.location.href = '/calibration'; // Redirect after a brief pause
-        }, 1500); // Adjust this delay as needed
+        }, 1500);
     };
     const handleContinueToQuiz = async () => {
         setShowCompletionPopup(false);
@@ -218,6 +218,16 @@ const Mode2Display = () => {
         setIsRestartActive(true); // Set active to true
         setTimeout(() => setIsRestartActive(false), 100); // Reset after 500ms
     };
+    
+    useEffect(() => {
+        if (selectedTextId !== null) {
+            if (showCompletionPopup) {
+                setShowCompletionPopup(false);  // Hide the popup if it's visible
+            }
+            restartAction();  // Then call the restart action
+        }
+    }, [selectedTextId]);
+
     // Function to toggle pause/play action
     const togglePausePlayAction = () => {
         if (isPaused) {
@@ -228,6 +238,7 @@ const Mode2Display = () => {
         setIsPausePlayActive(true); // Set active to true
         setTimeout(() => setIsPausePlayActive(false), 100); // Reset after 500ms
     };
+
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
             if (showCalibrationPopup || showCompletionPopup) {
@@ -279,8 +290,8 @@ const Mode2Display = () => {
         const minScaledDisplayTime = baseTime / minWPM;
         const maxScaledDisplayTime = baseTime / maxWPM;
         const normalisedTime = (displayTimeMs - minScaledDisplayTime) / (maxScaledDisplayTime - minScaledDisplayTime);
-        const percentageToIgnore = 0.35 + normalisedTime * (0.75 - 0.35);
-        return Math.max(0.35, Math.min(percentageToIgnore, 0.75));
+        const percentageToIgnore = 0.3 + normalisedTime * (0.70 - 0.3);
+        return Math.max(0.3, Math.min(percentageToIgnore, 0.70));
     };
 
     const getGradualSpeedIncrement = (inferredWPM: number, maxWPM: number) => {
@@ -370,6 +381,7 @@ const Mode2Display = () => {
                 // console.log('WPM', WPM)
                 // console.log('currentChunkIndex', currentChunkIndex)
                 // console.log('chunkDisplayTime', chunkDisplayTime)
+                // console.log('displayTimeToIgnore', displayTimeToIgnore)
                 // console.log('deltaTime', deltaTime)
 
                 // Ensure we're analyzing only after at least 60% of the expected chunk display time has passed
@@ -382,18 +394,23 @@ const Mode2Display = () => {
                         const inferredWPM = calculateWPMFromDisplayTime(deltaTime, wordChunks[currentChunkIndex])
                         const gradualSpeedIncrement = getGradualSpeedIncrement(inferredWPM, maxWPM);
                         const increasedWPM = Math.round(Math.min(WPM + maxConstIncreaseWPM, inferredWPM + gradualSpeedIncrement, maxWPM))
+                        // console.log('increasedWPM', increasedWPM)
 
                         // Track consecutive increases
                         if (increasedWPM > WPM) {
                             consecutiveWPMIncrease.current += 1;
+                            // console.log('Incrementing consecutive increases:', consecutiveWPMIncrease.current);
                         } else {
                             consecutiveWPMIncrease.current = 0; // Reset if WPM does not increase
+                            // console.log('Resetting consecutive increases because new WPM is not greater than old WPM');
                         }
                         
                          // Check for uncontrolled increase
                         if (consecutiveWPMIncrease.current >= consecutiveWPMIncreaseThreshold) {
+                            // console.log('Checking for uncontrolled increase:', consecutiveWPMIncrease.current, 'Threshold:', consecutiveWPMIncreaseThreshold);
                             const prevWPMIncrease = WPMValues.current[WPMValues.current.length - 1] - WPMValues.current[WPMValues.current.length - 2];
                             const currentWPMIncrease = increasedWPM - WPMValues.current[WPMValues.current.length - 1];
+                            // console.log('Previous and Current WPM Increases:', prevWPMIncrease, currentWPMIncrease);
                             // if (currentWPMIncrease >= prevWPMIncrease * 0.5) {
                             if (currentWPMIncrease + prevWPMIncrease > cumulativeIncreaseThreshold) {
                                 // Apply damping
@@ -401,10 +418,16 @@ const Mode2Display = () => {
                                 setWPM(dampenedWPM);
                                 WPMValues.current = [...WPMValues.current, dampenedWPM];
                                 consecutiveWPMIncrease.current = 0;
+                                // console.log('DAMPED increase of WPM', dampenedWPM, 'for WPM:', WPM)
+                            } else {
+                                setWPM(increasedWPM);
+                                WPMValues.current = [...WPMValues.current, increasedWPM];
+                                // console.log('NORMAL increase of WPM', increasedWPM, 'for WPM:', WPM)
                             }
                         } else {
                             setWPM(increasedWPM);
                             WPMValues.current = [...WPMValues.current, increasedWPM];
+                            // console.log('NORMAL increase of WPM', increasedWPM, 'for WPM:', WPM)
                         }
             
                         setCurrentChunkIndex(prevIndex => prevIndex + 1);
@@ -422,6 +445,7 @@ const Mode2Display = () => {
                         const chunksReadFactor = Math.floor(currentChunkIndex / (wordChunks.length/10));
                         const adjustedDecreaseWPM = Math.max(constDecreaseWPM - chunksReadFactor * decreaseAdjustmentStep, minConstDecreaseWPM);
                         const decreasedWPM = Math.max(WPM - adjustedDecreaseWPM, minWPM)
+                        // console.log('decreasedWPM', decreasedWPM, 'for WPM:', WPM)
 
                         // Track consecutive decreases
                         if (decreasedWPM < WPM) {
@@ -444,7 +468,7 @@ const Mode2Display = () => {
                         // }
                         // console.log('TOO FAST - LEFT NOT DETECTED')
                         // console.log('WPM', WPM)
-                        // console.log('currentChunkIndex', currentChunkIndex)   wordChunks
+                        // console.log('currentChunkIndex', currentChunkIndex)
                     }
                 }
     
@@ -759,14 +783,14 @@ const Mode2Display = () => {
                     paddingTop: '0px',
                 }}>
                     {/* Centered Counter Display */}
-                    <CounterDisplay key={WPM} count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
+                    <CounterDisplay count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
                     {/* <button onClick={downloadGazeData}>Download Gaze Data</button> */}
                     {/* Container for Play/Pause and Restart Icons aligned to the top right */}
                     <div style={{ 
                         position: 'absolute',
                         top: 0, 
                         right: 0,
-                        backgroundColor: 'white', 
+                        backgroundColor: 'white',
                         boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.15)', 
                         padding: '10px 20px', 
                         borderRadius: '10px', 

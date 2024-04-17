@@ -200,7 +200,7 @@ const AnalyticsPage: React.FC = () => {
     >
       <div className="self-start absolute top-4 left-4">
         <Link href="/webgazer-mode-2">
-          <Button className="ml-4 shadow bg-lime-50/60 hover:bg-lime-50/100 text-gray-900 bold">Back</Button>
+          <Button className="text-lg ml-4 shadow bg-lime-50/60 hover:bg-lime-50/100 text-gray-900 bold">Back</Button>
         </Link>
       </div>
 
