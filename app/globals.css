@@ -482,7 +482,7 @@ body,
 }
 
 .home-container ul {
-  max-width: 50vw; 
+  max-width: 60vw; 
   margin: auto; /* Centers the list */
   background-color: white; /* Background for contrast */
   border-radius: 15px; /* Rounded corners for list */
