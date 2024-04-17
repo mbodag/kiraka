@@ -33,10 +33,14 @@ const Sidebar = () => {
         console.error("Error fetching text:", error);
       }
     };
- {
-  fetchReadTexts(userId);
+    if (userId) {
+      fetchReadTexts(userId);
     }
-  }, []);
+  }, [userId]);
+
+  const handleFeedbackClick = () => {
+    window.location.href = 'https://forms.gle/nijvaqhDHYo3QE2v5'; // Link to google feedback form
+  };
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-r border-gray-700">
@@ -89,6 +93,16 @@ const Sidebar = () => {
             {text.title}
           </button>
         ))}
+        {readTexts.length >= 2 && (
+          <div className="pt-8">  {/* This div wraps the button and applies a top margin */}
+          <button
+            className="text-sm w-full max-w-xs p-2 font-medium rounded-lg bg-green-900 hover:bg-green-700 transition sidebar-button-font"
+            onClick={handleFeedbackClick}
+          >
+            Give Feedback
+          </button>
+        </div>
+      )}
       </div>
 
       {/* User button at the bottom */}

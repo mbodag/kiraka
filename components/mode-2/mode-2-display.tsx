@@ -257,10 +257,6 @@ const Mode2Display = () => {
         return () => window.removeEventListener("keydown", handleKeyPress);
     }, [showCalibrationPopup, showCompletionPopup, isPaused]);
 
-    useEffect(() => {
-        console.log('Completion Popup State:', showCompletionPopup);
-    }, [showCompletionPopup]);
-
     
     // Function to calculate display time from WPM for a chunk
     const calculateDisplayTimeFromWPM = (chunk: string) => {
@@ -358,7 +354,7 @@ const Mode2Display = () => {
         const monitorAndAdjust = () => {
             // The start time of monitoring the current chunk
             const startTime = performance.now();
-            // console.log('monitorAndAdjust')
+            console.log('monitorAndAdjust')
     
             // Function to analyze gaze data and decide whether to adjust WPM or move to the next chunk
             const analyzeAndAdjust = () => {
@@ -370,15 +366,15 @@ const Mode2Display = () => {
                 if (currentChunkIndex === 0) {
                     displayTimeToIgnore = 500;
                 }
-                // console.log('one iteration')
-                // console.log('WPM', WPM)
-                // console.log('currentChunkIndex', currentChunkIndex)
-                // console.log('chunkDisplayTime', chunkDisplayTime)
-                // console.log('deltaTime', deltaTime)
+                console.log('one iteration')
+                console.log('WPM', WPM)
+                console.log('currentChunkIndex', currentChunkIndex)
+                console.log('chunkDisplayTime', chunkDisplayTime)
+                console.log('deltaTime', deltaTime)
 
                 // Ensure we're analyzing only after at least 60% of the expected chunk display time has passed
                 if (deltaTime > Math.min(displayTimeToIgnore, maxCutOffTime)) {
-                    // console.log('entered 0.6T')
+                    console.log('entered 0.6T')
 
                     // If significant leftward movement is detected
                     if (gazeDataRef.current.length > 0 && gazeDataRef.current[gazeDataRef.current.length - 1].Lefts >= 1) {
@@ -415,9 +411,9 @@ const Mode2Display = () => {
                         gazeDataRef.current = [];
                         consecutiveLeftMovements.current = 0;
                         consecutiveWPMDecrease.current = 0;
-                        // console.log('TOO SLOW - LEFT DETECTED')
-                        // console.log('WPM', WPM)
-                        // console.log('currentChunkIndex', currentChunkIndex)
+                        console.log('TOO SLOW - LEFT DETECTED')
+                        console.log('WPM', WPM)
+                        console.log('currentChunkIndex', currentChunkIndex)
 
                     } else if (deltaTime >= chunkDisplayTime) {
                         // No leftward movement detected by the end of the chunk display time,
@@ -446,9 +442,9 @@ const Mode2Display = () => {
                         //     // console.log('TIRED')
                         //     // consecutiveWPMDecrease.current = 0;
                         // }
-                        // console.log('TOO FAST - LEFT NOT DETECTED')
-                        // console.log('WPM', WPM)
-                        // console.log('currentChunkIndex', currentChunkIndex)   wordChunks
+                        console.log('TOO FAST - LEFT NOT DETECTED')
+                        console.log('WPM', WPM)
+                        console.log('currentChunkIndex', currentChunkIndex)
                     }
                 }
     
