@@ -1,0 +1,30 @@
+
+stages:
+    - build
+    - deploy
+build:
+    stage: build
+    # tags: 
+    #     - <tag you provided while registering the token>
+    #     - <second tag>
+    script:
+        - echo "Building deploy package"
+        # - npm install
+        # - npm build
+        - echo "Build successful"
+    artifacts:
+        expire_in: 1 hour
+        paths:
+            - build
+deploy_production:
+    stage: deploy
+    # tags: 
+    #   - <tag you provided while registering the token>
+    #   - <second tag>
+    script:
+        - echo "Deploying to server"
+        # - cp -rv build/* /var/www/html/<destination_folder>/
+        - echo "Deployed"
+    # environment:
+    #     name: production
+    #     url: <your deployment url>
