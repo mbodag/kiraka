@@ -4,7 +4,6 @@ import { Montserrat } from "next/font/google";
 import Image from "next/legacy/image";
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -47,10 +46,10 @@ export const LandingNavbar = () => {
           Kiraka.ai
         </h1>
       </Link>
-      <div className="flex items-center justify-center text-white">
+      <div className="flex-1 flex items-center justify-center text-white space-x-6">
         {routes.map((route) => (
           <Link key={route.href} href={route.href}>
-            <div className="px-4 hover:border hover:border-white hover:rounded-lg hover:bg-white/10 font-medium cursor-pointer transition">
+            <div className="px-4 py-2 hover:bg-white/20 rounded-lg transition-all">
               {route.name}
             </div>
           </Link>
@@ -58,20 +57,10 @@ export const LandingNavbar = () => {
       </div>
       <div className="flex item-center gap-x-2">
         <div>
-          <Link href={isSignedIn ? "/instructions" : "/sign-up"}>
-            <Button
-              variant="outline"
-              className="rounded-full border-none hover:bg-green-100"
-            >
-              Get Started
-            </Button>
-          </Link>
-        </div>
-        <div>
           <Link href={isSignedIn ? "/instructions" : "/sign-in"}>
             <Button
               variant="outline"
-              className="rounded-full border-none hover:bg-green-100"
+              className="text-white bg-green-500 hover:bg-green-600 transition-all rounded-full px-6 py-2"
             >
               Sign In
             </Button>

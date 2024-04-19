@@ -32,11 +32,13 @@ export default function WebgazerCalibration() {
 
   // Function to start the calibration process
   const startCalibration = () => {
+    setAllCalibrated(false);
     setCalibrationStarted(true);
     setShowCalibrationButton(false);
     if (extendedWindow && extendedWindow.webgazer) {
       // Show prediction points if WebGazer is available
       extendedWindow.webgazer.showPredictionPoints(true).addMouseEventListeners();
+      extendedWindow.webgazer.showVideo(true)
     }
     setShowInstructions(false); // Hide instructions overlay
   };
@@ -142,7 +144,7 @@ export default function WebgazerCalibration() {
       if (extendedWindow) {
         // Shows prediction points, hides the video feed, and removes mouse event listeners
         extendedWindow.webgazer
-          .showPredictionPoints(false)
+          .showPredictionPoints(true)
           .showVideo(false)
           .removeMouseEventListeners();
       }
@@ -164,15 +166,33 @@ export default function WebgazerCalibration() {
   if (!isMounted) {
     return null;  // Renders nothing if the component hasn't mounted yet
   }
+
+
+  const resetAndReinitWebgazer = async () => {
+      if (extendedWindow && extendedWindow.webgazer) {
+          await extendedWindow.webgazer.clearData();
+          extendedWindow.webgazer.end();
+      }
+
+      // Reset the state
+      setWebgazerInitialized(false);
+      setCalibrationStarted(false);
+      setCalibrationPoints({});
+      setShowCalibrationButton(true);
+
+      // Reinitialize WebGazer
+      await initWebgazer();
+      startCalibration();
+  };
   
   return (
     <div>
       {/* Initialise WebGazer Button */}
       <button
-        onClick={allCalibrated ? startCalibration : initWebgazer} // Calls the initWebgazer function when clicked
+        onClick={allCalibrated ? resetAndReinitWebgazer : initWebgazer} // Calls the initWebgazer function when clicked
         className={allCalibrated ? "OrangeButton" : "GreenButton"}
       >
-        {allCalibrated ? "Re-calibrate WebGazer" : "Initialise WebGazer"}
+        {allCalibrated ? "Re-calibrate" : "Initialise WebGazer"}
       </button>
 
       {/* Conditionally rendered Start Calibration Button */}
@@ -208,9 +228,9 @@ export default function WebgazerCalibration() {
 
       {/* Link to Dashboard if All Calibrated */}
       {allCalibrated && (
-        <Link href="../webgazer-mode-2">
-          <Button>Go Back</Button>
-        </Link>
+          <Link href="../webgazer-mode-2">
+              <button className="GreenButton">Start Speed Reading</button>
+          </Link>
       )}
 
       {/* Instructions Overlay */}
@@ -231,13 +251,13 @@ export default function WebgazerCalibration() {
           }}
         >
           <p style={{ 
-            color: "black" ,
-            paddingTop: "5px",
-            paddingBottom: "10px",
-            }}>
-            Click each on-screen target point <em>at least 5 times</em> until it changes colour to calibrate the eye-tracking system.<br /><br />
-            <strong>While clicking, focus your gaze on the center of each target</strong>.<br /><br />
-            For best results, remain in a well-lit area, keep your head still during calibration, and avoid significant changes to your environment while using WebGazer.
+              color: "black",
+              paddingTop: "5px",
+              paddingBottom: "10px",
+          }}>
+              Click each on-screen target point <span style={{ color: 'rgb(200, 0, 0)', fontWeight: '', fontStyle: 'italic' }}>at least 5 times</span> until it changes colour from red to blue to calibrate the eye-tracking system. <span style={{ color: 'rgb(200, 0, 0)', fontWeight: '', fontStyle: 'italic' }}>While clicking, focus your gaze on the center of each target</span>.<br /><br />
+              For best results, <span style={{ color: 'rgb(0, 0, 180)', fontWeight: '', fontStyle: 'italic' }}>remain in a well-lit area</span>, <span style={{ color: 'rgb(0, 0, 180)', fontWeight: '', fontStyle: 'italic' }}>keep your head still</span> during calibration, and <span style={{ color: 'rgb(0, 0, 180)', fontWeight: '', fontStyle: 'italic' }}>avoid significant changes to your environment</span> while using WebGazer.<br /><br />
+              Please note, the active camera is solely used to track your eyes for calibration and speed reading purposes. When prompted, please <span style={{ color: 'rgb(150, 0, 150)', fontWeight: '', fontStyle: 'italic' }}>allow “srp.doc.ic.ac.uk” to use your camera</span>.
           </p>
           <div style={{ display: "flex", justifyContent: "center", gap: "5px" }}>
             {/* Got it Button */}
