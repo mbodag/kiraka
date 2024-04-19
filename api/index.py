@@ -84,6 +84,13 @@ class GazerPoints(db.Model):
     y_value = db.Column(db.Float) #y coordinate of the gaze point
     elapsed_time = db.Column(db.Float) #Time elapsed since the start of the chunk
     
+class ChunkComplexity(db.Model):
+    __tablename__ = 'ChunkComplexity'
+    chunk_complexity_id = db.Column(db.Integer, primary_key = True)
+    complexity = db.Column(db.Float) #Complexity score of the chunk
+    text_id = db.Column(db.Integer, db.ForeignKey('Texts.text_id'), nullable=False)
+    chunk_position = db.Column(db.Integer) #Index position w.r.t this text's other chunks, so that they can be ordered
+    chunk_content = db.Column(db.Text) #The actual text content of the chunk
 
 def populate_texts():
     '''
