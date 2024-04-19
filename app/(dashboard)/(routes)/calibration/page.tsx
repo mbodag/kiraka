@@ -184,6 +184,27 @@ export default function WebgazerCalibration() {
       await initWebgazer();
       startCalibration();
   };
+
+
+  const calculateColor = (clicks: number) => {
+    const maxClicks = 5;
+    // Check if calibration is complete
+    if (clicks >= maxClicks) {
+      return 'rgb(0, 200, 0)'; // Green color when done
+    }
+  
+    // Starting RGB for red
+    const startColor = { r: 255, g: 0, b: 0 };
+    // Ending RGB for blue
+    const endColor = { r: 100, g: 0, b: 0 };
+  
+    // Linear interpolation between start and end colors based on clicks
+    const r = Math.round(startColor.r + ((endColor.r - startColor.r) * (clicks / maxClicks)));
+    const g = Math.round(startColor.g + ((endColor.g - startColor.g) * (clicks / maxClicks)));
+    const b = Math.round(startColor.b + ((endColor.b - startColor.b) * (clicks / maxClicks)));
+  
+    return `rgb(${r}, ${g}, ${b})`;
+  };
   
   return (
     <div>
@@ -222,7 +243,10 @@ export default function WebgazerCalibration() {
             }}
             disabled={point.clicks >= 5}
           >
-            <SiTarget style={{ color: point.clicks >= 5 ? "blue" : "red", fontSize: "20px" }} />
+            <SiTarget style={{
+              color: calculateColor(point.clicks),
+              fontSize: "20px"
+            }} />
           </button>
         ))}
 
