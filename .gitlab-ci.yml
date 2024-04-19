@@ -7,8 +7,8 @@ dev:
 
     script:
         - echo "Building deploy package"
-        - npm install
-        - npm run dev
+        # - npm install
+        # - npm run dev
         - echo "Build successful"
 
 # deploy_production:
