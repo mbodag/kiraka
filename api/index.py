@@ -134,7 +134,7 @@ def generate_quiz():
 
 # Input validation functions
 def text_content_is_valid(text_content):
-    return text_content and isinstance(text_content, str) and len(text_content) >= 100
+    return text_content and isinstance(text_content, str) and len(text_content.split()) >= 150 and len(text_content.split()) < 4000
 
 def user_id_is_valid(user_id):
     return isinstance(user_id, int) and user_id > 0 # Outdated
@@ -154,8 +154,6 @@ def add_text():
             return jsonify({'error': 'Invalid request. Missing text_content or user_id'}), 400
         if not text_content_is_valid(text_content):
             return jsonify({'error': 'Invalid text_content'}), 400
-        if not user_id_is_valid(user_id):
-            return jsonify({'error': 'Invalid user_id'}), 400
         else:
             new_text = Texts(
                 text_content=text_content,
@@ -232,7 +230,7 @@ def text_by_user_id():
         all_texts_data.append(text_data)
     return jsonify(all_texts_data)
       
-@app.route('/api/texts/<int:text_id>', methods=['DELETE'])
+@app.route('/api/texts/<string:text_id>', methods=['DELETE'])
 def delete_text(text_id):
     user_id = int(request.args.get('user_id'))
     text_to_delete = Texts.query.filter_by(text_id=text_id).first()
