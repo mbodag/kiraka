@@ -219,6 +219,26 @@ def get_text_by_id(text_id):
     # If the text is not found, return a 404 not found error
     else:
         return jsonify({'message': 'Text not found'}), 404
+    
+@app.route('/api/chunks/<int:text_id>', methods=['GET'])
+def get_chunks_by_text_id(text_id):
+    '''
+    Fetches a specific text from the database by text_id and returns it as JSON
+    '''
+    # Fetch the text from the database using the provided text_id
+    chunks = ChunkComplexity.query.filter_by(text_id=text_id).order_by(ChunkComplexity.chunk_position).all()
+
+    # If the text is found, return its details
+    if chunks:
+        text_data = {
+            'chunks': [chunk.chunk_content for chunk in chunks],
+            'complexity': [chunk.complexity for chunk in chunks],
+        }
+        return jsonify(text_data)
+    
+    # If the text is not found, return a 404 not found error
+    else:
+        return jsonify({'message': 'Text not found'}), 404
 
 
 @app.route('/api/texts/user', methods=['GET'])
@@ -545,7 +565,19 @@ def get_practiced_texts():
     read_texts = list(set([text.text_id for text in practiced_texts]))
     return jsonify(read_texts=read_texts), 200
 
-
+def store_chunk_complexity():
+    texts = Texts.query.all()
+    for text in texts:
+        chunks = break_text_into_chunks(text.text_content)
+        for i, chunk in enumerate(chunks):
+            complexity = calculate_complexity(chunk)
+            new_chunk_complexity = ChunkComplexity(
+                complexity=complexity,
+                text_id=text.text_id,
+                chunk_position=i,
+                chunk_content = chunk
+            )
+            db.session.add(new_chunk_complexity)
 
 with app.app_context():
     db.create_all()
@@ -554,6 +586,8 @@ with app.app_context():
         add_admin()
     if Texts.query.first() is None:
         populate_texts()
+    if ChunkComplexity.query.first() is None: 
+        pass
 
 if __name__ == '__main__':
     app.run(debug=True, port = 8000)
