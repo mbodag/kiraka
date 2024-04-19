@@ -7,6 +7,7 @@ dev:
 
     script:
         - echo "Building deploy package"
+        - which python3
         # - npm install
         # - npm run dev
         - echo "Build successful"
