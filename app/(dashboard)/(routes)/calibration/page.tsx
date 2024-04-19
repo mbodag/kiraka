@@ -144,7 +144,7 @@ export default function WebgazerCalibration() {
       if (extendedWindow) {
         // Shows prediction points, hides the video feed, and removes mouse event listeners
         extendedWindow.webgazer
-          .showPredictionPoints(true)
+          .showPredictionPoints(false)
           .showVideo(false)
           .removeMouseEventListeners();
       }
@@ -279,7 +279,7 @@ export default function WebgazerCalibration() {
               paddingTop: "5px",
               paddingBottom: "10px",
           }}>
-              Click each on-screen target point <span style={{ color: 'rgb(200, 0, 0)', fontWeight: '', fontStyle: 'italic' }}>at least 5 times</span> until it changes colour from red to blue to calibrate the eye-tracking system. <span style={{ color: 'rgb(200, 0, 0)', fontWeight: '', fontStyle: 'italic' }}>While clicking, focus your gaze on the center of each target</span>.<br /><br />
+              Click each on-screen target point <span style={{ color: 'rgb(200, 0, 0)', fontWeight: '', fontStyle: 'italic' }}>at least 5 times</span> until it changes colour from red to green to calibrate the eye-tracking system. <span style={{ color: 'rgb(200, 0, 0)', fontWeight: '', fontStyle: 'italic' }}>While clicking, focus your gaze on the center of each target</span>.<br /><br />
               For best results, <span style={{ color: 'rgb(0, 0, 180)', fontWeight: '', fontStyle: 'italic' }}>remain in a well-lit area</span>, <span style={{ color: 'rgb(0, 0, 180)', fontWeight: '', fontStyle: 'italic' }}>keep your head still</span> during calibration, and <span style={{ color: 'rgb(0, 0, 180)', fontWeight: '', fontStyle: 'italic' }}>avoid significant changes to your environment</span> while using WebGazer.<br /><br />
               Please note, the active camera is solely used to track your eyes for calibration and speed reading purposes. When prompted, please <span style={{ color: 'rgb(150, 0, 150)', fontWeight: '', fontStyle: 'italic' }}>allow “srp.doc.ic.ac.uk” to use your camera</span>.
           </p>
