@@ -108,6 +108,16 @@ const Mode2Display = () => {
     const [redirectingToCalibration, setRedirectingToCalibration] = useState(false);
     const [redirectingToQuiz, setRedirectingToQuiz] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
+    
+    useEffect(() => {
+        // Check if the session is new -- if yes, ensure webgazer is set to inactive as camera will be off
+        const isExistingSession = sessionStorage.getItem('isExistingSession');
+        if (!isExistingSession) {
+            // If no existing session, set WebGazer to inactive
+            setWebGazerActive(false);
+            sessionStorage.setItem('isExistingSession', 'true'); // Mark this session as existing
+        }
+    }, []);
 
     useEffect(() => {
       const fetchTextById = async (textId: number) => {
