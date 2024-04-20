@@ -205,17 +205,22 @@ def get_text_by_id(text_id):
     '''
     Fetches a specific text from the database by text_id and returns it as JSON
     '''
+    user_id = request.args.get('user_id')
     # Fetch the text from the database using the provided text_id
     text = Texts.query.get(text_id)
 
+
     # If the text is found, return its details
     if text:
-        text_data = {
-            'text_id': text.text_id,
-            'text_content': text.text_content,
-            'quiz_questions': [question.to_dict() for question in text.quiz_questions]
-        }
-        return jsonify(text_data)
+        if not text.user_id in [1, user_id]:
+            return jsonify({'error': 'Unauthorized to access this text'}), 401
+        else: 
+            text_data = {
+                'text_id': text.text_id,
+                'text_content': text.text_content,
+                'quiz_questions': [question.to_dict() for question in text.quiz_questions]
+            }
+            return jsonify(text_data)
     
     # If the text is not found, return a 404 not found error
     else:
