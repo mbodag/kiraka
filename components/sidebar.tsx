@@ -9,15 +9,36 @@ import { UserButton, useUser, useAuth } from "@clerk/nextjs";
 const Sidebar = () => {
   const { selectedTextId, setSelectedTextId } = useSelectedText();
   const [readTexts, setReadTexts] = useState<number[]>([]);
+  const [userTexts, setUserTexts] = useState<number[]>([]);
 
   // Array of texts with their IDs
   const texts = Array.from({ length: 5 }, (_, index) => ({
     id: index + 1,
-    title: `Text ${index + 1}`,
+    title: ["Bioluminescence", "Honeybees", "Tungsten", "Auroras", "NASA"][index],
   }));
 
   const { user } = useUser();
   const { userId } = useAuth();
+
+  useEffect(() => {
+    const fetchUserTexts = async (userId: string | null | undefined) => {
+      try {
+        const response = await fetch(`/api/texts/user/?user_id=${userId}`);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        const user_texts = data.map((text: any) => ({ id: text.text_id, title: `Your text ${text.text_id + 1}` }));
+        console.log(user_texts)
+        setUserTexts(user_texts); // Update the state with the fetched data
+      } catch (error) {
+        console.error("Error fetching text:", error);
+      }
+    }
+    if (userId) {
+      fetchUserTexts(userId);
+    }
+  }, [userId]);
 
   useEffect(() => {
     const fetchReadTexts = async (userId: string | null | undefined) => {
@@ -69,17 +90,16 @@ const Sidebar = () => {
       </div>
 
       {/* Upload button aligned to the left */}
-      {/* <div className="px-3 py-2 mb-4 bg-gray-800">
+      { <div className="px-3 py-2 mb-4 bg-gray-800">
         <Link href="/upload">
           <button className="text-sm w-full max-w-xs p-2 font-medium rounded-lg hover:bg-gray-700 transition sidebar-button-font">
-            Upload Files
+            Upload your own text
           </button>
         </Link>
-      </div> */}
-      {/* TEMPORARY REPLACEMENT FOR THE UPLOAD BUTTON FOR MVP LAUNCH */}
+      </div>}
       <div className="flex justify-center items-center px-3 py-2 mb-4 bg-gray-800">
         <p className="text-md p-2 font-medium rounded-lg">
-          Your Texts
+          Kiraka's Texts
         </p>
       </div>
 
@@ -106,6 +126,23 @@ const Sidebar = () => {
           </button>
         </div>
       )}
+        <div className="flex justify-center items-center px-3 py-2 mb-4 bg-gray-800">
+          <p className="text-md p-2 font-medium rounded-lg">
+            Your texts
+          </p>
+       </div>
+       {userTexts.map((text) => (
+          <button
+            key={text.id}
+            onClick={() => handleTextClick(text.id)}
+            className={`text-sm w-full max-w-xs p-2 font-medium rounded-lg transition sidebar-button-font 
+              ${text.id === selectedTextId ? 'bg-gray-700' : 'hover:bg-gray-800'}
+              ${readTexts.includes(text.id) ? 'text-green-600' : ''}`} // Apply active or hover class
+          >
+            {text.title}
+          </button>
+        ))}
+      
       </div>
 
       {/* User button at the bottom */}
