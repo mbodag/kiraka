@@ -170,6 +170,7 @@ def add_text():
             )
             db.session.add(new_text)
             db.session.commit()
+            store_chunk_complexity(new_text)
             try:
                 quiz = generate_quiz()
                 if quiz:
@@ -225,16 +226,22 @@ def get_chunks_by_text_id(text_id):
     '''
     Fetches a specific text from the database by text_id and returns it as JSON
     '''
+    #Get the user_id for authorisation
+    user_id = request.args.get('user_id')
     # Fetch the text from the database using the provided text_id
+
     chunks = ChunkComplexity.query.filter_by(text_id=text_id).order_by(ChunkComplexity.chunk_position).all()
 
     # If the text is found, return its details
     if chunks:
-        text_data = {
-            'chunks': [chunk.chunk_content for chunk in chunks],
-            'complexity': [chunk.complexity for chunk in chunks],
-        }
-        return jsonify(text_data)
+        if not Texts.query.filter_by(text_id=text_id).first().user_id in [1, user_id]:
+            return jsonify({'error': 'Unauthorized to access this text'}), 401
+        else: 
+            text_data = {
+                'chunks': [chunk.chunk_content for chunk in chunks],
+                'complexity': [chunk.complexity for chunk in chunks],
+            }
+            return jsonify(text_data)
     
     # If the text is not found, return a 404 not found error
     else:
@@ -565,19 +572,17 @@ def get_practiced_texts():
     read_texts = list(set([text.text_id for text in practiced_texts]))
     return jsonify(read_texts=read_texts), 200
 
-def store_chunk_complexity():
-    texts = Texts.query.all()
-    for text in texts:
-        chunks = break_text_into_chunks(text.text_content)
-        for i, chunk in enumerate(chunks):
-            complexity = calculate_complexity(chunk)
-            new_chunk_complexity = ChunkComplexity(
-                complexity=complexity,
-                text_id=text.text_id,
-                chunk_position=i,
-                chunk_content = chunk
+def store_chunk_complexity(text):
+    chunk_list, total_complexity = calculate_complexity(text.text_content)
+    for i, chunk in enumerate(chunk_list):
+        new_chunk_complexity = ChunkComplexity(
+            complexity=total_complexity[i],
+            text_id=text.text_id,
+            chunk_position=i,
+            chunk_content = chunk
             )
-            db.session.add(new_chunk_complexity)
+    db.session.add(new_chunk_complexity)
+    db.session.commit()
 
 with app.app_context():
     db.create_all()
