@@ -6,6 +6,7 @@ job_build:
   stage: build
   script:
     - cd /home/website/kiraka
+    - npm run build
     - echo "Building the project"
 
 job_test:
