@@ -1,3 +1,6 @@
+# Specify the image to use for the job
+image: node:14
+
 stages:
   - build
   - test
@@ -6,6 +9,7 @@ job_build:
   stage: build
   script:
     - cd /home/website/kiraka
+    - npm install
     - npm run build
     - echo "Building the project"
 
