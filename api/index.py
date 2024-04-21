@@ -3,10 +3,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy.sql.expression import func
 from datetime import datetime, timezone
+from transformers import AutoModel, AutoTokenizer
 import requests
 import random
 import json
+import torch
 from api.config import DATABASE_URI, ADMIN_ID
+from api.chunk_complexity import compute_chunk_complexity, transformer_reg
+
 
 app = Flask(__name__)
 CORS(app) # See what this does
@@ -16,6 +20,23 @@ API_TOKEN = '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'
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # What does this do?
 db = SQLAlchemy(app)
+
+# LLM models and tokenizers
+complexity_model = None
+complexity_tokenizer = None
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+
+# Loads LLM models and tokenizers when the server starts
+def load_model(device = "cpu"):
+    global complexity_model
+    global complexity_tokenizer
+
+    complexity_tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+    complexity_model = transformer_reg("bert-base-uncased").to(device)
+    complexity_model.load_state_dict(torch.load(f"llms/complexity_llm.pt", map_location=device))
+    complexity_model.to(device)
+    complexity_model.eval()
 
 # Creates the database model. This means we create a class for each table in the database
 class Texts(db.Model):  
@@ -84,6 +105,13 @@ class GazerPoints(db.Model):
     y_value = db.Column(db.Float) #y coordinate of the gaze point
     elapsed_time = db.Column(db.Float) #Time elapsed since the start of the chunk
     
+class ChunkComplexity(db.Model):
+    __tablename__ = 'ChunkComplexity'
+    chunk_complexity_id = db.Column(db.Integer, primary_key = True)
+    complexity = db.Column(db.Float) #Complexity score of the chunk
+    text_id = db.Column(db.Integer, db.ForeignKey('Texts.text_id'), nullable=False)
+    chunk_position = db.Column(db.Integer) #Index position w.r.t this text's other chunks, so that they can be ordered
+    chunk_content = db.Column(db.Text) #The actual text content of the chunk
 
 def populate_texts():
     '''
@@ -110,6 +138,7 @@ def populate_texts():
                                                   )
                     db.session.add(new_quiz_question)
                     db.session.commit()
+                store_chunk_complexity(new_text)
         print('Texts and quizzes added successfully!')
     except Exception as e:
         db.session.rollback()
@@ -161,6 +190,7 @@ def add_text():
             )
             db.session.add(new_text)
             db.session.commit()
+            store_chunk_complexity(new_text)
             try:
                 quiz = generate_quiz()
                 if quiz:
@@ -195,17 +225,48 @@ def get_text_by_id(text_id):
     '''
     Fetches a specific text from the database by text_id and returns it as JSON
     '''
+    user_id = request.args.get('user_id')
     # Fetch the text from the database using the provided text_id
     text = Texts.query.get(text_id)
 
+
     # If the text is found, return its details
     if text:
-        text_data = {
-            'text_id': text.text_id,
-            'text_content': text.text_content,
-            'quiz_questions': [question.to_dict() for question in text.quiz_questions]
-        }
-        return jsonify(text_data)
+        if not text.user_id in ['1', user_id]:
+            return jsonify({'error': 'Unauthorized to access this text'}), 401
+        else: 
+            text_data = {
+                'text_id': text.text_id,
+                'text_content': text.text_content,
+                'quiz_questions': [question.to_dict() for question in text.quiz_questions]
+            }
+            return jsonify(text_data)
+    
+    # If the text is not found, return a 404 not found error
+    else:
+        return jsonify({'message': 'Text not found'}), 404
+    
+@app.route('/api/chunks/<int:text_id>', methods=['GET'])
+def get_chunks_by_text_id(text_id):
+    '''
+    Fetches a specific text from the database by text_id and returns it as JSON
+    '''
+    #Get the user_id for authorisation
+    user_id = request.args.get('user_id')
+    # Fetch the text from the database using the provided text_id
+
+    chunks = ChunkComplexity.query.filter_by(text_id=text_id).order_by(ChunkComplexity.chunk_position).all()
+
+    # If the text is found, return its details
+    if chunks:
+        if not Texts.query.filter_by(text_id=text_id).first().user_id in ['1', user_id]:
+            return jsonify({'error': 'Unauthorized to access this text'}), 401
+        else: 
+            text_data = {
+                'chunks': [chunk.chunk_content for chunk in chunks],
+                'complexity': [chunk.complexity for chunk in chunks],
+            }
+            return jsonify(text_data)
     
     # If the text is not found, return a 404 not found error
     else:
@@ -536,15 +597,29 @@ def get_practiced_texts():
     read_texts = list(set([text.text_id for text in practiced_texts]))
     return jsonify(read_texts=read_texts), 200
 
-
+def store_chunk_complexity(text):
+    global device
+    chunk_list, total_complexity = compute_chunk_complexity(text.text_content, complexity_model, complexity_tokenizer, device=device)
+    for i, chunk in enumerate(chunk_list):
+        new_chunk_complexity = ChunkComplexity(
+            complexity=total_complexity[i],
+            text_id=text.text_id,
+            chunk_position=i,
+            chunk_content = chunk
+            )
+        db.session.add(new_chunk_complexity)
+    db.session.commit()
 
 with app.app_context():
     db.create_all()
-    
+    load_model()
     if Users.query.first() is None:
         add_admin()
     if Texts.query.first() is None:
         populate_texts()
+    if ChunkComplexity.query.first() is None: 
+        for text in Texts.query.all():
+            store_chunk_complexity(text)
 
 if __name__ == '__main__':
     app.run(debug=True, port = 8000)
