@@ -47,7 +47,7 @@ const QuizDisplay: React.FC = () => {
   useEffect(() => {
     const fetchQuizQuestions = async (textId: number) => {
       try {
-        const response = await fetch(`/api/texts/${textId}`);
+        const response = await fetch(`/api/texts/${textId}?user_id=${userId}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

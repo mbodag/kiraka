@@ -2,9 +2,12 @@
 import React, { useState } from 'react';
 import DashboardLayout from '../layout'; // Adjust the path if necessary
 import { SelectedTextProvider } from "@/contexts/SelectedTextContext"; // Adjust the import path as necessary
+import { useAuth } from "@clerk/nextjs"; 
+
 
 const UploadPage: React.FC = () => {
   const [text, setText] = useState('');
+  const { userId } = useAuth();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -14,10 +17,10 @@ const UploadPage: React.FC = () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ text_content: text, user_id: 1 })
+      body: JSON.stringify({ text_content: text, user_id: userId })
     });
-
     const data = await response.json();
+    window.location.href = '/webgazer-mode-2';
     // handle response data
   };
 
@@ -35,7 +38,7 @@ const UploadPage: React.FC = () => {
                 onChange={e => setText(e.target.value)} 
               />
             </label>
-            <input type="submit" value="Submit" />
+            <input type="submit" value="Submit"/>
           </form>
         </div>
       </DashboardLayout>

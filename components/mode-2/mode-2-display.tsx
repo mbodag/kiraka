@@ -97,9 +97,8 @@ const Mode2Display = () => {
     const [shortStory, setShortStory] = useState("");
     const { selectedTextId } = useSelectedText(); // Use the ID from context
     const { userId } = useAuth();
-    const wordChunks = useMemo(() => {
-        return shortStory.match(new RegExp('.{1,' + maxCharsPerChunk + '}(\\s|$)', 'g')) || [];
-    }, [shortStory]);
+    const [wordChunks, setWordChunks] = useState<string[]>([]);
+    const [complexityChunks, setComplexityChunks] = useState<number[]>([]);
 
     // Accessing the current state of WebGazer
     const { isWebGazerActive, setWebGazerActive } = useWebGazer();
@@ -112,17 +111,19 @@ const Mode2Display = () => {
     useEffect(() => {
       const fetchTextById = async (textId: number) => {
         try {
-          const response = await fetch(`/api/texts/${textId}`);
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          const data = await response.json();
+            const response = await fetch(`/api/chunks/${textId}?user_id=${userId}`);
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            const data = await response.json();
 
-          // Replace newlines (\n) with spaces and set the cleaned text
-          const cleanedText = data.text_content.replace(/\n+/g, " ");
-          setShortStory(cleanedText);
-        } catch (error) {
-          console.error("Error fetching text:", error);
+            // Replace newlines (\n) with spaces and set the cleaned text
+            const chunk_list = data.chunks;
+            const complexity_list = data.complexity;
+            setWordChunks(chunk_list);
+            setComplexityChunks(complexity_list);
+            } catch (error) {
+            console.error("Error fetching text:", error);
         }
       };
 
