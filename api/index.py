@@ -3,10 +3,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy.sql.expression import func
 from datetime import datetime, timezone
+from transformers import AutoModel, AutoTokenizer
 import requests
 import random
 import json
+import torch
 from api.config import DATABASE_URI, ADMIN_ID
+from api.chunk_complexity import compute_chunk_complexity, transformer_reg
+
 
 app = Flask(__name__)
 CORS(app) # See what this does
@@ -16,6 +20,23 @@ API_TOKEN = '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'
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # What does this do?
 db = SQLAlchemy(app)
+
+# LLM models and tokenizers
+complexity_model = None
+complexity_tokenizer = None
+
+# Loads LLM models and tokenizers when the server starts
+@app.before_first_request
+def load_model():
+    global complexity_model
+    global complexity_tokenizer
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    complexity_tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+    complexity_model = transformer_reg("bert-base-uncased").to(device)
+    complexity_model.load_state_dict(torch.load(f"/llms/complexity_llm.pt"))
+    complexity_model.to(device)
+    complexity_model.eval()
 
 # Creates the database model. This means we create a class for each table in the database
 class Texts(db.Model):  
@@ -573,7 +594,7 @@ def get_practiced_texts():
     return jsonify(read_texts=read_texts), 200
 
 def store_chunk_complexity(text):
-    chunk_list, total_complexity = calculate_complexity(text.text_content)
+    chunk_list, total_complexity = compute_chunk_complexity(text.text_content, complexity_model, complexity_tokenizer)
     for i, chunk in enumerate(chunk_list):
         new_chunk_complexity = ChunkComplexity(
             complexity=total_complexity[i],
