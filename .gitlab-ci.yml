@@ -5,6 +5,7 @@ stages:
 job_build:
   stage: build
   script:
+    - cd /home/website/kiraka
     - echo "Building the project"
 
 job_test:
