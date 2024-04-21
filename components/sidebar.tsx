@@ -9,7 +9,7 @@ import { UserButton, useUser, useAuth } from "@clerk/nextjs";
 const Sidebar = () => {
   const { selectedTextId, setSelectedTextId } = useSelectedText();
   const [readTexts, setReadTexts] = useState<number[]>([]);
-  const [userTexts, setUserTexts] = useState<number[]>([]);
+  const [userTexts, setUserTexts] = useState<{id: number, title:string}[]>([]);
 
   // Array of texts with their IDs
   const texts = Array.from({ length: 5 }, (_, index) => ({
@@ -99,7 +99,7 @@ const Sidebar = () => {
       </div>}
       <div className="flex justify-center items-center px-3 py-2 mb-4 bg-gray-800">
         <p className="text-md p-2 font-medium rounded-lg">
-          Kiraka's Texts
+          Kiraka&apos;s Texts
         </p>
       </div>
 
