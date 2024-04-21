@@ -5,7 +5,7 @@ import { useSelectedText } from "@/contexts/SelectedTextContext";
 import CounterDisplay from "@/components/mode-1/counter-display";
 import styles from '@/app/(dashboard)/(routes)/dashboard/DashboardPage.module.css';
 import '@/app/globals.css';
-import { useWebGazer } from '@/contexts/WebGazerContext.tsx';
+import { useWebGazer } from '@/contexts/WebGazerContext';
 import { TbSquareLetterR } from "react-icons/tb";
 import { RiSpace } from "react-icons/ri";
 import  { usePracticeID } from '@/contexts/PracticeIDContext';
