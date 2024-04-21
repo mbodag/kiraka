@@ -1,19 +1,38 @@
 # Specify the image to use for the job
 image: node:14
+image: python
 
 stages:
   - build
   - test
+  - deploy
+
+before_script:
+  - cd /home/website/kiraka
+  - source venv/bin/activate
+  - pip install -r requrirements.txt
 
 job_build:
   stage: build
   script:
-    - cd /home/website/kiraka
     - npm install
     - npm run build
     - echo "Building the project"
+  only:
+    - dev
+    - master
 
 job_test:
   stage: test
   script:
     - echo "Running tests"
+  only:
+    - dev
+    - master
+
+job_deploy:
+  stage: deploy
+  script:
+    - echo "Deploying the project"
+  only:
+    - master
