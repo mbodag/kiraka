@@ -62,6 +62,7 @@ const CounterDisplay: React.FC<CounterDisplayProps> = ({
         <p style={{ fontSize: fontSize, fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>
           Counter (words per minute): {count}
         </p>
+        
       </div>
 
       {/* Arrows display */}
@@ -73,6 +74,9 @@ const CounterDisplay: React.FC<CounterDisplayProps> = ({
           <ArrowRightSquare color={rightArrowActive ? "rgb(200, 0, 0)" : "rgb(90, 90, 90)"} />
         </div>
       </div>
+      <p style={{ fontSize: fontSize, color: 'rgb(90, 90, 90)' }}>
+          Use the arrow keys to change the speed
+        </p>
     </div>
   );
 };

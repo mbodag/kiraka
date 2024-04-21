@@ -107,6 +107,7 @@ const Mode2Display = () => {
     const [redirectingToCalibration, setRedirectingToCalibration] = useState(false);
     const [redirectingToQuiz, setRedirectingToQuiz] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
+    const [bionicReading, setBionicReading] = useState<boolean>(false);
 
     useEffect(() => {
       const fetchTextById = async (textId: number) => {
@@ -813,16 +814,29 @@ const Mode2Display = () => {
                     </div>
                 </div>
                 {/* Mode 2: Chunk Display */}
-                <div className={`wordDisplay monospaced ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{ 
+                <div className={`wordDisplay monospaced ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{
                     marginTop: "30px",
                     fontSize: `${fontSize}px`,
-                    fontWeight: "bold",
+                    /*fontWeight: "bold",*/
                     maxWidth: "100vw",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                 }}>
-                    {wordChunks[currentChunkIndex]}
+                    {bionicReading ? wordChunks[currentChunkIndex]?.split(" ").map((word, index) => {
+                    const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+                    return (
+                        <span key={index}>
+                            {(
+                                <>
+                                    <span style={{ fontWeight: "bold" }}>{word.slice(0, Math.floor((1 + cleanWord.length) / 2))}</span>
+                                    <span>{word.slice(Math.floor((1 + cleanWord.length) / 2))} </span>
+                                </>
+                            )}
+                        </span>
+                    );
+                }): wordChunks[currentChunkIndex]}
+                   
                 </div>
                 
                 {/* Progress Bar */}
@@ -968,9 +982,25 @@ const Mode2Display = () => {
                 <ReadingSpeedChart wpmValues={WPMValues.current} averageWPM={averageWPM || 0} />
             </div>
         )}
+        <div>
+            {/* Toggle Button */}
+            <button
+            onClick={() => setBionicReading(!bionicReading)}
+            style={{
+                backgroundColor: bionicReading ? 'green' : 'grey',
+                color: 'white',
+                padding: '10px',
+                borderRadius: '5px',
+                border: 'none',
+                cursor: 'pointer',
+            }}
+            >
+            {bionicReading ? 'Disable Bionic Reading' : 'Enable Bionic Reading'}
+            </button>
+        </div>
     </div>
 
-    );
+        );
 };
 
 export default Mode2Display;
