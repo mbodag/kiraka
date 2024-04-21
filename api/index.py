@@ -24,17 +24,17 @@ db = SQLAlchemy(app)
 # LLM models and tokenizers
 complexity_model = None
 complexity_tokenizer = None
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 
 # Loads LLM models and tokenizers when the server starts
-@app.before_first_request
-def load_model():
+def load_model(device = "cpu"):
     global complexity_model
     global complexity_tokenizer
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     complexity_tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
     complexity_model = transformer_reg("bert-base-uncased").to(device)
-    complexity_model.load_state_dict(torch.load(f"/llms/complexity_llm.pt"))
+    complexity_model.load_state_dict(torch.load(f"llms/complexity_llm.pt", map_location=device))
     complexity_model.to(device)
     complexity_model.eval()
 
@@ -138,6 +138,7 @@ def populate_texts():
                                                   )
                     db.session.add(new_quiz_question)
                     db.session.commit()
+                store_chunk_complexity(new_text)
         print('Texts and quizzes added successfully!')
     except Exception as e:
         db.session.rollback()
@@ -233,7 +234,7 @@ def get_text_by_id(text_id):
 
     # If the text is found, return its details
     if text:
-        if not text.user_id in [1, user_id]:
+        if not text.user_id in ['1', user_id]:
             return jsonify({'error': 'Unauthorized to access this text'}), 401
         else: 
             text_data = {
@@ -260,7 +261,7 @@ def get_chunks_by_text_id(text_id):
 
     # If the text is found, return its details
     if chunks:
-        if not Texts.query.filter_by(text_id=text_id).first().user_id in [1, user_id]:
+        if not Texts.query.filter_by(text_id=text_id).first().user_id in ['1', user_id]:
             return jsonify({'error': 'Unauthorized to access this text'}), 401
         else: 
             text_data = {
@@ -599,7 +600,8 @@ def get_practiced_texts():
     return jsonify(read_texts=read_texts), 200
 
 def store_chunk_complexity(text):
-    chunk_list, total_complexity = compute_chunk_complexity(text.text_content, complexity_model, complexity_tokenizer)
+    global device
+    chunk_list, total_complexity = compute_chunk_complexity(text.text_content, complexity_model, complexity_tokenizer, device=device)
     for i, chunk in enumerate(chunk_list):
         new_chunk_complexity = ChunkComplexity(
             complexity=total_complexity[i],
@@ -607,18 +609,19 @@ def store_chunk_complexity(text):
             chunk_position=i,
             chunk_content = chunk
             )
-    db.session.add(new_chunk_complexity)
+        db.session.add(new_chunk_complexity)
     db.session.commit()
 
 with app.app_context():
     db.create_all()
-    
+    load_model()
     if Users.query.first() is None:
         add_admin()
     if Texts.query.first() is None:
         populate_texts()
     if ChunkComplexity.query.first() is None: 
-        pass
+        for text in Texts.query.all():
+            store_chunk_complexity(text)
 
 if __name__ == '__main__':
     app.run(debug=True, port = 8000)

@@ -211,7 +211,7 @@ def get_longest_word_complexity_scores(chunk_list):
     longest_word_complexity_scores = [longest_word_complexity(chunk) for chunk in chunk_list]
     return longest_word_complexity_scores
 
-def compute_chunk_complexity(passage, model, tokeniser, device='cuda'):
+def compute_chunk_complexity(passage, model, tokenizer, device='cuda'):
     # Clean and chunk passage
     chunk_list = clean_and_chunk_passage(passage)
 
@@ -220,7 +220,7 @@ def compute_chunk_complexity(passage, model, tokeniser, device='cuda'):
     chunk_loader = DataLoader(chunk_dataset, batch_size=10, shuffle=False)
 
     # Calculate complexity scores and combine for total complexity
-    llm_scores = get_llm_scores(loaded_model, chunk_loader, device)
+    llm_scores = get_llm_scores(model, chunk_loader, device)
     lw_scores = get_longest_word_complexity_scores(chunk_list)
     total_complexity_scores = [x + y for x, y in zip(llm_scores, lw_scores)]
     
