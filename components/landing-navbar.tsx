@@ -48,7 +48,7 @@ export const LandingNavbar = () => {
             height={30}
             objectFit="contain"
           />
-          <span className="text-2xl font-bold text-white ml-4">Kiraka.ai</span>
+          <span className="monospace-jetbrains-mono text-2xl font-bold text-white ml-4">Kiraka.ai</span>
         </div>
       </Link>
 
