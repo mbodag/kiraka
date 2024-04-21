@@ -1,21 +1,13 @@
-
 stages:
-    - dev
-    - deploy
-dev:
-    stage: dev
+  - build
+  - test
 
-    script:
-        - echo "Building deploy package"
-        - which python3
-        # - npm install
-        # - npm run dev
-        - echo "Build successful"
+job_build:
+  stage: build
+  script:
+    - echo "Building the project"
 
-# deploy_production:
-#     stage: deploy
-
-#     script:
-#         - echo "Deploying to server"
-#         - npm start
-#         - echo "Deployed"
+job_test:
+  stage: test
+  script:
+    - echo "Running tests"
