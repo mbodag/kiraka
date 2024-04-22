@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useSelectedText } from '../contexts/SelectedTextContext';
+import { useSelectedText } from '@/contexts/SelectedTextContext';
 import Image from "next/legacy/image";
 import Link from "next/link";
 import { UserButton, useUser, useAuth } from "@clerk/nextjs";
+import { HiOutlineDocumentText } from "react-icons/hi";
+import { TbBrandGoogleAnalytics } from "react-icons/tb";
+import { RiHome2Line } from "react-icons/ri";
 
 const Sidebar = () => {
   const { selectedTextId, setSelectedTextId } = useSelectedText();
@@ -48,9 +51,9 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-r border-gray-700">
+    <div className="sidebar-container flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-t border-r border-black">
       {/* Logo, company name, and horizontal line */}
-      <div className="py-4 mb-2 w-full text-center">
+      <div className="fixed-top p-4 mb-2 w-full text-center">
         <Link href="/">
           <div className="inline-flex items-center justify-center cursor-pointer mr-8">
             <div className="relative w-8 h-8 mr-4 inline-block">
@@ -64,8 +67,27 @@ const Sidebar = () => {
             <span className="monospace-jetbrains-mono text-2xl font-bold">Kiraka.ai</span>
           </div>
         </Link>
-        <hr className="border-t border-gray-700 mt-2 w-3/4 mx-auto" />{" "}
+        <hr className="border-t border-gray-700 mt-2 mx-auto" style={{ width: '100%' }} />
         {/* Horizontal line */}
+        {/* Link buttons with icons */}
+        <div className="flex text-sm flex-col items-start mt-4"> {/* Changed to items-start and added padding left */}
+          <Link href="/" passHref>
+            <button className="flex items-center mb-2 text-white px-2 py-1 hover:text-cyan-500">
+              <RiHome2Line className="mr-2 text-lg" /> Home {/* Icon with margin right */}
+            </button>
+          </Link>
+          <Link href="/instructions" passHref>
+            <button className="flex items-center mb-2 text-white px-2 py-1 hover:text-orange-500">
+              <HiOutlineDocumentText className="mr-2 text-lg" /> Instructions {/* Icon with margin right */}
+            </button>
+          </Link>
+          <Link href="/analytics" passHref>
+            <button className="flex items-center text-white px-2 py-1 hover:text-blue-500">
+              <TbBrandGoogleAnalytics className="mr-2 text-lg" /> Analytics {/* Icon with margin right */}
+            </button>
+          </Link>
+        </div>
+        <hr className="border-t border-gray-700 mt-4 mx-auto" style={{ width: '100%' }} />
       </div>
 
       {/* Upload button aligned to the left */}
@@ -90,7 +112,7 @@ const Sidebar = () => {
             key={text.id}
             onClick={() => handleTextClick(text.id)}
             className={`text-sm w-full max-w-xs p-2 font-medium rounded-lg transition sidebar-button-font 
-              ${text.id === selectedTextId ? 'bg-gray-700' : 'hover:bg-gray-800'}
+              ${text.id === selectedTextId ? 'bg-gray-800' : 'hover:bg-gray-900'}
               ${readTexts.includes(text.id) ? 'text-green-600' : ''}`} // Apply active or hover class
           >
             {text.title}
@@ -108,9 +130,8 @@ const Sidebar = () => {
       )}
       </div>
 
-      {/* User button at the bottom */}
-
-      <div className="flex item-center m-2">
+      {/* User button fixed at the bottom */}
+      <div className="fixed-bottom flex item-center m-2">
         <div>
           <UserButton afterSignOutUrl="/" />
         </div>

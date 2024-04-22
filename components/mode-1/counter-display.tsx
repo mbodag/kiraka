@@ -60,7 +60,7 @@ const CounterDisplay: React.FC<CounterDisplayProps> = ({
       {/* Counter display */}
       <div>
         <p style={{ fontSize: fontSize, fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>
-          Counter (words per minute): {count}
+          Counter WPM (Words Per Minute): {count}
         </p>
       </div>
 

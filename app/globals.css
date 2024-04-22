@@ -514,3 +514,19 @@ body,
   padding: 12px 10px; /* Adds vertical padding for spacing between items */
 }
 
+
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;  /* Ensures the sidebar takes full height */
+}
+
+.fixed-top,
+.fixed-bottom {
+  flex-shrink: 0;  /* Prevents shrinking */
+}
+
+.scrollable-content {
+  flex: 1;  /* Takes up all available space */
+  overflow-y: auto;  /* Enables vertical scrolling */
+}
