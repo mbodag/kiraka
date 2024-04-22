@@ -4,12 +4,16 @@ interface HighlightableTextProps {
   text: string;
   highlightInterval?: number;
   fontSize?: string;
+  fontFamily?: string;
+  bionicReading?: boolean;
 }
 
 const HighlightableText: React.FC<HighlightableTextProps> = ({
   text,
   highlightInterval = 1000,
-  fontSize = "16px",
+  fontSize = "14px",
+  fontFamily = "monospace",
+  bionicReading = false,
 }) => {
   const paragraphs = text
     .split("\n")
@@ -120,7 +124,7 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
         return (
           <p
             key={pIndex}
-            style={{ margin: "5px 0", padding: "0", fontSize: fontSize }}
+            style={{ margin: "5px 0", padding: "0", fontSize: fontSize, fontFamily: fontFamily}}
           >
             {wordsAndKeywords.map((wordOrKeyword: string, wIndex: number) => {
               const isHighlighted = globalIndex === currentIndex;

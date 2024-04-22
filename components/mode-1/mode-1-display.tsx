@@ -12,6 +12,8 @@ const Mode1Display = () => {
   const [shortStory, setShortStory] = useState("");
   const [summary, setSummary] = useState("");
   const { selectedTextId } = useSelectedText(); // Use the ID from context
+  const [fontFamily, setFontFamily] = useState("arial");
+  const [bionicReading, setBionicReading] = useState(false);
 
   useEffect(() => {
     const fetchTextById = async (textId: number) => {
@@ -127,8 +129,34 @@ setShortStory(data.text_content);
           <HighlightableText
             text={shortStory}
             highlightInterval={60000 / wordsPerMinute}
+            fontFamily={fontFamily}
+            bionicReading={bionicReading}
+            fontSize="12px"
           />
         </div>
+        <button
+                        onClick={() => setBionicReading(!bionicReading)}
+                        style={{
+                            backgroundColor: bionicReading ? 'green' : 'grey',
+                            color: 'white',
+                            padding: '10px',
+                            borderRadius: '5px',
+                            border: 'none',
+                            cursor: 'pointer',
+                        }}
+                        >
+                        {bionicReading ? 'Disable Bionic Reading' : 'Enable Bionic Reading'}
+                        </button>
+        <label>Change font:</label>
+
+                        <select name="font" id="font" onChange={(e) => setFontFamily(e.target.value)}>
+                            <option value="monospace">Monospace</option>
+                            <option value="arial">Arial</option>
+                            <option value="helvetica">Helvetica</option>
+                            <option value="roboto">Roboto</option>
+                            <option value="times new roman">Times New Roman</option>
+                        
+        </select>
         <button className="fancyButton" onClick={handleGetSummary}>
           Get Summary
         </button>

@@ -93,6 +93,7 @@ const Mode2Display = () => {
     const [isPausePlayActive, setIsPausePlayActive] = useState(false);
 
     const [fontSize, setFontSize] = useState(44); // Start with a default font size
+    const [fontFamily, setFontFamily] = useState<string>("Monospace"); // Start with a default font family
     const maxCharsPerChunk = wordsPerChunk * avgCharCountPerWord
     const [shortStory, setShortStory] = useState("");
     const { selectedTextId } = useSelectedText(); // Use the ID from context
@@ -815,6 +816,7 @@ const Mode2Display = () => {
                 </div>
                 {/* Mode 2: Chunk Display */}
                 <div className={`wordDisplay monospaced ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{
+                    fontFamily: `${fontFamily}`,
                     marginTop: "30px",
                     fontSize: `${fontSize}px`,
                     /*fontWeight: "bold",*/
@@ -983,24 +985,34 @@ const Mode2Display = () => {
             </div>
         )}
         <div>
-            {/* Toggle Button */}
-            <button
-            onClick={() => setBionicReading(!bionicReading)}
-            style={{
-                backgroundColor: bionicReading ? 'green' : 'grey',
-                color: 'white',
-                padding: '10px',
-                borderRadius: '5px',
-                border: 'none',
-                cursor: 'pointer',
-            }}
-            >
-            {bionicReading ? 'Disable Bionic Reading' : 'Enable Bionic Reading'}
-            </button>
-        </div>
-    </div>
+            
+                        <button
+                        onClick={() => setBionicReading(!bionicReading)}
+                        style={{
+                            backgroundColor: bionicReading ? 'green' : 'grey',
+                            color: 'white',
+                            padding: '10px',
+                            borderRadius: '5px',
+                            border: 'none',
+                            cursor: 'pointer',
+                        }}
+                        >
+                        {bionicReading ? 'Disable Bionic Reading' : 'Enable Bionic Reading'}
+                        </button>
+                        <label>Change font:</label>
 
-        );
+                        <select name="font" id="font" onChange={(e) => setFontFamily(e.target.value)}>
+                            <option value="monospace">Monospace</option>
+                            <option value="arial">Arial</option>
+                            <option value="helvetica">Helvetica</option>
+                            <option value="roboto">Roboto</option>
+                            <option value="times new roman">Times New Roman</option>
+                        
+                        </select>
+                    </div>
+                </div>
+
+            );
 };
 
 export default Mode2Display;
