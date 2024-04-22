@@ -133,10 +133,19 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
                 ? "keyword-highlighted"
                 : "";
               globalIndex++;
-
+              const cleanWord = wordOrKeyword.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
               return (
                 <span key={`${pIndex}-${wIndex}`}>
-                  <span className={className}>{wordOrKeyword}</span>
+                  <span className={className}>
+                    {bionicReading ? (
+                      <>
+                        <span style={{ fontWeight: "bold" }}>
+                          {wordOrKeyword.slice(0, Math.floor((1 + cleanWord.length) / 2))}
+                        </span>
+                        <span>{wordOrKeyword.slice(Math.floor((1 + cleanWord.length) / 2))} </span>
+                      </>
+                    ): <span>{wordOrKeyword} </span>}
+                  </span>
                   <span> </span>
                 </span>
               );
