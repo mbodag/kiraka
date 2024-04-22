@@ -17,7 +17,7 @@ const Sidebar = () => {
   // Array of texts with their IDs
   const texts = Array.from({ length: 5 }, (_, index) => ({
     id: index + 1,
-    title: ["Bioluminescence", "Honeybees", "Tungsten", "Auroras", "NASA"][index],
+    title: ["Bioluminescence", "Aurora Borealis", "Tungsten", "NASA Mars Rover", "Health & Longevity"][index],
   }));
 
   const { user } = useUser();
