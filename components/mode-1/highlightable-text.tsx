@@ -132,7 +132,7 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
               const className = isHighlighted
                 ? isKeyword
                   ? "highlighted keyword-highlighted"
-                  : "bold highlighted"
+                  : "highlighted"
                 : highlightedKeywordIndices.has(globalIndex) && isKeyword
                 ? "keyword-highlighted"
                 : "";
@@ -146,9 +146,9 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
                         <span style={{ fontWeight: "bold" }}>
                           {wordOrKeyword.slice(0, Math.floor((1 + cleanWord.length) / 2))}
                         </span>
-                        <span>{wordOrKeyword.slice(Math.floor((1 + cleanWord.length) / 2))} </span>
+                        <span>{wordOrKeyword.slice(Math.floor((1 + cleanWord.length) / 2))}</span>
                       </>
-                    ): <span>{wordOrKeyword} </span>}
+                    ): <span>{wordOrKeyword}</span>}
                   </span>
                   <span> </span>
                 </span>

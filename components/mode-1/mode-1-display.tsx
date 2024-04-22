@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSelectedText } from "../../contexts/SelectedTextContext"; // Adjust path if necessary
 import HighlightableText from "./highlightable-text";
 import CounterDisplay from "./counter-display";
+import { useAuth } from "@clerk/nextjs";
 import "@/app/globals.css";
 
 const Mode1Display = () => {
@@ -14,11 +15,12 @@ const Mode1Display = () => {
   const { selectedTextId } = useSelectedText(); // Use the ID from context
   const [fontFamily, setFontFamily] = useState("arial");
   const [bionicReading, setBionicReading] = useState(false);
+  const { userId } = useAuth();
 
   useEffect(() => {
     const fetchTextById = async (textId: number) => {
       try {
-        const response = await fetch(`/api/texts/${textId}`);
+        const response = await fetch(`/api/texts/${textId}?user_id=${userId}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
