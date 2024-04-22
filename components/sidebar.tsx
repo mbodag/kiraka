@@ -68,6 +68,22 @@ const Sidebar = () => {
     // window.location.reload();    // Force a full page reload
   };
 
+  const handleDeleteClick = async (textId: any) => {
+    try {
+      const response = await fetch(`/api/texts/${textId}?user_id=${userId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      else {
+      window.location.reload(); 
+      }   // Force a full page reload
+    } catch (error) {
+      console.error("Error deleting text:", error);
+    }
+  }
+
   return (
     <div className="flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-r border-gray-700">
       {/* Logo, company name, and horizontal line */}
@@ -132,15 +148,22 @@ const Sidebar = () => {
           </p>
        </div>
        {userTexts.map((text) => (
-          <button
-            key={text.id}
-            onClick={() => handleTextClick(text.id)}
-            className={`text-sm w-full max-w-xs p-2 font-medium rounded-lg transition sidebar-button-font 
-              ${text.id === selectedTextId ? 'bg-gray-700' : 'hover:bg-gray-800'}
-              ${readTexts.includes(text.id) ? 'text-green-600' : ''}`} // Apply active or hover class
+          <div>
+            <button
+              key={text.id}
+              onClick={() => handleTextClick(text.id)}
+              className={`text-sm w-full max-w-xs p-2 font-medium rounded-lg transition sidebar-button-font 
+                ${text.id === selectedTextId ? 'bg-gray-700' : 'hover:bg-gray-800'}
+                ${readTexts.includes(text.id) ? 'text-green-600' : ''}`} // Apply active or hover class
           >
-            {text.title}
-          </button>
+              {text.title}
+            </button>
+            <button
+              onClick={()=>handleDeleteClick(text.id)}
+              >
+              DELETE TEXT
+            </button>
+          </div>
         ))}
       
       </div>
