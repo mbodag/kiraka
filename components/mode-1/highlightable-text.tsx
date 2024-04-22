@@ -20,8 +20,8 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
     .filter((paragraph) => paragraph.trim() !== "");
 
   const keywords = useMemo(
-    () => [
-      "work-life balance",
+    () => ["sdfsffsafaffafafsasfsfdvsddssfsd"],
+      /*"work-life balance",
       "personal well-being",
       "professional success",
       "stress and burnout",
@@ -35,8 +35,7 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
       "productive work environment",
       "job satisfaction",
       "career progression",
-      "long-term happiness",
-    ],
+      "long-term happiness",*/
     []
   );
 
