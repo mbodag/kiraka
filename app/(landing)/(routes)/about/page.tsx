@@ -10,7 +10,7 @@ const AboutPage = () => {
         Welcome to Kiraka.ai! This platform is part of our university project at Imperial College London 
         aimed at exploring the potentials of speed reading and its effects on comprehension. 
         We've developed tools that dynamically adjust to your reading speed and style, continually challenging your limits.<br></br> <br></br> 
-        Join us in pushing the boundaries of how we absorb and retain information!
+        Join us in pushing the boundaries of how we absorb information!
         </p>
       </div>
     </div>

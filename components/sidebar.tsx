@@ -8,6 +8,10 @@ import { UserButton, useUser, useAuth } from "@clerk/nextjs";
 import { HiOutlineDocumentText } from "react-icons/hi";
 import { TbBrandGoogleAnalytics } from "react-icons/tb";
 import { RiHome2Line } from "react-icons/ri";
+import { TbSend } from "react-icons/tb";
+import { PiUploadSimpleBold } from "react-icons/pi";
+import { MdDone } from "react-icons/md";
+
 
 const Sidebar = () => {
   const { selectedTextId, setSelectedTextId } = useSelectedText();
@@ -91,7 +95,7 @@ const Sidebar = () => {
         <hr className="border-t border-gray-700 mt-2 mx-auto" style={{ width: '100%' }} />
         {/* Horizontal line */}
         {/* Link buttons with icons */}
-        <div className="flex text-sm flex-col items-start mt-4"> {/* Changed to items-start and added padding left */}
+        <div className="flex text-sm flex-col items-start mt-3"> {/* Changed to items-start and added padding left */}
           <Link href="/" passHref>
             <button className="flex items-center mb-2 text-white px-2 py-1 hover:text-cyan-500">
               <RiHome2Line className="mr-2 text-lg" /> Home {/* Icon with margin right */}
@@ -108,14 +112,50 @@ const Sidebar = () => {
             </button>
           </Link>
         </div>
-        <hr className="border-t border-gray-700 mt-4 mx-auto" style={{ width: '100%' }} />
+
+        {/* Conditional Feedback button with icon */}
+        {readTexts.length >= 2 && (
+          <div>
+            <hr className="border-t border-gray-700 mt-3 mx-auto" style={{ width: '100%' }} />
+            <button
+              className="flex items-center text-sm text-white px-2 pt-3 hover:text-green-400"
+              onClick={handleFeedbackClick}
+            >
+              <TbSend className="mr-2 text-lg" /> Give Feedback
+            </button>
+          </div>
+        )}
+        <hr className="border-t border-gray-700 mt-3 mx-auto" style={{ width: '100%' }} />
+
+        {/* Kiraka's own texts */}
+        <div className="flex text-sm flex-col items-start mt-3"> 
+          <div className="text-lg py-2" style={{ color: 'var(--off-white)' }}>Kiraka's Own Texts</div>
+          {texts.map((text) => (
+            <button
+              key={text.id}
+              onClick={() => handleTextClick(text.id)}
+              className={`flex items-center text-sm w-full max-w-xs px-2 py-1.5 rounded-lg transition sidebar-button-bg
+                ${text.id === selectedTextId ? 'sidebar-button-selected' : ''}`} // Apply active or hover class
+            >
+              {/* Conditionally render the icon if the text has been read */}
+              {readTexts.includes(text.id) && <MdDone className="text-green-600 mr-2" />}
+              {text.title}
+            </button>
+          ))}
+        </div>
+
+        {/* flex items-center mb-2 text-white px-2 py-1 hover:text-cyan-500 */}
+
+
+
       </div>
+      
 
       {/* Upload button aligned to the left */}
       { <div className="px-3 py-2 mb-4 bg-gray-800">
         <Link href="/upload">
           <button className="text-sm w-full max-w-xs p-2 font-medium rounded-lg hover:bg-gray-700 transition sidebar-button-font">
-            Upload your own text
+            <PiUploadSimpleBold className="mr-2 text-lg" /> Upload your own text
           </button>
         </Link>
       </div>}
@@ -127,27 +167,6 @@ const Sidebar = () => {
 
       {/* Document buttons aligned to the left */}
       <div className="flex-1 px-3 py-2 space-y-1">
-        {texts.map((text) => (
-          <button
-            key={text.id}
-            onClick={() => handleTextClick(text.id)}
-            className={`text-sm w-full max-w-xs p-2 font-medium rounded-lg transition sidebar-button-font 
-              ${text.id === selectedTextId ? 'bg-gray-800' : 'hover:bg-gray-900'}
-              ${readTexts.includes(text.id) ? 'text-green-600' : ''}`} // Apply active or hover class
-          >
-            {text.title}
-          </button>
-        ))}
-        {readTexts.length >= 2 && (
-          <div className="pt-8">  {/* This div wraps the button and applies a top margin */}
-          <button
-            className="text-sm w-full max-w-xs p-2 font-medium rounded-lg bg-green-900 hover:bg-green-700 transition sidebar-button-font"
-            onClick={handleFeedbackClick}
-          >
-            Give Feedback
-          </button>
-        </div>
-      )}
         <div className="flex justify-center items-center px-3 py-2 mb-4 bg-gray-800">
           <p className="text-md p-2 font-medium rounded-lg">
             Your texts

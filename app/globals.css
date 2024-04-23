@@ -235,10 +235,6 @@ body,
   margin-top: 20px; /* Space between counter and text */
 }
 
-.sidebar-button-font {
-  font-size: 15px;
-}
-
 .navbar-dashboard-font {
   font-size: 15px
 }
@@ -529,4 +525,29 @@ body,
 .scrollable-content {
   flex: 1;  /* Takes up all available space */
   overflow-y: auto;  /* Enables vertical scrolling */
+}
+
+
+
+.py-1_5 {
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
+
+.sidebar-button-bg {
+  transition: background-color 0.3s;
+  color: var(--almost-white);
+}
+
+.sidebar-button-bg:hover {
+  background-color: rgb(20, 20, 20);
+}
+
+.sidebar-button-selected {
+  background-color: rgb(40, 40, 40);
+}
+
+:root {
+  --off-white: #f8f8f8;  /* Off-white, a bit less bright than pure white */
+  --almost-white: #f0f0f0; /* A shade darker than off-white */
 }
