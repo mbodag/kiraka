@@ -38,8 +38,7 @@ export const LandingHero = () => {
         <Link href={isSignedIn ? "/instructions" : "/sign-in"}>
           <Button
             variant="tertiary"
-            style={{fontWeight: '450'}}
-            className="md:text-lg p-4 md:p-6 rounded-full"
+            className="animated-gradient-button md:text-lg p-4 md:p-6 rounded-full"
           >
             Start Speed Learning Now
           </Button>

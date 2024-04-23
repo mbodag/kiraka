@@ -657,3 +657,31 @@ body,
 .trash-dropdown-content li:last-child {
   border-bottom: none; /* No border for the last item */
 }
+
+
+
+@keyframes gradientAnimation {
+  0%, 100% {
+    background-size: 150% 150%;
+  }
+  50% {
+    background-size: 200% 200%;
+  }
+}
+
+.animated-gradient-button {
+  background: linear-gradient(45deg, rgb(0, 125, 0), rgb(0, 225, 225));
+  background-size: 150% 150%;
+  animation: gradientAnimation 2s ease infinite;
+  color: white;
+  font-weight: 450;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 9999px; 
+  cursor: pointer; 
+  transition: transform 0.3s ease;
+}
+
+.animated-gradient-button:hover {
+  transform: scale(1.05); /* Slightly enlarges the button on hover */
+}
