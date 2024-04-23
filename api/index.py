@@ -182,7 +182,8 @@ def add_text():
     else:
         text_content = request.json.get('text_content')
         user_id = request.json.get('user_id')
-
+        if Users.query.filter_by(user_id=user_id).first() is None:
+            return jsonify({'error': 'User not found'}), 404
         if text_content is None or user_id is None:
             return jsonify({'error': 'Invalid request. Missing text_content or user_id'}), 400
         if not text_content_is_valid(text_content):
