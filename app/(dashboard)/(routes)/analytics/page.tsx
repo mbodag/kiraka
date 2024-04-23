@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Line, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js/auto';
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 
 
 // Register Chart.js components
@@ -56,6 +56,7 @@ const AnalyticsPage: React.FC = () => {
   const [isAdmin, setAdmin] = useState(false)
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { userId } = useAuth();
+  const { user } = useUser();
 
   useEffect(() => {
     const fetchAnalyticsData = async () => {
@@ -95,6 +96,9 @@ const AnalyticsPage: React.FC = () => {
     const labels = userRecords.map(
       (record: any) => `${record.timestamp} (ID: ${record.textId})`
     );
+
+    // Conditional title based on the userName
+    const plotTitle = userName === "Your data" ? "Your Performance" : `${userName}'s Performance`;
 
     // Combined data for both Average WPM and Quiz Score
     const combinedData = {
@@ -170,7 +174,7 @@ const AnalyticsPage: React.FC = () => {
         },
         title: {
           display: true,
-          text: `${userName}'s Performance`,
+          text: plotTitle,
           font: {
             size: 18,
           },

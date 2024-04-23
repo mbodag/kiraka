@@ -4,7 +4,6 @@ import { Montserrat } from "next/font/google";
 import Image from "next/legacy/image";
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -28,56 +27,52 @@ const routes = [
   },
 ];
 
+const textStyle = {
+  fontSize: '1rem', // Adjust this value as needed
+  fontWeight: '450', // Set the font weight here
+  padding: '8px 16px', // Example padding
+};
+
 export const LandingNavbar = () => {
   const { isSignedIn } = useAuth();
 
   return (
-    <nav className="p-4 bg-transparent flex items-center justify-between">
-      <Link href="/" className="flex items-center">
-        <div className="relative h-8 w-8 mr-4">
-          <Image
-            src="/Kiraka_Logo.png"
-            alt="Kiraka Logo"
-            width={30}
-            height={30}
-            objectFit="contain"
-          />
-        </div>
-        <h1 className={cn("monospace-jetbrains-mono text-2xl font-bold text-white")}>
-          Kiraka.ai
-        </h1>
-      </Link>
-      <div className="flex items-center justify-center text-white">
+    <nav className="relative flex items-center justify-between p-4 w-full bg-transparent">
+      {/* Logo and title on the left */}
+      <Link href="/" passHref>
+          <div className="inline-flex text-white items-center justify-center cursor-pointer mr-8">
+            <div className="relative w-8 h-8 mr-4 inline-block">
+              <Image
+                src="/Kiraka_Logo.png"
+                alt="Kiraka Logo"
+                layout="fill"
+                objectFit="contain"
+              />
+            </div>
+            <span className="monospace-jetbrains-mono text-2xl font-bold">Kiraka.ai</span>
+          </div>
+        </Link>
+
+      {/* Center navigation links */}
+      <div className="absolute left-1/2 transform -translate-x-1/2 flex space-x-6">
         {routes.map((route) => (
-          <Link key={route.href} href={route.href}>
-            <div className="px-4 hover:border hover:border-white hover:rounded-lg hover:bg-white/10 font-medium cursor-pointer transition">
+          <Link key={route.href} href={route.href} passHref>
+            <div style={textStyle} className="px-4 py-2 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all cursor-pointer">
               {route.name}
             </div>
           </Link>
         ))}
       </div>
-      <div className="flex item-center gap-x-2">
-        <div>
-          <Link href={isSignedIn ? "/instructions" : "/sign-up"}>
-            <Button
-              variant="outline"
-              className="rounded-full border-none hover:bg-green-100"
-            >
-              Get Started
-            </Button>
-          </Link>
-        </div>
-        <div>
-          <Link href={isSignedIn ? "/instructions" : "/sign-in"}>
-            <Button
-              variant="outline"
-              className="rounded-full border-none hover:bg-green-100"
-            >
-              Sign In
-            </Button>
-          </Link>
-        </div>
-      </div>
+
+      {/* Sign-in button on the right */}
+      <Link href={isSignedIn ? "/instructions" : "/sign-in"} passHref>
+        <Button
+          // variant="outline"
+          style={textStyle} className="text-white bg-gradient-to-r from-green-400 to-green-600 hover:from-green-600 hover:to-green-800 transition-all rounded-full px-6 py-2 cursor-pointer"
+        >
+          Sign In
+        </Button>
+      </Link>
     </nav>
   );
 };
