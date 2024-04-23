@@ -79,8 +79,7 @@ const Sidebar = () => {
   return (
     <div className="sidebar-container flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-t border-r border-black">
       {/* Logo, company name, and horizontal line */}
-      <div className="fixed-top p-4 mb-2 w-full text-center">
-        <div className="header-container">
+        <div className="header-container px-4 pt-4">
           <Link href="/">
             <div className="inline-flex items-center justify-center cursor-pointer mr-8">
               <div className="relative w-8 h-8 mr-4 inline-block">
@@ -136,9 +135,9 @@ const Sidebar = () => {
         </div>
 
         {/* Scrollable area for texts */}
-        <div className="content-container flex-grow overflow-auto">
+        <div className="content-container px-4 flex-grow overflow-auto">
           {/* Kiraka's own texts */}
-          <div className="flex text-sm flex-col items-center mt-5"> 
+          <div className="flex text-sm flex-col items-center mt-4"> 
             <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-5">Kiraka&apos;s Texts</div>
             {texts.map((text) => (
               <button
@@ -169,10 +168,9 @@ const Sidebar = () => {
             ))}
           </div>
         </div>
-      </div>
 
       {/* (Fixed Footer) User button fixed at the bottom */}
-      <div className="fixed-bottom flex item-center m-2">
+      <div className="footer-container flex item-center m-2 bg-black py-2 px-2">
         <div>
           <UserButton afterSignOutUrl="/" />
         </div>
