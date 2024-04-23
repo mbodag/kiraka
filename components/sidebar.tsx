@@ -11,13 +11,14 @@ import { RiHome2Line } from "react-icons/ri";
 import { TbSend } from "react-icons/tb";
 import { PiUploadSimpleBold } from "react-icons/pi";
 import { MdDone } from "react-icons/md";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { TbTrash } from "react-icons/tb";
 
 
 const Sidebar = () => {
   const { selectedTextId, setSelectedTextId } = useSelectedText();
   const [readTexts, setReadTexts] = useState<number[]>([]);
   const [userTexts, setUserTexts] = useState<{id: number, title:string}[]>([]);
+  const [activeDelete, setActiveDelete] = useState(null);
 
   // Array of texts with their IDs
   const texts = Array.from({ length: 5 }, (_, index) => ({
@@ -76,6 +77,17 @@ const Sidebar = () => {
     // window.location.reload();    // Force a full page reload
   };
 
+  const handleDeleteClick = (e: any, textId: any) => {
+    e.stopPropagation(); // Prevent the click from closing the dropdown immediately
+    setActiveDelete(null);
+  };
+
+  const toggleDeleteDropdown = (e: any, textId: any) => {
+    e.stopPropagation();
+    setActiveDelete(activeDelete === textId ? null : textId);
+  };
+
+
   return (
     <div className="sidebar-container flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-t border-r border-black">
       {/* Logo, company name, and horizontal line */}
@@ -113,7 +125,7 @@ const Sidebar = () => {
               </button>
             </Link>
             <Link href="/upload">
-              <button className="flex items-center text-white px-2 py-1 hover:text-purple-600">
+              <button className="flex items-center text-white px-2 py-1 hover:text-purple-500">
                 <PiUploadSimpleBold className="mr-2 text-lg" /> Upload your own text
               </button>
             </Link>
@@ -152,20 +164,36 @@ const Sidebar = () => {
               </button>
             ))}
           </div>
-          <div className="flex text-sm flex-col items-center mt-3"> 
-            <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-5">Your Texts</div>
-            {userTexts.map((text) => (
-              <button
-                key={text.id}
-                onClick={() => handleTextClick(text.id)}
-                className={`flex items-center text-sm w-full max-w-xs px-2 py-sidebar rounded-lg transition sidebar-button-bg
-                  ${text.id === selectedTextId ? 'sidebar-button-selected' : ''}`} // Apply active or hover class
-              >
-                {/* Conditionally render the icon if the text has been read */}
-                {readTexts.includes(text.id) && <MdDone className="text-green-600 mr-2" />}
-                {text.title}
-              </button>
-            ))}
+          {/* User's own texts */}
+          <div className="flex text-sm flex-col items-center mt-3">
+              <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-5">Your Texts</div>
+              {userTexts.map((text) => (
+                <div key={text.id} className={`text-button-container w-full max-w-xs ${activeDelete === text.id ? 'active' : ''}`} style={{ position: 'relative' }}>
+                    <button
+                        onClick={() => handleTextClick(text.id)}
+                        className={`flex justify-between items-center text-sm w-full px-2 py-sidebar rounded-lg transition sidebar-button-bg
+                          ${text.id === selectedTextId ? 'sidebar-button-selected' : ''}`} // Apply active or hover class
+                    >
+                        <div className="flex items-center">
+                            {readTexts.includes(text.id) && <MdDone className="text-green-600 mr-2" />}
+                            {text.title}
+                        </div>
+                        <TbTrash className="trash-icon opacity-0" style={{ fontSize: '16px' }} onClick={(e) => 
+                            toggleDeleteDropdown(e, text.id)
+                            // handleDeleteClick(text.id);
+                        }/>
+                    </button>
+                    {activeDelete === text.id && (
+                      <div className="trash-dropdown-content text-sm">
+                        <ul>
+                            <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(e, text.id); }}>Delete but Keep Analytics</li>
+                            <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(e, text.id); }}>Deep Delete</li>
+                            <li onClick={(e) => { e.stopPropagation(); setActiveDelete(null); }}>Cancel</li>
+                        </ul>
+                      </div>
+                    )}
+                </div>
+              ))}
           </div>
         </div>
 
