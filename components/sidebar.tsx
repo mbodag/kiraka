@@ -92,11 +92,11 @@ const Sidebar = () => {
       console.error("Error deleting text:", error);
     }
   }
-
     const toggleDeleteDropdown = (e: any, textId: any) => {
     e.stopPropagation();
     setActiveDelete(activeDelete === textId ? null : textId);
   };
+  
   return (
     <div className="sidebar-container flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-t border-r border-black">
       {/* Logo, company name, and horizontal line */}
