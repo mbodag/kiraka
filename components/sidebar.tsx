@@ -37,7 +37,7 @@ const Sidebar = () => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        const user_texts = data.map((text: any) => ({ id: text.text_id, title: `Your text ${text.text_id + 1}` }));
+        const user_texts = data.map((text: any) => ({ id: text.text_id, title: `Your text ${text.text_id}` }));
         console.log(user_texts)
         setUserTexts(user_texts); // Update the state with the fetched data
       } catch (error) {
@@ -77,17 +77,26 @@ const Sidebar = () => {
     // window.location.reload();    // Force a full page reload
   };
 
-  const handleDeleteClick = (e: any, textId: any) => {
-    e.stopPropagation(); // Prevent the click from closing the dropdown immediately
-    setActiveDelete(null);
-  };
+  const handleDeleteClick = async (textId: any, full_delete: boolean) => {
+    try {
+      const response = await fetch(`/api/texts/${textId}?user_id=${userId}&full_delete=${full_delete}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      else {
+      window.location.reload(); 
+      }   // Force a full page reload
+    } catch (error) {
+      console.error("Error deleting text:", error);
+    }
+  }
 
-  const toggleDeleteDropdown = (e: any, textId: any) => {
+    const toggleDeleteDropdown = (e: any, textId: any) => {
     e.stopPropagation();
     setActiveDelete(activeDelete === textId ? null : textId);
   };
-
-
   return (
     <div className="sidebar-container flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-t border-r border-black">
       {/* Logo, company name, and horizontal line */}
@@ -186,8 +195,8 @@ const Sidebar = () => {
                     {activeDelete === text.id && (
                       <div className="trash-dropdown-content text-sm">
                         <ul>
-                            <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(e, text.id); }}>Delete but Keep Analytics</li>
-                            <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(e, text.id); }}>Deep Delete</li>
+                            <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, false); }}>Delete but Keep Analytics</li>
+                            <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, true); }}>Deep Delete</li>
                             <li onClick={(e) => { e.stopPropagation(); setActiveDelete(null); }}>Cancel</li>
                         </ul>
                       </div>

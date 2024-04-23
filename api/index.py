@@ -45,8 +45,11 @@ class Texts(db.Model):
     keywords = db.Column(db.Text)
     text_content = db.Column(db.Text)
     user_id = db.Column(db.String(50), db.ForeignKey('Users.user_id'))
-    quiz_questions = db.relationship('Questions', backref='text', lazy=True)
+    quiz_questions = db.relationship('Questions', backref='text', lazy=True, cascade='all, delete')
     title = db.Column(db.Text)
+    deleted = db.Column(db.Boolean, default=False)
+    chunk_complexity = db.relationship('ChunkComplexity', backref='text', lazy=True, cascade='all, delete')
+    practices = db.relationship('PracticeResults', backref='text', lazy=True, cascade='all, delete')
     
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -84,9 +87,9 @@ class PracticeResults(db.Model):
     user_id = db.Column(db.String(50), db.ForeignKey('Users.user_id'), nullable=False)
     wpm = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, default=datetime.today())
-    quiz_results = db.relationship('QuizResults', backref='practice', lazy=True)
+    quiz_results = db.relationship('QuizResults', backref='practice', lazy=True, cascade='all, delete')
     mode = db.Column(db.Text)
-    
+    chunks = db.relationship('Chunks', backref='practice', lazy=True, cascade='all, delete')
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
     
@@ -95,6 +98,7 @@ class Chunks(db.Model):
     chunk_id = db.Column(db.Integer, primary_key=True)
     practice_id = db.Column(db.Integer, db.ForeignKey('PracticeResults.practice_id'), nullable=False)
     chunk_position = db.Column(db.Integer) #Index position w.r.t this run's other chunks, so that they can be ordered
+    gazer_points = db.relationship('GazerPoints', backref='chunk', lazy=True, cascade='all, delete')
 
 class GazerPoints(db.Model):
     __tablename__ = 'GazerPoints'
@@ -163,7 +167,7 @@ def generate_quiz():
 
 # Input validation functions
 def text_content_is_valid(text_content):
-    return text_content and isinstance(text_content, str) and len(text_content.split()) >= 150 and len(text_content.split()) < 4000
+    return text_content and isinstance(text_content, str) and len(text_content.split()) >= 200 and len(text_content.split()) < 1000
 
 def user_id_is_valid(user_id):
     return isinstance(user_id, int) and user_id > 0 # Outdated
@@ -178,7 +182,8 @@ def add_text():
     else:
         text_content = request.json.get('text_content')
         user_id = request.json.get('user_id')
-
+        if Users.query.filter_by(user_id=user_id).first() is None:
+            return jsonify({'error': 'User not found'}), 404
         if text_content is None or user_id is None:
             return jsonify({'error': 'Invalid request. Missing text_content or user_id'}), 400
         if not text_content_is_valid(text_content):
@@ -234,6 +239,8 @@ def get_text_by_id(text_id):
     if text:
         if not text.user_id in ['1', user_id]:
             return jsonify({'error': 'Unauthorized to access this text'}), 401
+        if text.deleted:
+            return jsonify({'message': 'Text has been deleted'}), 404
         else: 
             text_data = {
                 'text_id': text.text_id,
@@ -279,7 +286,7 @@ def text_by_user_id():
     Fetches all texts from a user and returns it as JSON
     '''
     user_id = request.args.get('user_id')
-    texts = Texts.query.filter_by(user_id=user_id).all()
+    texts = Texts.query.filter_by(user_id=user_id, deleted=False).all()
     all_texts_data = []
     for text in texts:
         text_data = {
@@ -293,19 +300,39 @@ def text_by_user_id():
       
 @app.route('/api/texts/<string:text_id>', methods=['DELETE'])
 def delete_text(text_id):
-    user_id = int(request.args.get('user_id'))
+    try:
+        user_id = request.args.get('user_id')
+    except TypeError:
+        return jsonify({'error': 'User ID is required'}), 400
+        
     text_to_delete = Texts.query.filter_by(text_id=text_id).first()
-    if text_to_delete.user_id != user_id:
+    if text_to_delete is None:
+        return jsonify({'error': 'Text not found'}), 404
+    if text_to_delete.user_id != user_id or user_id == 1:
         return jsonify({'error': 'Unauthorized to delete this text'}), 401
     else:
-        try:
-            Questions.query.filter_by(text_id=text_id).delete()
-            Texts.query.filter_by(text_id=text_id).delete()
-            db.session.commit()
-            return jsonify({'message': 'Text deleted successfully!'}), 200
-        except:
-            db.session.rollback()
-            return jsonify({'error': 'Failed to delete text'}), 500
+        full_delete = request.args.get('full_delete')
+        print(full_delete)
+        if full_delete == 'false' or full_delete == None:
+            try:
+                my_text = Texts.query.filter_by(text_id=text_id).first()
+                db.session.delete(my_text)
+                db.session.commit()
+                print('Text deleted successfully!')
+                return jsonify({'message': 'Text deleted successfully!'}), 200
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({'error': e.message}), 500
+        else:
+            try:
+                Questions.query.filter_by(text_id=text_id).update({"question_content": "Question deleted by user", "multiple_choices": "deleted", "correct_answer": "deleted"})
+                ChunkComplexity.query.filter_by(text_id=text_id).delete()
+                Texts.query.filter_by(text_id=text_id).update({'text_content': 'Text deleted by user', 'keywords': 'deleted', 'title': 'Deleted', 'deleted': True})
+                db.session.commit()
+                return jsonify({'message': 'Text deleted successfully!'}), 200
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({'error': e.message}), 500
 
     
 @app.route('/api/texts/summarize', methods=['POST'])
