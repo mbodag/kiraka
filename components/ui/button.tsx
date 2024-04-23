@@ -18,8 +18,6 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         tertiary: // customary variant
           "bg-green-300/40 text-white hover:bg-green-300/60",
-        // gradientWire: 
-        //   "gradient-border text-white",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },

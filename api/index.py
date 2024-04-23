@@ -167,7 +167,7 @@ def generate_quiz():
 
 # Input validation functions
 def text_content_is_valid(text_content):
-    return text_content and isinstance(text_content, str) and len(text_content.split()) >= 1000 and len(text_content.split()) < 4000
+    return text_content and isinstance(text_content, str) and len(text_content.split()) >= 200 and len(text_content.split()) < 1000
 
 def user_id_is_valid(user_id):
     return isinstance(user_id, int) and user_id > 0 # Outdated
@@ -311,15 +311,10 @@ def delete_text(text_id):
     if text_to_delete.user_id != user_id or user_id == 1:
         return jsonify({'error': 'Unauthorized to delete this text'}), 401
     else:
-        full_delete = request.args.get('full_delete', True)
-        if full_delete:
+        full_delete = request.args.get('full_delete')
+        print(full_delete)
+        if full_delete == 'false' or full_delete == None:
             try:
-                #GazerPoints.query.filter_by(chunk_id=Chunks.query.filter_by(practice_id=PracticeResults.query.filter_by(text_id=text_id).all()).all()).delete()
-                #Chunks.query.filter_by(practice_id=PracticeResults.query.filter_by(text_id=text_id).all()).delete()
-                #QuizResults.query.filter_by(practice_id=PracticeResults.query.filter_by(text_id=text_id).all()).delete()
-                #PracticeResults.query.filter_by(text_id=text_id).delete()
-                #Questions.query.filter_by(text_id=text_id).delete()
-                #ChunkComplexity.query.filter_by(text_id=text_id).delete()
                 my_text = Texts.query.filter_by(text_id=text_id).first()
                 db.session.delete(my_text)
                 db.session.commit()

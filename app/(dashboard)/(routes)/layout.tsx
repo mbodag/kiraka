@@ -2,8 +2,8 @@
 
 import React from "react";
 import StandardNavbar from "@/components/navbar";
-import StandardWebGazerNavbar from "@/components/navbar_webgazer";
-import StandardInstructionsNavbar from "@/components/navbar_instructions";
+import StandardWebGazerNavbar from "@/components/navbar-webgazer";
+import StandardInstructionsNavbar from "@/components/navbar-instructions";
 import QuizNavbar from "@/components/quiz-navbar";
 import Sidebar from "@/components/sidebar";
 import QuizSidebar from "@/components/quiz-sidebar";

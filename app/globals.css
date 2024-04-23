@@ -235,10 +235,6 @@ body,
   margin-top: 20px; /* Space between counter and text */
 }
 
-.sidebar-button-font {
-  font-size: 15px;
-}
-
 .navbar-dashboard-font {
   font-size: 15px
 }
@@ -348,11 +344,12 @@ body,
   left: calc(var(--sidebar-width) + (100vw - var(--sidebar-width)) / 2);
   transform: translate(-50%, -50%);
   z-index: 1050;
-  background-color: #e5e5e5;
+  background: linear-gradient(to top, rgb(220, 220, 220), rgb(240, 240, 240));
+  /* color: white; */
   padding: 20px;
   border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-  border: 1px solid #074309;
+  box-shadow: 0 0 40px 4px rgb(85, 85, 85);
+  /* border: 1px solid #ffffff; */
   outline: none;
 }
 
@@ -512,4 +509,179 @@ body,
 .home-container li {
   text-align: left; /* Aligns text to the left */
   padding: 12px 10px; /* Adds vertical padding for spacing between items */
+}
+
+
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between; 
+}
+
+.fixed-bottom {
+  position: sticky;
+  bottom: 0;
+}
+
+.scrollable-content {
+  flex: 1;  /* Takes up all available space */
+  overflow-y: auto;  /* Enables vertical scrolling */
+}
+
+
+
+.py-sidebar {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+.sidebar-button-bg {
+  transition: background-color 0s;
+  color: var(--almost-white);
+}
+
+.sidebar-button-bg:hover {
+  background-color: rgb(33, 33, 33);
+}
+
+.sidebar-button-selected {
+  background-color: rgb(40, 40, 40);
+}
+
+:root {
+  --off-white: #f8f8f8;  /* Off-white, a bit less bright than pure white */
+  --almost-white: #f0f0f0; /* A shade darker than off-white */
+}
+
+.title-container-sidebar {
+  color: var(--off-white); /* Custom off-white color for text */
+  background: linear-gradient(to top, rgb(30, 30, 30), black);
+  text-align: center; /* Centers text horizontally */
+  padding: 10px 0; /* Vertical padding, no horizontal padding to allow full width utilization */
+  width: 95%; /* Makes the div take the full width of its parent */
+  box-shadow: 0 2px 12px rgba(184, 185, 184, 0.5); /* Subtle white shadow for visibility */
+  font-size: 15px;
+}
+
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: 100vh;
+  scrollbar-width: 4px; /* For Firefox */
+  scrollbar-color: #333 #000; /* For Firefox: thumb and track color */
+
+  /* For Chrome, Safari, and Opera */
+  ::-webkit-scrollbar {
+    width: 4px; /* Width of the scrollbar */
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #000; /* Color of the scrollbar track */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: none; /* Color of the scrollbar thumb */
+    border-radius: 4px; /* Rounded corners of the scrollbar thumb */
+    border: 2px solid #000; /* Creates a border around the scrollbar thumb */
+  }
+}
+
+.header-container, .footer-container {
+  flex-shrink: 0;
+}
+
+.header-container, .footer-container {
+  flex-shrink: 0;
+}
+
+.content-container {
+  /* This will expand to fill the available space */
+  flex-grow: 1;
+  overflow: auto; /* Enables scrolling */
+}
+
+.trash-icon {
+  color: #ccc;  
+  cursor: pointer;
+  transition: color 0s, opacity 0s;
+  opacity: 0; 
+}
+
+.text-button-container:hover .trash-icon {
+  opacity: 1; 
+}
+
+.trash-icon:hover {
+  color: rgb(150, 5, 5);
+  opacity: 1;
+}
+
+
+.trash-dropdown-content {
+  width: 100%;
+  background-color: rgb(20, 20, 20);
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.25);
+  border-radius: 10px;
+  padding: 5px;
+  z-index: 9999; /* Make sure it's above other content */
+  margin-top: 4px; /* Give some space between the text title and the dropdown */
+  position: relative;
+}
+
+.text-button-container.active {
+  box-shadow: 0 0 4px 1px rgb(150, 5, 5);
+  border-radius: 8px;
+}
+
+.trash-dropdown-content ul {
+  list-style: none; /* Removes bullet points */
+  margin: 0;
+  padding: 0;
+  background-color: rgb(20, 20, 20);
+}
+
+.trash-dropdown-content li {
+  padding: 8px 12px; /* Add some padding for better touch */
+  cursor: pointer; /* Change cursor to pointer */
+  color: rgb(215, 215, 215); /* Ensure text is visible against white background */
+  position: relative;
+}
+
+.trash-dropdown-content li:hover {
+  background-color: rgb(38, 31, 31); /* Light grey background on hover */
+  border-radius: 10px;
+}
+
+.trash-dropdown-content li:last-child {
+  border-bottom: none; /* No border for the last item */
+}
+
+
+
+@keyframes gradientAnimation {
+  0%, 100% {
+    background-size: 150% 150%;
+  }
+  50% {
+    background-size: 200% 200%;
+  }
+}
+
+.animated-gradient-button {
+  background: linear-gradient(45deg, rgb(0, 125, 0), rgb(0, 225, 225));
+  background-size: 150% 150%;
+  animation: gradientAnimation 2s ease infinite;
+  color: white;
+  font-weight: 450;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 9999px; 
+  cursor: pointer; 
+  transition: transform 0.3s ease;
+}
+
+.animated-gradient-button:hover {
+  transform: scale(1.05); /* Slightly enlarges the button on hover */
 }
