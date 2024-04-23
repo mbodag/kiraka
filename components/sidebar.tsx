@@ -23,7 +23,7 @@ const Sidebar = () => {
   // Array of texts with their IDs
   const texts = Array.from({ length: 5 }, (_, index) => ({
     id: index + 1,
-    title: ["Bioluminescence", "Aurora Borealis", "Tungsten", "NASA Mars Rover", "Health & Longevity"][index],
+    title: ["1. Bioluminescence", "2. Aurora Borealis", "3. Tungsten", "4. NASA Mars Rover", "5. Health & Longevity"][index],
   }));
 
   const { user } = useUser();
@@ -96,7 +96,7 @@ const Sidebar = () => {
     e.stopPropagation();
     setActiveDelete(activeDelete === textId ? null : textId);
   };
-  
+
   return (
     <div className="sidebar-container flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-t border-r border-black">
       {/* Logo, company name, and horizontal line */}
@@ -195,9 +195,15 @@ const Sidebar = () => {
                     {activeDelete === text.id && (
                       <div className="trash-dropdown-content text-sm">
                         <ul>
-                            <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, false); }}>Delete but Keep Analytics</li>
-                            <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, true); }}>Deep Delete</li>
-                            <li onClick={(e) => { e.stopPropagation(); setActiveDelete(null); }}>Cancel</li>
+                          {readTexts.includes(text.id) ? (
+                            <>
+                              <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, true); }}>Delete but Keep Analytics</li>
+                              <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, false); }}>Full Delete</li>
+                            </>
+                          ) : (
+                            <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, false); }}>Delete</li>
+                          )}
+                          <li onClick={(e) => { e.stopPropagation(); setActiveDelete(null); }}>Cancel</li>
                         </ul>
                       </div>
                     )}
