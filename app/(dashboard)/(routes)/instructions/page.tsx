@@ -1,6 +1,6 @@
 import React from 'react';
 import { auth, currentUser, UserButton } from "@clerk/nextjs";
-import styles from '../dashboard/DashboardPage.module.css';
+import styles from '../Dashboard.module.css';
 import DashboardLayout from '../layout';
 import { SelectedTextProvider } from "@/contexts/SelectedTextContext"; // Adjust the import path as necessary
 

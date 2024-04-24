@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import styles from '../dashboard/DashboardPage.module.css';
+import styles from '../Dashboard.module.css';
 import DashboardLayout from '../layout'; 
 import { SelectedTextProvider } from "@/contexts/SelectedTextContext"; 
 import { useAuth } from "@clerk/nextjs"; 

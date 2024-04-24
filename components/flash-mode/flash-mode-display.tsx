@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useMemo, FC } from "react";
 import { useSelectedText } from "@/contexts/SelectedTextContext";
-import CounterDisplay from "@/components/mode-1/counter-display";
+import CounterDisplay from "@/components/doc-mode/counter-display";
 import styles from '@/app/(dashboard)/(routes)/dashboard/DashboardPage.module.css';
 import '@/app/globals.css';
 import { useWebGazer } from '@/contexts/WebGazerContext';

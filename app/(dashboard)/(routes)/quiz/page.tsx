@@ -2,7 +2,7 @@
 import React from 'react';
 import DashboardLayout from '../layout';
 import QuizDisplay from "@/components/quiz-display";
-import styles from '../dashboard/DashboardPage.module.css';
+import styles from '../Dashboard.module.css';
 import { SelectedTextProvider } from '@/contexts/SelectedTextContext';
 import { PracticeIDProvider } from '@/contexts/PracticeIDContext';
 
