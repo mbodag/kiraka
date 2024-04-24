@@ -1,6 +1,5 @@
 import React from 'react';
-import { SelectedTextProvider } from "@/contexts/SelectedTextContext";
-import styles from '../Dashboard.module.css';
+
 
 
 const TermsAndConditions: React.FC = () => {
@@ -69,12 +68,4 @@ const TermsAndConditions: React.FC = () => {
 
 
 
-export default function TermsPage() {
-    return (
-        <SelectedTextProvider>
-                <TermsAndConditions/>
-        </SelectedTextProvider>
-    );
-}
-
-export const runtime = "edge";
+export default TermsAndConditions
