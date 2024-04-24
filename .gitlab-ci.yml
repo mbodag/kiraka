@@ -15,9 +15,9 @@ before_script:
 job_build:
   stage: build
   script:
-    - npm install
-    - npm run build
-    - echo "Building the project"
+    - cd /home/website
+    - ./run_app.sh
+
   only:
     - dev
     - master
