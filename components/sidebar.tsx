@@ -202,11 +202,11 @@ const Sidebar = () => {
                           <ul>
                             {readTexts.includes(text.id) ? (
                               <>
-                                <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, true); }}>Delete but Keep Analytics</li>
-                                <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, false); }}>Full Delete</li>
+                                <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, false); }}>Delete but Keep Analytics</li>
+                                <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, true); }}>Full Delete</li>
                               </>
                             ) : (
-                              <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, false); }}>Delete</li>
+                              <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, true); }}>Delete</li>
                             )}
                             <li onClick={(e) => { e.stopPropagation(); setActiveDelete(null); }}>Cancel</li>
                           </ul>

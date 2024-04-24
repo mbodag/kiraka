@@ -317,7 +317,7 @@ def delete_text(text_id):
     else:
         full_delete = request.args.get('full_delete')
         print(full_delete)
-        if full_delete == 'false' or full_delete == None:
+        if full_delete == 'true':
             try:
                 my_text = Texts.query.filter_by(text_id=text_id).first()
                 db.session.delete(my_text)
