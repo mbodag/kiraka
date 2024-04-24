@@ -167,7 +167,7 @@ def generate_quiz():
 
 # Input validation functions
 def text_content_is_valid(text_content):
-    return text_content and isinstance(text_content, str) and len(text_content.split()) >= 200 and len(text_content.split()) < 1000
+    return text_content and isinstance(text_content, str) and len(text_content) >= 1500 and len(text_content) < 6000
 
 def user_id_is_valid(user_id):
     return isinstance(user_id, int) and user_id > 0 # Outdated

@@ -42,7 +42,7 @@ const Sidebar = () => {
         }
         const data = await response.json();
         console.log(data)
-        const user_texts = data.map((text: any) => ({ id: text.text_id, title: text.title || `Your text ${text.text_id}` }));
+        const user_texts = data.map((text: any) => ({ id: text.text_id, title: `${text.text_id}. ${text.title|| `Your text ${text.text_id}`}`}));
         setUserTexts(user_texts); // Update the state with the fetched data
       } catch (error) {
         console.error("Error fetching text:", error);
