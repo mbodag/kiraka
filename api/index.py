@@ -182,6 +182,7 @@ def add_text():
     else:
         text_content = request.json.get('text_content')
         user_id = request.json.get('user_id')
+        title = request.json.get('title', None)
         if Users.query.filter_by(user_id=user_id).first() is None:
             return jsonify({'error': 'User not found'}), 404
         if text_content is None or user_id is None:
@@ -191,7 +192,8 @@ def add_text():
         else:
             new_text = Texts(
                 text_content=text_content,
-                user_id = user_id
+                user_id = user_id,
+                title = title
             )
             db.session.add(new_text)
             db.session.commit()
@@ -245,7 +247,8 @@ def get_text_by_id(text_id):
             text_data = {
                 'text_id': text.text_id,
                 'text_content': text.text_content,
-                'quiz_questions': [question.to_dict() for question in text.quiz_questions]
+                'quiz_questions': [question.to_dict() for question in text.quiz_questions],
+                'title': text.title,
             }
             return jsonify(text_data)
     
@@ -293,7 +296,8 @@ def text_by_user_id():
             'text_id': text.text_id,
             'text_content': text.text_content,
             'quiz_questions': [question.to_dict() for question in text.quiz_questions],
-            'keywords': text.keywords
+            'keywords': text.keywords,
+            'title': text.title,
         }
         all_texts_data.append(text_data)
     return jsonify(all_texts_data)

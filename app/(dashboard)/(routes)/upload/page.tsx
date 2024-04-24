@@ -8,6 +8,7 @@ import { useAuth } from "@clerk/nextjs";
 
 
 const UploadPage: React.FC = () => {
+  const [title, setTitle] = useState(''); // Add a title for the text
   const [text, setText] = useState('');
   const { userId } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -20,12 +21,16 @@ const UploadPage: React.FC = () => {
       alert(`Text must be between ${minChars} and ${maxChars} characters.`);
       return;
     }
+    else if (title.length > 30) {
+      alert(`Please write a shorter title`);
+      return;
+    }
     setLoading(true); // Start loading indicator
     setTimeout(async () => { // Simulate network request
       const response = await fetch('/api/texts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text_content: text, user_id: userId })
+        body: JSON.stringify({ text_content: text, user_id: userId, title: title })
       });
 
       if (response.ok) {
@@ -48,6 +53,15 @@ const UploadPage: React.FC = () => {
               Minimum 1500 characters and maximum 6000 characters.
             </div>
             <form onSubmit={handleSubmit}>
+            <label style={{ display: 'block', marginBottom: '10px' }}>
+                Add a title:
+                <textarea
+                  name="title"
+                  style={{ width: '100%', height: '5vh', fontSize: '14px', padding: '8px', border: '1px solid #ccc', borderRadius: '5px', overflow: 'hidden', resize: 'none'}}
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                />
+              </label>
               <label style={{ display: 'block', marginBottom: '10px' }}>
                 Paste your text here:
                 <textarea

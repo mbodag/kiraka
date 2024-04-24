@@ -41,8 +41,8 @@ const Sidebar = () => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        const user_texts = data.map((text: any) => ({ id: text.text_id, title: `Your text ${text.text_id}` }));
-        console.log(user_texts)
+        console.log(data)
+        const user_texts = data.map((text: any) => ({ id: text.text_id, title: text.title || `Your text ${text.text_id}` }));
         setUserTexts(user_texts); // Update the state with the fetched data
       } catch (error) {
         console.error("Error fetching text:", error);
