@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useSelectedText } from '@/contexts/SelectedTextContext';
 import Image from "next/legacy/image";
 import Link from "next/link";

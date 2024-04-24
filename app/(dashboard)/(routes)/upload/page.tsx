@@ -29,7 +29,7 @@ const UploadPage: React.FC = () => {
       });
 
       if (response.ok) {
-        window.location.href = '/webgazer-mode-2'; // Redirect after upload
+        window.location.href = '/flash-mode'; // Redirect after upload
       } else {
         const data = await response.json();
         console.error('Upload failed:', data);
@@ -42,9 +42,9 @@ const UploadPage: React.FC = () => {
     <SelectedTextProvider>
       <DashboardLayout navbarType="quiz">
         <div className={`${styles.dashboardBg} flex justify-center items-start pt-2 pb-8 min-h-screen monospace-jetbrains-mono`}>
-          <div style={{ maxWidth: '40vw', width: '100%', background: '#fff', padding: '25px', borderRadius: '10px', boxShadow: '0 0 40px 8px rgba(0,0,0,0.2)', marginTop: '5vh' }}>
+          <div style={{ maxWidth: '45vw', width: '100%', background: '#fff', padding: '25px', borderRadius: '10px', boxShadow: '0 0 40px 8px rgba(0,0,0,0.2)', marginTop: '5vh' }}>
             <h1 style={{ fontSize: '25px', textAlign: 'center' }}>Upload Your Text</h1>
-            <div style={{ fontSize: '13px', color: 'rgb(117, 1, 140)', textAlign: 'center', marginBottom: '20px',  marginTop: '10px' }}>
+            <div style={{ fontSize: '13px', color: 'rgb(120, 0, 140)', textAlign: 'center', marginBottom: '20px',  marginTop: '10px' }}>
               Minimum 1500 characters and maximum 6000 characters.
             </div>
             <form onSubmit={handleSubmit}>
@@ -52,7 +52,7 @@ const UploadPage: React.FC = () => {
                 Paste your text here:
                 <textarea
                   name="uploaded_text"
-                  style={{ width: '100%', height: '300px', fontSize: '14px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
+                  style={{ width: '100%', height: '40vh', fontSize: '14px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
                   value={text}
                   onChange={e => setText(e.target.value)}
                 />
