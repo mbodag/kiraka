@@ -44,7 +44,7 @@ const UploadPage: React.FC = () => {
         <div className={`${styles.dashboardBg} flex justify-center items-start pt-2 pb-8 min-h-screen monospace-jetbrains-mono`}>
           <div style={{ maxWidth: '40vw', width: '100%', background: '#fff', padding: '25px', borderRadius: '10px', boxShadow: '0 0 40px 8px rgba(0,0,0,0.2)', marginTop: '5vh' }}>
             <h1 style={{ fontSize: '25px', textAlign: 'center' }}>Upload Your Text</h1>
-            <div style={{ fontSize: '12px', color: 'rgb(117, 1, 140)', textAlign: 'center', marginBottom: '20px',  marginTop: '10px' }}>
+            <div style={{ fontSize: '13px', color: 'rgb(117, 1, 140)', textAlign: 'center', marginBottom: '20px',  marginTop: '10px' }}>
               Minimum 1500 characters and maximum 6000 characters.
             </div>
             <form onSubmit={handleSubmit}>
@@ -61,8 +61,14 @@ const UploadPage: React.FC = () => {
                 {text.length} / 6000 characters
               </div>
               <button type="submit" className="SubmitButton" disabled={loading}>
-                {loading ? (<span>Please Wait...</span>) : 'Upload'}
-              </button>
+              {loading ? (
+                <p>Please Wait
+                  <span className="dot">.</span>
+                  <span className="dot">.</span>
+                  <span className="dot">.</span>
+                </p>
+              ) : 'Upload'}
+            </button>
             </form>
           </div>
         </div>
