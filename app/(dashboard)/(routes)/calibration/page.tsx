@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { useWebGazer } from '@/contexts/WebGazerContext';
 import { SiTarget } from "react-icons/si";
-// import webgazer from "webgazer";
+import Routes from '@/config/routes';
+
 
 // Type definitions for extended window object and calibration points
 interface ExtendedWindow extends Window { webgazer?: any; } // Adjust the type based on the 'webgazer' object
@@ -24,7 +24,6 @@ export default function WebgazerCalibration() {
   const [calibrationPoints, setCalibrationPoints] = useState<CalibrationPoints>({});
   const [showInstructions, setShowInstructions] = useState(true);
   const [allCalibrated, setAllCalibrated] = useState(false);
-  const [showInitButton, setShowInitButton] = useState(true);
   const [showCalibrationButton, setShowCalibrationButton] = useState(true);
 
   // Accessing setWebgazerActive from context
@@ -252,7 +251,7 @@ export default function WebgazerCalibration() {
 
       {/* Link to Dashboard if All Calibrated */}
       {allCalibrated && (
-          <Link href="../webgazer-mode-2">
+          <Link href={Routes.DEFAULT_MODE}>
               <button className="GreenButton">Start Speed Reading</button>
           </Link>
       )}
@@ -294,8 +293,7 @@ export default function WebgazerCalibration() {
             {/* Back Button */}
             <button
               onClick={() => {
-                // Change to the desired route, and then force a reload
-                window.location.href = '/webgazer-mode-2';
+                window.location.href = Routes.DEFAULT_MODE;
               }}
               className="BlackButton"
             >

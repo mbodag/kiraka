@@ -4,8 +4,13 @@ import MobileSidebar from "./mobile-sidebar";
 import ModeToggle from "./modetoggle";
 import { Button } from "./ui/button";
 import { FaPause } from "react-icons/fa6";
+import { usePathname } from 'next/navigation';
+
 
 const Navbar: React.FC = () => {
+  const pathname = usePathname();
+  const shouldDisplayTexts = !(pathname === '/quiz' || pathname === '/upload');
+
   return (
     <div className="flex justify-between items-center py-4 px-8 w-full"
       style={{

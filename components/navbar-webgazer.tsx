@@ -4,7 +4,7 @@ import MobileSidebar from "./mobile-sidebar";
 import ModeToggle from "./modetoggle";
 import { Button } from "./ui/button";
 import { useWebGazer } from '@/contexts/WebGazerContext';
-import { FaPause } from "react-icons/fa6";
+
 
 const NavbarWebGazer: React.FC = () => {
     const { isWebGazerActive } = useWebGazer(); // Accessing the current state of WebGazer

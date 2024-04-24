@@ -685,3 +685,23 @@ body,
 .animated-gradient-button:hover {
   transform: scale(1.05); /* Slightly enlarges the button on hover */
 }
+
+
+.SubmitButton {
+  background-color: #04af4e;
+  top: 10px;
+  right: 10px;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 4px 8px 0 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+
+.SubmitButton:hover {
+  background-color: #03843b;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2); 
+}

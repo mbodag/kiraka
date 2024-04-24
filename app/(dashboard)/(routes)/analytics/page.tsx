@@ -203,8 +203,8 @@ const AnalyticsPage: React.FC = () => {
       className={`${styles.analyticsBg} flex flex-col items-center pt-10 pb-8 min-h-screen analytics-font`}
     >
       <div className="self-start absolute top-4 left-4">
-        <Link href="/webgazer-mode-2">
-          <Button className="text-lg ml-4 shadow bg-lime-50/60 hover:bg-lime-50/100 text-gray-900 bold">Back</Button>
+        <Link href="/flash-mode">
+          <Button className="ml-4 shadow bg-lime-50/60 hover:bg-lime-50/100 text-gray-900 bold" style={{ fontSize: "17px" }}>Back</Button>
         </Link>
       </div>
 

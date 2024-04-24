@@ -1,8 +1,7 @@
 import React from 'react';
 import { auth, currentUser, UserButton } from "@clerk/nextjs";
-import styles from '../dashboard/DashboardPage.module.css';
+import styles from '../Dashboard.module.css';
 import DashboardLayout from '../layout';
-import Mode1Display from "@/components/mode-1/mode-1-display";
 import { SelectedTextProvider } from "@/contexts/SelectedTextContext"; // Adjust the import path as necessary
 
 export default async function InstructionPage() {

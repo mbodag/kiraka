@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { useWebGazer } from '@/contexts/WebGazerContext';
+import Routes from '@/config/routes';
 
 const ModeToggle = () => {
   const { setWebGazerActive } = useWebGazer();
   
   const handleFlashModeClick = () => {
     setWebGazerActive(false); // Deactivate WebGazer
-    window.location.href = '/webgazer-mode-2'; // Redirect to FlashMode
+    window.location.href = Routes.DEFAULT_MODE; // Redirect to FlashMode
   };
 
   return (

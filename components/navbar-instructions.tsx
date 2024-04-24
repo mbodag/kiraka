@@ -3,7 +3,7 @@ import Link from "next/link";
 import MobileSidebar from "./mobile-sidebar";
 import ModeToggle from "./modetoggle";
 import { Button } from "./ui/button";
-import { FaPause } from "react-icons/fa6";
+
 
 const InstructionsNavbar: React.FC = () => {
   return (
