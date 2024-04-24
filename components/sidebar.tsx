@@ -163,7 +163,7 @@ const Sidebar = () => {
         {shouldDisplayTexts && (
           <div className="content-container px-4 flex-grow overflow-auto">
             {/* Kiraka's own texts */}
-            <div className="flex text-sm flex-col items-center mt-4"> 
+            <div className="flex text-sm flex-col items-center mt-3"> 
               <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-5">Kiraka&apos;s Texts</div>
               {texts.map((text) => (
                 <button
@@ -173,13 +173,17 @@ const Sidebar = () => {
                     ${text.id === selectedTextId ? 'sidebar-button-selected' : ''}`} // Apply active or hover class
                 >
                   {/* Conditionally render the icon if the text has been read */}
-                  {readTexts.includes(text.id) && <MdDone className="text-green-600 mr-2" />}
+                  {readTexts.includes(text.id) ? (
+                    <MdDone className="text-green-600 mr-2" />
+                  ) : (
+                    <MdDone className="text-gray-600 mr-2" />
+                  )}
                   {text.title}
                 </button>
               ))}
             </div>
             {/* User's own texts */}
-            <div className="flex text-sm flex-col items-center mt-3">
+            <div className="flex text-sm flex-col items-center mt-2">
                 <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-5">Your Texts</div>
                 {userTexts.map((text) => (
                   <div key={text.id} className={`text-button-container w-full max-w-xs ${activeDelete === text.id ? 'active' : ''}`} style={{ position: 'relative' }}>
@@ -189,7 +193,11 @@ const Sidebar = () => {
                             ${text.id === selectedTextId ? 'sidebar-button-selected' : ''}`} // Apply active or hover class
                       >
                           <div className="flex items-center">
-                              {readTexts.includes(text.id) && <MdDone className="text-green-600 mr-2" />}
+                              {readTexts.includes(text.id) ? (
+                                <MdDone className="text-green-600 mr-2" />
+                              ) : (
+                                <MdDone className="text-gray-600 mr-2" />
+                              )}
                               {text.title}
                           </div>
                           <TbTrash className="trash-icon opacity-0" style={{ fontSize: '16px' }} onClick={(e) => 
