@@ -74,6 +74,10 @@ const UploadPage: React.FC = () => {
               <div style={{ textAlign: 'right', fontSize: '12px', marginBottom: '10px' }}>
                 {text.length} / 6000 characters
               </div>
+              <div style={{ fontSize: '12px', marginBottom: '10px' }}>
+                By uploading, you agree to our <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>.
+              </div>
+
               <button type="submit" className="SubmitButton" disabled={loading}>
               {loading ? (
                 <p>Please Wait
