@@ -1,45 +1,70 @@
-'use client';
+"use client";
+
 import React, { useState } from 'react';
-import DashboardLayout from '../layout'; // Adjust the path if necessary
-import { SelectedTextProvider } from "@/contexts/SelectedTextContext"; // Adjust the import path as necessary
+import styles from '../dashboard/DashboardPage.module.css';
+import DashboardLayout from '../layout'; 
+import { SelectedTextProvider } from "@/contexts/SelectedTextContext"; 
 import { useAuth } from "@clerk/nextjs"; 
 
 
 const UploadPage: React.FC = () => {
   const [text, setText] = useState('');
   const { userId } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const minChars = 1500;
+  const maxChars = 6000;
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
+    if (text.length < minChars || text.length > maxChars) {
+      alert(`Text must be between ${minChars} and ${maxChars} characters.`);
+      return;
+    }
+    setLoading(true); // Start loading indicator
+    setTimeout(async () => { // Simulate network request
+      const response = await fetch('/api/texts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text_content: text, user_id: userId })
+      });
 
-    const response = await fetch('/api/texts', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ text_content: text, user_id: userId })
-    });
-    const data = await response.json();
-    window.location.href = '/webgazer-mode-2';
-    // handle response data
+      if (response.ok) {
+        window.location.href = '/webgazer-mode-2'; // Redirect after upload
+      } else {
+        const data = await response.json();
+        console.error('Upload failed:', data);
+        setLoading(false); // Stop loading indicator if failed
+      }
+    }, 2000); // Minimum display time for loading indicator
   };
 
   return (
     <SelectedTextProvider>
       <DashboardLayout navbarType="quiz">
-        <div>
-          <form onSubmit={handleSubmit}>
-            <label>
-              Paste your text here: 
-              <textarea 
-                name="uploaded_text" 
-                style={{ height: '500px', width:'500px', fontSize: '14pt' }} 
-                value={text} 
-                onChange={e => setText(e.target.value)} 
-              />
-            </label>
-            <input type="submit" value="Submit"/>
-          </form>
+        <div className={`${styles.dashboardBg} flex justify-center items-start pt-2 pb-8 min-h-screen monospace-jetbrains-mono`}>
+          <div style={{ maxWidth: '40vw', width: '100%', background: '#fff', padding: '25px', borderRadius: '10px', boxShadow: '0 0 40px 8px rgba(0,0,0,0.2)', marginTop: '5vh' }}>
+            <h1 style={{ fontSize: '25px', textAlign: 'center' }}>Upload Your Text</h1>
+            <div style={{ fontSize: '12px', color: 'rgb(117, 1, 140)', textAlign: 'center', marginBottom: '20px',  marginTop: '10px' }}>
+              Minimum 1500 characters and maximum 6000 characters.
+            </div>
+            <form onSubmit={handleSubmit}>
+              <label style={{ display: 'block', marginBottom: '10px' }}>
+                Paste your text here:
+                <textarea
+                  name="uploaded_text"
+                  style={{ width: '100%', height: '300px', fontSize: '14px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
+                  value={text}
+                  onChange={e => setText(e.target.value)}
+                />
+              </label>
+              <div style={{ textAlign: 'right', fontSize: '12px', marginBottom: '10px' }}>
+                {text.length} / 6000 characters
+              </div>
+              <button type="submit" className="SubmitButton" disabled={loading}>
+                {loading ? (<span>Please Wait...</span>) : 'Upload'}
+              </button>
+            </form>
+          </div>
         </div>
       </DashboardLayout>
     </SelectedTextProvider>
