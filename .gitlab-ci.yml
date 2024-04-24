@@ -16,6 +16,7 @@ job_build:
   stage: build
   script:
     - npm install
+    - chmod -R 777 .next
     - npm run build
     - echo "Building the project"
   only:
