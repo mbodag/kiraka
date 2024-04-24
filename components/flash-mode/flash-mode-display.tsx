@@ -46,11 +46,6 @@ interface GazeDataToSend {
     elapsedTime: number;
 }
 
-interface ReadingSpeedChartProps {
-    wpmValues: number[];
-    averageWPM: number;
-  }
-  
 
 // Assuming you want a specific number of words per chunk, 
 // and estimating the average character count per word
