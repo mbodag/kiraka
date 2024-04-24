@@ -164,7 +164,7 @@ const Sidebar = () => {
           <div className="content-container px-4 flex-grow overflow-auto">
             {/* Kiraka's own texts */}
             <div className="flex text-sm flex-col items-center mt-3"> 
-              <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-5">Kiraka&apos;s Texts</div>
+              <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-3">Kiraka&apos;s Texts</div>
               {texts.map((text) => (
                 <button
                   key={text.id}
@@ -184,7 +184,7 @@ const Sidebar = () => {
             </div>
             {/* User's own texts */}
             <div className="flex text-sm flex-col items-center mt-2">
-                <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-5">Your Texts</div>
+                <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-3">Your Texts</div>
                 {userTexts.map((text) => (
                   <div key={text.id} className={`text-button-container w-full max-w-xs ${activeDelete === text.id ? 'active' : ''}`} style={{ position: 'relative' }}>
                       <button

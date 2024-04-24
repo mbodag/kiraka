@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import DashboardLayout from "../layout";
+import DashboardLayout from "../../layout";
 import Mode2Display from "@/components/flash-mode/flash-mode-display";
 import { PracticeIDProvider } from "@/contexts/PracticeIDContext";
 import { SelectedTextProvider } from "@/contexts/SelectedTextContext"; // Adjust the import path if necessary

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Line, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js/auto';
 import { useAuth, useUser } from "@clerk/nextjs";
+import Routes from '@/config/routes';
 
 
 // Register Chart.js components
@@ -203,7 +204,7 @@ const AnalyticsPage: React.FC = () => {
       className={`${styles.analyticsBg} flex flex-col items-center pt-10 pb-8 min-h-screen analytics-font`}
     >
       <div className="self-start absolute top-4 left-4">
-        <Link href="/flash-mode">
+        <Link href={Routes.DEFAULT_MODE}>
           <Button className="ml-4 shadow bg-lime-50/60 hover:bg-lime-50/100 text-gray-900 bold" style={{ fontSize: "17px" }}>Back</Button>
         </Link>
       </div>
