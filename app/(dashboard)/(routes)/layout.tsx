@@ -6,7 +6,6 @@ import StandardWebGazerNavbar from "@/components/navbar-webgazer";
 import StandardInstructionsNavbar from "@/components/navbar-instructions";
 import QuizNavbar from "@/components/quiz-navbar";
 import Sidebar from "@/components/sidebar";
-import QuizSidebar from "@/components/quiz-sidebar";
 import { WebGazerProvider } from "@/contexts/WebGazerContext";
 
 
@@ -36,7 +35,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, navbarType 
       break;
     case 'quiz':
       navbar = <QuizNavbar />;
-      sidebar = <QuizSidebar />;
+      sidebar = <Sidebar />;
       break;
     default:
       navbar = null; // Default case if no navbarType is provided

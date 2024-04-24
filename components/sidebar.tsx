@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useSelectedText } from '@/contexts/SelectedTextContext';
 import Image from "next/legacy/image";
 import Link from "next/link";
@@ -19,6 +20,9 @@ const Sidebar = () => {
   const [readTexts, setReadTexts] = useState<number[]>([]);
   const [userTexts, setUserTexts] = useState<{id: number, title:string}[]>([]);
   const [activeDelete, setActiveDelete] = useState(null);
+  
+  const pathname = usePathname();
+  const shouldDisplayTexts = !(pathname === '/quiz' || pathname === '/upload');
 
   // Array of texts with their IDs
   const texts = Array.from({ length: 5 }, (_, index) => ({
@@ -156,61 +160,63 @@ const Sidebar = () => {
         </div>
 
         {/* Scrollable area for texts */}
-        <div className="content-container px-4 flex-grow overflow-auto">
-          {/* Kiraka's own texts */}
-          <div className="flex text-sm flex-col items-center mt-4"> 
-            <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-5">Kiraka&apos;s Texts</div>
-            {texts.map((text) => (
-              <button
-                key={text.id}
-                onClick={() => handleTextClick(text.id)}
-                className={`flex items-center text-sm w-full max-w-xs px-2 py-sidebar rounded-lg transition sidebar-button-bg
-                  ${text.id === selectedTextId ? 'sidebar-button-selected' : ''}`} // Apply active or hover class
-              >
-                {/* Conditionally render the icon if the text has been read */}
-                {readTexts.includes(text.id) && <MdDone className="text-green-600 mr-2" />}
-                {text.title}
-              </button>
-            ))}
-          </div>
-          {/* User's own texts */}
-          <div className="flex text-sm flex-col items-center mt-3">
-              <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-5">Your Texts</div>
-              {userTexts.map((text) => (
-                <div key={text.id} className={`text-button-container w-full max-w-xs ${activeDelete === text.id ? 'active' : ''}`} style={{ position: 'relative' }}>
-                    <button
-                        onClick={() => handleTextClick(text.id)}
-                        className={`flex justify-between items-center text-sm w-full px-2 py-sidebar rounded-lg transition sidebar-button-bg
-                          ${text.id === selectedTextId ? 'sidebar-button-selected' : ''}`} // Apply active or hover class
-                    >
-                        <div className="flex items-center">
-                            {readTexts.includes(text.id) && <MdDone className="text-green-600 mr-2" />}
-                            {text.title}
-                        </div>
-                        <TbTrash className="trash-icon opacity-0" style={{ fontSize: '16px' }} onClick={(e) => 
-                            toggleDeleteDropdown(e, text.id)
-                            // handleDeleteClick(text.id);
-                        }/>
-                    </button>
-                    {activeDelete === text.id && (
-                      <div className="trash-dropdown-content text-sm">
-                        <ul>
-                          {readTexts.includes(text.id) ? (
-                            <>
-                              <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, true); }}>Delete but Keep Analytics</li>
-                              <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, false); }}>Full Delete</li>
-                            </>
-                          ) : (
-                            <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, false); }}>Delete</li>
-                          )}
-                          <li onClick={(e) => { e.stopPropagation(); setActiveDelete(null); }}>Cancel</li>
-                        </ul>
-                      </div>
-                    )}
-                </div>
+        {shouldDisplayTexts && (
+          <div className="content-container px-4 flex-grow overflow-auto">
+            {/* Kiraka's own texts */}
+            <div className="flex text-sm flex-col items-center mt-4"> 
+              <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-5">Kiraka&apos;s Texts</div>
+              {texts.map((text) => (
+                <button
+                  key={text.id}
+                  onClick={() => handleTextClick(text.id)}
+                  className={`flex items-center text-sm w-full max-w-xs px-2 py-sidebar rounded-lg transition sidebar-button-bg
+                    ${text.id === selectedTextId ? 'sidebar-button-selected' : ''}`} // Apply active or hover class
+                >
+                  {/* Conditionally render the icon if the text has been read */}
+                  {readTexts.includes(text.id) && <MdDone className="text-green-600 mr-2" />}
+                  {text.title}
+                </button>
               ))}
+            </div>
+            {/* User's own texts */}
+            <div className="flex text-sm flex-col items-center mt-3">
+                <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-5">Your Texts</div>
+                {userTexts.map((text) => (
+                  <div key={text.id} className={`text-button-container w-full max-w-xs ${activeDelete === text.id ? 'active' : ''}`} style={{ position: 'relative' }}>
+                      <button
+                          onClick={() => handleTextClick(text.id)}
+                          className={`flex justify-between items-center text-sm w-full px-2 py-sidebar rounded-lg transition sidebar-button-bg
+                            ${text.id === selectedTextId ? 'sidebar-button-selected' : ''}`} // Apply active or hover class
+                      >
+                          <div className="flex items-center">
+                              {readTexts.includes(text.id) && <MdDone className="text-green-600 mr-2" />}
+                              {text.title}
+                          </div>
+                          <TbTrash className="trash-icon opacity-0" style={{ fontSize: '16px' }} onClick={(e) => 
+                              toggleDeleteDropdown(e, text.id)
+                              // handleDeleteClick(text.id);
+                          }/>
+                      </button>
+                      {activeDelete === text.id && (
+                        <div className="trash-dropdown-content text-sm">
+                          <ul>
+                            {readTexts.includes(text.id) ? (
+                              <>
+                                <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, true); }}>Delete but Keep Analytics</li>
+                                <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, false); }}>Full Delete</li>
+                              </>
+                            ) : (
+                              <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, false); }}>Delete</li>
+                            )}
+                            <li onClick={(e) => { e.stopPropagation(); setActiveDelete(null); }}>Cancel</li>
+                          </ul>
+                        </div>
+                      )}
+                  </div>
+                ))}
+            </div>
           </div>
-        </div>
+        )}
 
       {/* (Fixed Footer) User button fixed at the bottom */}
       <div className="footer-container flex item-center m-2 bg-black py-2 px-2">
