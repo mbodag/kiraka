@@ -60,6 +60,9 @@ const UploadPage: React.FC = () => {
                   style={{ width: '100%', height: '5vh', fontSize: '14px', padding: '8px', border: '1px solid #ccc', borderRadius: '5px', overflow: 'hidden', resize: 'none'}}
                   value={title}
                   onChange={e => setTitle(e.target.value)}
+                  onKeyPress={e => {
+                    if (e.key === 'Enter') e.preventDefault();
+                  }}
                 />
               </label>
               <label style={{ display: 'block', marginBottom: '10px' }}>
