@@ -3,14 +3,13 @@
 import { useEffect, useState, useRef, useMemo, FC } from "react";
 import { useSelectedText } from "@/contexts/SelectedTextContext";
 import CounterDisplay from "@/components/doc-mode/counter-display";
-import styles from '@/app/(dashboard)/(routes)/dashboard/DashboardPage.module.css';
+import styles from '@/app/(dashboard)/(routes)/Dashboard.module.css';
 import '@/app/globals.css';
 import { useWebGazer } from '@/contexts/WebGazerContext';
 import { TbSquareLetterR } from "react-icons/tb";
 import { RiSpace } from "react-icons/ri";
 import  { usePracticeID } from '@/contexts/PracticeIDContext';
 import { useAuth } from "@clerk/nextjs";
-import { FaPlay, FaPause } from "react-icons/fa6";
 import { VscDebugRestart } from "react-icons/vsc";
 import { TbPlayerPause, TbPlayerPlay } from "react-icons/tb";
 import { Line } from 'react-chartjs-2';
