@@ -5,6 +5,7 @@ import styles from '../Dashboard.module.css';
 import DashboardLayout from '../layout'; 
 import { SelectedTextProvider } from "@/contexts/SelectedTextContext"; 
 import { useAuth } from "@clerk/nextjs"; 
+import Routes from '@/config/routes';
 
 
 const UploadPage: React.FC = () => {
@@ -29,7 +30,13 @@ const UploadPage: React.FC = () => {
       });
 
       if (response.ok) {
-        window.location.href = '/flash-mode'; // Redirect after upload
+        // Check if there's history to go back to; if not, navigate to a default route
+        if (window.history.length > 1) {
+          window.history.back(); // Go back to the previous page after a successful response
+        } else {
+          // Use a fallback URL if no history is available
+          window.location.href = Routes.DEFAULT_MODE;
+        }
       } else {
         const data = await response.json();
         console.error('Upload failed:', data);

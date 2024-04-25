@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect } from "react";
-import DashboardLayout from "../layout";
-import Mode2Display from "@/components/flash-mode/flash-mode-display";
+import DashboardLayout from "../../layout";
+import Mode1Display from "@/components/flash-mode/flash-static-display";
 import { PracticeIDProvider } from "@/contexts/PracticeIDContext";
 import { SelectedTextProvider } from "@/contexts/SelectedTextContext"; // Adjust the import path if necessary
 import { useAuth } from "@clerk/nextjs";
@@ -39,7 +39,7 @@ export default function WebgazerPage() {
     <SelectedTextProvider>
       <PracticeIDProvider>
         <DashboardLayout navbarType="standard-auto">
-          <Mode2Display />
+          <Mode1Display />
         </DashboardLayout>
       </PracticeIDProvider>
     </SelectedTextProvider>
