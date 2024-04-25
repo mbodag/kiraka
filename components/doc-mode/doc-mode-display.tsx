@@ -90,6 +90,10 @@ const Mode1Display = () => {
     setTextColor((prevColor) => (prevColor === "white" ? "black" : "white"));
   };
 
+  const toggleBionicReading = () => {
+    setBionicReading((prevValue) => !prevValue);
+  }
+
   const { practiceId, setPracticeId } = usePracticeID(); // Accessing the setPracticeId method from the global context
 
   // This function takes the average WPM and sends it to the backend.
@@ -142,11 +146,12 @@ const Mode1Display = () => {
       } else if (event.key === "ArrowLeft") {
         setWordsPerMinute((prevWPM) => Math.max(prevWPM - 20, 50)); // Decrease WPM with lower bound
       } else if (event.key === "b" || event.key === "B") {
-        // When the "B" or "b" key is pressed, toggle the background color
-        toggleBackgroundColor();
+        // When the "b" or "B" key is pressed, toggle the background color
+        toggleBionicReading();
       } else if (event.key === "t" || event.key === "T") {
-        // When the "H" or "h" key is pressed, toggle the text color
+        // When the "t" or "T" key is pressed, toggle the text color
         toggleTextColor();
+        toggleBackgroundColor();
       }
     };
 
@@ -179,6 +184,7 @@ const Mode1Display = () => {
   }
   const handleCloseFinishPopupSendToQuiz = () => {
     submitReadingSpeed(averageWPM);
+    
   }
   const handleCloseFinishPopupRestart = () => {
     setShowFinishPopup(false);
@@ -241,7 +247,7 @@ const Mode1Display = () => {
                                         <p style={{ color: 'rgb(0, 125, 0)', fontWeight: 'bold' }}>Press the spacebar to start</p>
                                     </p>
                                     <button className="GreenButton" onClick={handleCloseFinishPopupRestart}>
-                                        Restart reading
+                                        Reread the text
                                     </button>
                                     <button className="GreenButton" onClick={handleCloseFinishPopupSendToQuiz}>
                                         Save and continue to quiz
@@ -371,6 +377,7 @@ const Mode1Display = () => {
                         >
                         {bionicReading ? 'Disable Bionic Reading' : 'Enable Bionic Reading'}
                         </button>
+                        
                 </div>
             </div>
     <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-auto p-8 pt-2 my-2">
@@ -396,6 +403,8 @@ const Mode1Display = () => {
             }}
             onRestartTimeChange={handleRestartTimeChange} 
             onReadingTimeChange={handleReadingTimeChange}
+            bionicReading={bionicReading}
+            fontFamily = "monospace"
             // className= {showStartPopup||showFinishPopup ? 'blur-effect' : ''}
           />
         </div>

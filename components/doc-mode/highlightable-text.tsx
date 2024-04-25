@@ -8,6 +8,8 @@ interface HighlightableTextProps {
   className?: string;
   onRestartTimeChange: (newRestartTime: number) => void;
   onReadingTimeChange: (newReadingTime: number) => void;
+  fontFamily?: string;
+  bionicReading?: boolean;
 
 }
 
@@ -19,6 +21,8 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
   className = "",
   onRestartTimeChange,
   onReadingTimeChange,
+  fontFamily = "monospace",
+  bionicReading = false,
 }) => {
   const paragraphs = text
     .split("\n")
@@ -202,15 +206,24 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
               const className = isHighlighted
                 ? isKeyword
                   ? "highlighted keyword-highlighted"
-                  : "bold highlighted"
+                  : "highlighted"
                 : highlightedKeywordIndices.has(globalIndex) && isKeyword
                 ? "keyword-highlighted"
                 : "";
               globalIndex++;
-
+              const cleanWord = wordOrKeyword.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
               return (
                 <span key={`${pIndex}-${wIndex}`}>
-                  <span className={className}>{wordOrKeyword}</span>
+                  <span className={className}>
+                    {bionicReading ? (
+                      <>
+                        <span style={{ fontWeight: "bold" }}>
+                          {wordOrKeyword.slice(0, Math.floor((1 + cleanWord.length) / 2))}
+                        </span>
+                        <span>{wordOrKeyword.slice(Math.floor((1 + cleanWord.length) / 2))}</span>
+                      </>
+                    ): <span>{wordOrKeyword}</span>}
+                  </span>
                   <span> </span>
                 </span>
               );
