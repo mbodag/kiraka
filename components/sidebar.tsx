@@ -74,7 +74,11 @@ const Sidebar = () => {
   }, [userId]);
 
   const handleFeedbackClick = () => {
-    window.open(Routes.FEEDBACK, '_blank'); // Opens the link in a new tab
+    let win = window.open(Routes.FEEDBACK, '_blank');
+if (win) {
+    // Browser has allowed it to be opened
+    win.opener = null;
+}
   };
 
   const handleTextClick = (textId: any) => {
