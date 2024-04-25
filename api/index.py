@@ -135,6 +135,7 @@ def populate_texts(text_file = 'api/preloaded_texts.json'):
                 db.session.add(new_text)
                 db.session.commit()
                 for question in text['questions']:
+                    random.shuffle(question['options'])
                     new_quiz_question = Questions(text_id=new_text.text_id,
                                                   question_content=question['question'],
                                                   multiple_choices=';'.join(question['options']),
