@@ -24,7 +24,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
 const minWPM = 100;
-const maxWPM = 1000; // This is an approximation (~4.7 for English language)
+const maxWPM = 1000;
 const constIncreaseWPM = 25;
 const constDecreaseWPM = 25;
 

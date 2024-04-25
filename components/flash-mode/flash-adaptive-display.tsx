@@ -52,7 +52,7 @@ interface GazeDataToSend {
 const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
 const minWPM = 180;
-const maxWPM = 700; // This is an approximation (~4.7 for English language)
+const maxWPM = 700;
 const significantLeftNormSpeed = -2/1201*100; // defined experimentally, based on the mac word display width (1201px) at the time of the experiment, and the value of -2px/s for threshold speed. Scaled by 100 (giving percentage)
 const constIncreaseWPM = 30;
 const constDecreaseWPM = 30;
