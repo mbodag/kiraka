@@ -183,7 +183,7 @@ def add_text():
         text_content = request.json.get('text_content')
         user_id = request.json.get('user_id')
         title = request.json.get('title', None)
-        if Users.query.filter_by(user_id=user_id).first() is None:
+        if Users.query.filter_by(user_id=user_id).first() is None or user_id==1:
             return jsonify({'error': 'User not found'}), 404
         if text_content is None or user_id is None:
             return jsonify({'error': 'Invalid request. Missing text_content or user_id'}), 400
@@ -342,17 +342,15 @@ def delete_text(text_id):
                 db.session.rollback()
                 return jsonify({'error': e.message}), 500
 
-@app.route('/api/avgWpm', methods=['GET'])
+@app.route('/api/avgWPM', methods=['GET'])
 def get_avg_wpm():
     user_id = request.args.get('user_id')
     mode = request.args.get('mode')
     if not user_id:
         return jsonify({'error': 'User ID is required'}), 400
     practice_results = PracticeResults.query.filter_by(user_id=user_id, mode=mode).all()
-    if not practice_results:
-        return jsonify({'avgWpm': 300})
-    avg_wpm = sum([practice.wpm for practice in practice_results]) / len(practice_results)
-    return jsonify({'avgWpm': avg_wpm})
+    avg_wpms = [practice.wpm for practice in practice_results]
+    return jsonify({'avgWPMs': avg_wpms})
 
 @app.route('/api/texts/summarize', methods=['POST'])
 def summarize_text():
