@@ -117,7 +117,7 @@ class ChunkComplexity(db.Model):
     chunk_position = db.Column(db.Integer) #Index position w.r.t this text's other chunks, so that they can be ordered
     chunk_content = db.Column(db.Text) #The actual text content of the chunk
 
-def populate_texts(text_file = 'api/preloaded_text.json'):
+def populate_texts(text_file = 'api/preloaded_texts.json'):
     '''
     Add initial texts to the database
     '''
@@ -210,18 +210,14 @@ def add_text():
             finally:      
                 return jsonify({'message': 'Text added successfully!', 'text_id':new_text.text_id}), 201
 
-@app.route('/api/texts/random', methods=['GET'])        
+@app.route('/api/texts/admin', methods=['GET'])        
 def get_random_text():
     '''
     Fetches a random admin text from the database and returns it as JSON
     '''
-    random_text = Texts.query.filter_by(user_id=ADMIN_ID).order_by(func.rand()).first()
-    if random_text:
-        text_data = {
-            'text_id': random_text.text_id,
-            'text_content': random_text.text_content,
-            'quiz_questions': [question.to_dict() for question in random_text.quiz_questions]
-        }
+    admin_texts = Texts.query.filter_by(user_id=ADMIN_ID).all()
+    if admin_texts:
+        text_data = [{'text_id': admin_text.text_id, 'title': admin_text.title} for admin_text in admin_texts if int(admin_text.text_id) > 5]
         return jsonify(text_data)
     else:
         return jsonify({'message': 'No texts found'}), 404
@@ -665,7 +661,7 @@ with app.app_context():
         for text in Texts.query.all():
             store_chunk_complexity(text)
     if len(Texts.query.filter_by(user_id='1').all()) <=5:
-        populate_texts('api/preloaded_text_2.json')
+        populate_texts('api/preloaded_texts_2.json')
         
 if __name__ == '__main__':
     app.run(debug=True, port = 8000)

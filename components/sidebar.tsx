@@ -21,6 +21,7 @@ const Sidebar = () => {
   const [readTexts, setReadTexts] = useState<number[]>([]);
   const [userTexts, setUserTexts] = useState<{id: number, title:string}[]>([]);
   const [activeDelete, setActiveDelete] = useState(null);
+  const [adminTexts, setAdminTexts] = useState<{id: number, title:string}[]>([]);
   
   const pathname = usePathname();
   const shouldDisplayTexts = !(pathname === '/quiz' || pathname === '/upload');
@@ -42,7 +43,6 @@ const Sidebar = () => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        console.log(data)
         const user_texts = data.map((text: any) => ({ id: text.text_id, title: `${text.text_id}. ${text.title|| `Your text ${text.text_id}`}`}));
         setUserTexts(user_texts); // Update the state with the fetched data
       } catch (error) {
@@ -53,6 +53,27 @@ const Sidebar = () => {
       fetchUserTexts(userId);
     }
   }, [userId]);
+
+  useEffect(() => {
+    const fetchAdminTexts = async () => {
+      try {
+        const response = await fetch(`/api/texts/admin`);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        const admin_texts = data.map((text: any) => ({ id: text.text_id, title: text.title }));
+        console.log(data);
+        console.log(admin_texts)
+        setAdminTexts(admin_texts); // Update the state with the fetched data
+      } catch (error) {
+        console.error("Error fetching text:", error);
+      }
+    }
+    if (userId) {
+      fetchAdminTexts();
+    }
+  }, []);
 
   useEffect(() => {
     const fetchReadTexts = async (userId: string | null | undefined) => {
@@ -95,6 +116,7 @@ if (win) {
         throw new Error("Network response was not ok");
       }
       else {
+      setSelectedTextId(null);
       window.location.reload(); 
       }   // Force a full page reload
     } catch (error) {
@@ -170,7 +192,7 @@ if (win) {
             {/* Kiraka's own texts */}
             <div className="flex text-sm flex-col items-center mt-3"> 
               <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-3">Kiraka&apos;s Texts</div>
-              {texts.map((text) => (
+              {adminTexts.map((text) => (
                 <button
                   key={text.id}
                   onClick={() => handleTextClick(text.id)}

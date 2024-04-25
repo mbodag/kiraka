@@ -42,7 +42,12 @@ export const SelectedTextProvider: React.FC<SelectedTextProviderProps> = ({ chil
   const [selectedTextId, setSelectedTextId] = useState<number | null>(() => {
     if (typeof window !== 'undefined') {
       const storedSelectedTextId = localStorage.getItem('selectedTextId');
-      return storedSelectedTextId !== null ? JSON.parse(storedSelectedTextId) : null;
+      try {
+        return storedSelectedTextId !== null ? JSON.parse(storedSelectedTextId) : null;
+      }
+      catch (error) {
+        return null;
+      }
     }
     return null;
   });
