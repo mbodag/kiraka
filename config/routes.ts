@@ -4,7 +4,7 @@ const Routes = {
     UPLOAD: '/upload',
     INSTRUCTIONS: '/instructions',
     ANALYTICS: '/analytics',
-    FEEDBACK: 'https://forms.gle/nijvaqhDHYo3QE2v5'
+    FEEDBACK: 'https://forms.gle/EqSwybdkeWA2JW7m9'
   };
   
   export default Routes;
