@@ -210,18 +210,14 @@ def add_text():
             finally:      
                 return jsonify({'message': 'Text added successfully!', 'text_id':new_text.text_id}), 201
 
-@app.route('/api/texts/random', methods=['GET'])        
+@app.route('/api/texts/admin', methods=['GET'])        
 def get_random_text():
     '''
     Fetches a random admin text from the database and returns it as JSON
     '''
-    random_text = Texts.query.filter_by(user_id=ADMIN_ID).order_by(func.rand()).first()
-    if random_text:
-        text_data = {
-            'text_id': random_text.text_id,
-            'text_content': random_text.text_content,
-            'quiz_questions': [question.to_dict() for question in random_text.quiz_questions]
-        }
+    admin_texts = Texts.query.filter_by(user_id=ADMIN_ID).all()
+    if admin_texts:
+        text_data = [{'text_id': admin_text.text_id, 'title': admin_text.title} for admin_text in admin_texts if int(admin_text.text_id) > 5]
         return jsonify(text_data)
     else:
         return jsonify({'message': 'No texts found'}), 404
