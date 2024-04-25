@@ -117,12 +117,12 @@ class ChunkComplexity(db.Model):
     chunk_position = db.Column(db.Integer) #Index position w.r.t this text's other chunks, so that they can be ordered
     chunk_content = db.Column(db.Text) #The actual text content of the chunk
 
-def populate_texts():
+def populate_texts(text_file = 'api/preloaded_text.json'):
     '''
     Add initial texts to the database
     '''
     try:
-        with open('api/preloaded_text.json', 'r') as texts_file:
+        with open(text_file, 'r') as texts_file:
             texts = json.loads(texts_file.read())
             for text in texts.values():
                 print(text['title'])
@@ -167,7 +167,7 @@ def generate_quiz():
 
 # Input validation functions
 def text_content_is_valid(text_content):
-    return text_content and isinstance(text_content, str) and len(text_content.split()) >= 200 and len(text_content.split()) < 1000
+    return text_content and isinstance(text_content, str) and len(text_content) >= 1500 and len(text_content) < 6000
 
 def user_id_is_valid(user_id):
     return isinstance(user_id, int) and user_id > 0 # Outdated
@@ -182,6 +182,7 @@ def add_text():
     else:
         text_content = request.json.get('text_content')
         user_id = request.json.get('user_id')
+        title = request.json.get('title', None)
         if Users.query.filter_by(user_id=user_id).first() is None:
             return jsonify({'error': 'User not found'}), 404
         if text_content is None or user_id is None:
@@ -191,7 +192,8 @@ def add_text():
         else:
             new_text = Texts(
                 text_content=text_content,
-                user_id = user_id
+                user_id = user_id,
+                title = title
             )
             db.session.add(new_text)
             db.session.commit()
@@ -245,7 +247,8 @@ def get_text_by_id(text_id):
             text_data = {
                 'text_id': text.text_id,
                 'text_content': text.text_content,
-                'quiz_questions': [question.to_dict() for question in text.quiz_questions]
+                'quiz_questions': [question.to_dict() for question in text.quiz_questions],
+                'title': text.title,
             }
             return jsonify(text_data)
     
@@ -260,6 +263,8 @@ def get_chunks_by_text_id(text_id):
     '''
     #Get the user_id for authorisation
     user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
     # Fetch the text from the database using the provided text_id
 
     chunks = ChunkComplexity.query.filter_by(text_id=text_id).order_by(ChunkComplexity.chunk_position).all()
@@ -286,6 +291,8 @@ def text_by_user_id():
     Fetches all texts from a user and returns it as JSON
     '''
     user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
     texts = Texts.query.filter_by(user_id=user_id, deleted=False).all()
     all_texts_data = []
     for text in texts:
@@ -293,7 +300,8 @@ def text_by_user_id():
             'text_id': text.text_id,
             'text_content': text.text_content,
             'quiz_questions': [question.to_dict() for question in text.quiz_questions],
-            'keywords': text.keywords
+            'keywords': text.keywords,
+            'title': text.title,
         }
         all_texts_data.append(text_data)
     return jsonify(all_texts_data)
@@ -313,7 +321,7 @@ def delete_text(text_id):
     else:
         full_delete = request.args.get('full_delete')
         print(full_delete)
-        if full_delete == 'false' or full_delete == None:
+        if full_delete == 'true':
             try:
                 my_text = Texts.query.filter_by(text_id=text_id).first()
                 db.session.delete(my_text)
@@ -334,7 +342,18 @@ def delete_text(text_id):
                 db.session.rollback()
                 return jsonify({'error': e.message}), 500
 
-    
+@app.route('/api/avgWpm', methods=['GET'])
+def get_avg_wpm():
+    user_id = request.args.get('user_id')
+    mode = request.args.get('mode')
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
+    practice_results = PracticeResults.query.filter_by(user_id=user_id, mode=mode).all()
+    if not practice_results:
+        return jsonify({'avgWpm': 300})
+    avg_wpm = sum([practice.wpm for practice in practice_results]) / len(practice_results)
+    return jsonify({'avgWpm': avg_wpm})
+
 @app.route('/api/texts/summarize', methods=['POST'])
 def summarize_text():
     input_text = request.json.get('text', '')
@@ -590,7 +609,7 @@ def get_info():
     user_data = Users.query.filter_by(user_id=user_id).first()
     if user_data:
         # User exists, serialize and return user data
-        return jsonify(success=True, user_exists=True, user_data=user_data.to_dict())
+        return jsonify(success=True, user_exists=True)
     else:
         # User does not exist
         return jsonify(success=False, user_exists=False, message="User not found.")
@@ -647,7 +666,9 @@ with app.app_context():
     if ChunkComplexity.query.first() is None: 
         for text in Texts.query.all():
             store_chunk_complexity(text)
-
+    if len(Texts.query.filter_by(user_id='1').all()) <=5:
+        populate_texts('api/preloaded_text_2.json')
+        
 if __name__ == '__main__':
     app.run(debug=True, port = 8000)
 

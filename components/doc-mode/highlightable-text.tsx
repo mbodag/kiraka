@@ -4,12 +4,14 @@ interface HighlightableTextProps {
   text: string;
   highlightInterval?: number;
   fontSize?: string;
+  onFinish?: () => void;
 }
 
 const HighlightableText: React.FC<HighlightableTextProps> = ({
   text,
   highlightInterval = 1000,
   fontSize = "16px",
+  onFinish = () => {},
 }) => {
   const paragraphs = text
     .split("\n")
@@ -58,7 +60,7 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
     new Set<number>()
   );
   const [isPaused, setIsPaused] = useState(true); // Highlighting deactivated by default
-
+  const [submittedWPM, setSubmittedWPM] = useState<boolean>(false);
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "R" || event.key === "r") {
@@ -90,6 +92,14 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
             });
             wordCounter += words.length;
           });
+          if (prevIndex === wordCounter - 1) {
+            setIsPaused(true);
+            if (!submittedWPM) {
+              setSubmittedWPM(true);
+              onFinish();
+            }
+            return 0;
+          }
           return prevIndex + 1;
         });
       }, highlightInterval);

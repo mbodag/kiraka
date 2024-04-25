@@ -42,8 +42,8 @@ const Sidebar = () => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        const user_texts = data.map((text: any) => ({ id: text.text_id, title: `Your text ${text.text_id}` }));
-        console.log(user_texts)
+        console.log(data)
+        const user_texts = data.map((text: any) => ({ id: text.text_id, title: `${text.text_id}. ${text.title|| `Your text ${text.text_id}`}`}));
         setUserTexts(user_texts); // Update the state with the fetched data
       } catch (error) {
         console.error("Error fetching text:", error);
@@ -211,11 +211,11 @@ const Sidebar = () => {
                           <ul>
                             {readTexts.includes(text.id) ? (
                               <>
-                                <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, true); }}>Delete but Keep Analytics</li>
-                                <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, false); }}>Full Delete</li>
+                                <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, false); }}>Delete but Keep Analytics</li>
+                                <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, true); }}>Full Delete</li>
                               </>
                             ) : (
-                              <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, false); }}>Delete</li>
+                              <li onClick={(e) => { e.stopPropagation(); handleDeleteClick(text.id, true); }}>Delete</li>
                             )}
                             <li onClick={(e) => { e.stopPropagation(); setActiveDelete(null); }}>Cancel</li>
                           </ul>
