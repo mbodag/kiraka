@@ -13,6 +13,7 @@ import { TbSend } from "react-icons/tb";
 import { PiUploadSimpleBold } from "react-icons/pi";
 import { MdDone } from "react-icons/md";
 import { TbTrash } from "react-icons/tb";
+import Routes from '@/config/routes';
 
 
 const Sidebar = () => {
@@ -73,7 +74,11 @@ const Sidebar = () => {
   }, [userId]);
 
   const handleFeedbackClick = () => {
-    window.open('https://forms.gle/nijvaqhDHYo3QE2v5', '_blank'); // Opens the link in a new tab
+    let win = window.open(Routes.FEEDBACK, '_blank');
+if (win) {
+    // Browser has allowed it to be opened
+    win.opener = null;
+}
   };
 
   const handleTextClick = (textId: any) => {

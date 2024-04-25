@@ -59,7 +59,7 @@ export default async function InstructionPage() {
                               After your session, you can <span style={{ color: 'rgb(0, 100, 250)', fontWeight: 'bold' }}>save your performance and tackle our custom quiz to test your understanding of the content.</span>
                             </li>
                             <li>
-                              To test other features of our website, try <a href="/upload"><span style={{ color: 'rgb(150, 50, 250)', fontWeight: 'bold' }}>uploading your own text.</span></a> Please <a href=""><span style={{ color: 'rgb(0, 100, 250)', fontWeight: 'bold' }}>give us feedback</span></a> about your experience when you're done!
+                              To test other features of our website, try <a href="/upload"><span style={{ color: 'rgb(150, 50, 250)', fontWeight: 'bold' }}>uploading your own text.</span></a> Please <a href={Routes.FEEDBACK} target="_blank" rel="noopener noreferrer"><span style={{ color: 'rgb(0, 100, 250)', fontWeight: 'bold' }}>give us feedback</span></a> about your experience when you're done!
                             </li>
                           </ul>
                           <div style={{ marginTop: '20px' }}>
