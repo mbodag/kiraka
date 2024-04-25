@@ -40,9 +40,10 @@ const QuizDisplay: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [score, setScore] = useState<number>(0);
   const [quizCompleted, setQuizCompleted] = useState<boolean>(false);
-  let { selectedTextId } = useSelectedText(); // Use the ID from context
+  let { selectedTextId, setSelectedTextId } = useSelectedText(); // Use the ID from context
   const { userId } = useAuth()
-  const { practiceId } = usePracticeID();
+  const { practiceId, setPracticeId } = usePracticeID();
+
 
   useEffect(() => {
     const fetchQuizQuestions = async (textId: number) => {
@@ -67,7 +68,7 @@ const QuizDisplay: React.FC = () => {
       }
     };
 
-    if (selectedTextId) {
+    if (selectedTextId && practiceId) {
       fetchQuizQuestions(selectedTextId);
     }
   }, [selectedTextId]);
@@ -92,7 +93,8 @@ const QuizDisplay: React.FC = () => {
         }
       });
       setScore(counter);
-      sendQuizResults(quizQuestions, userId, practiceId, selectedTextId)
+      sendQuizResults(quizQuestions, userId, practiceId, selectedTextId);
+      setPracticeId(null);
     }
   };
 
@@ -116,7 +118,7 @@ const QuizDisplay: React.FC = () => {
       </div>
     );
   }
-
+  if (practiceId){
   return (
     <div className="quiz-container">
       <h2 className="quiz-title">Question {currentQuestionIndex + 1}</h2>
@@ -138,7 +140,7 @@ const QuizDisplay: React.FC = () => {
       </div>
       <div className="quiz-navigation">
         {currentQuestionIndex > 0 && (
-          <button className="quiz-next-button" onClick={handlePreviousQuestion}>Back</button>
+        <button className="quiz-next-button" onClick={handlePreviousQuestion}>Back</button>
         )}
         {currentQuestionIndex < quizQuestions.length - 1 &&
         <button className="quiz-next-button" onClick={handleNextQuestion}>Next</button>
@@ -148,7 +150,14 @@ const QuizDisplay: React.FC = () => {
         }
       </div>
     </div>
-  );
+  );}
+  else {
+    return(
+      <div className="quiz-container">
+      <h2>Please read the text before completing the quiz</h2>
+      </div>
+    )
+  }
 };
 
 export default QuizDisplay;

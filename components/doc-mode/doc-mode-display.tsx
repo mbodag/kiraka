@@ -4,6 +4,7 @@ import { useSelectedText } from "../../contexts/SelectedTextContext"; // Adjust 
 import HighlightableText from "./highlightable-text";
 import CounterDisplay from "./counter-display";
 import "@/app/globals.css";
+import  { usePracticeID } from '@/contexts/PracticeIDContext';
 import { useAuth } from "@clerk/nextjs";
 
 const Mode1Display = () => {
@@ -45,6 +46,46 @@ const Mode1Display = () => {
     setTextColor((prevColor) => (prevColor === "white" ? "black" : "white"));
   };
 
+  const { practiceId, setPracticeId } = usePracticeID(); // Accessing the setPracticeId method from the global context
+
+  // This function takes the average WPM and sends it to the backend.
+  const submitReadingSpeed = async (averageWpm: number | null) => {
+      if (averageWpm === null) {
+          console.error('No average WPM available to submit.');
+          return; // Optionally show an error to the user
+      }
+      
+      try {
+          const response = await fetch("/api/save-reading-speed", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                  text_id: selectedTextId, 
+                  user_id: userId,
+                  wpm: averageWpm,
+                  mode: 0,
+                  chunks_data: [],
+              }),
+          });
+          if (response.status === 207) {
+              console.log(response);
+          }
+          if (response.ok) {
+              const data = await response.json();
+              setPracticeId(data.practice_id);
+              window.location.href = "/quiz";
+
+          } else {
+              // Handle non-OK responses
+              console.error('Error submitting reading speed');
+          }
+      } catch (error) {
+          console.error('Error in submitReadingSpeed:', error);
+      }
+  };
+  
   // Other effect hooks...
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -129,6 +170,7 @@ setShortStory(data.text_content);
           <HighlightableText
             text={shortStory}
             highlightInterval={60000 / wordsPerMinute}
+            onFinish={() => {submitReadingSpeed(wordsPerMinute)}}
           />
         </div>
         {/* <button className="GreenButton" onClick={handleGetSummary}>
