@@ -6,7 +6,7 @@ import { useSelectedText } from '@/contexts/SelectedTextContext';
 import Image from "next/legacy/image";
 import Link from "next/link";
 import { UserButton, useUser, useAuth } from "@clerk/nextjs";
-import { HiOutlineDocumentText } from "react-icons/hi";
+import { HiOutlineClipboardList } from "react-icons/hi";
 import { TbBrandGoogleAnalytics } from "react-icons/tb";
 import { RiHome2Line } from "react-icons/ri";
 import { TbSend } from "react-icons/tb";
@@ -129,7 +129,7 @@ const Sidebar = () => {
             </Link>
             <Link href="/instructions" passHref>
               <button className="flex items-center mb-2 text-white px-2 py-1 hover:text-orange-500">
-                <HiOutlineDocumentText className="mr-2 text-lg" /> Instructions {/* Icon with margin right */}
+                <HiOutlineClipboardList className="mr-2 text-lg" /> Instructions {/* Icon with margin right */}
               </button>
             </Link>
             <Link href="/analytics" passHref>
@@ -233,7 +233,7 @@ const Sidebar = () => {
         </div>
         <div>
           {user ? (
-            <div className=" m-2">
+            <div className="m-2 pl-2">
               <div className="text-sm font-medium">{user.fullName}</div>
             </div>
           ) : (

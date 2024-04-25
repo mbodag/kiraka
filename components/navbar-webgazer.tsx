@@ -1,13 +1,34 @@
-import React from 'react';
-import Link from "next/link";
+import React, { useState } from 'react';
 import MobileSidebar from "./mobile-sidebar";
-import ModeToggle from "./modetoggle";
 import { Button } from "./ui/button";
 import { useWebGazer } from '@/contexts/WebGazerContext';
+import { usePathname } from 'next/navigation';
+import { Switch } from "@/components/ui/switch"
+import { TiFlash } from "react-icons/ti";
+import { HiMiniDocumentText } from "react-icons/hi2";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
 
 
 const NavbarWebGazer: React.FC = () => {
     const { isWebGazerActive } = useWebGazer(); // Accessing the current state of WebGazer
+    const pathname = usePathname();
+    const [mode, setMode] = useState(pathname.includes('adaptive') ? 'adaptive' : 'static');
+    
+    const handleModeChange = (newMode: any) => {
+        setMode(newMode);
+        window.location.href = `/flash-mode/${newMode}`;
+    };
+
+    const handleSelectMode = (value: any) => {
+        window.location.href = `/${value}`;
+    };
+
 
     // Conditional border class names based on WebGazer's active state
     const webGazerButtonBorderClass = isWebGazerActive
@@ -15,7 +36,7 @@ const NavbarWebGazer: React.FC = () => {
         : "border-2 border-red-500 hover:border-red-600"; // Inactive state: Red border
 
     // Combine base button classes with conditional border classes
-    const webGazerButtonClass = `bg-green-200/30 hover:bg-green-200/50 text-white mr-2 text-sm ${webGazerButtonBorderClass}`;
+    const webGazerButtonClass = `bg-green-200/20 hover:bg-green-200/40 text-white text-sm rounded-xl ${webGazerButtonBorderClass}`;
     
     // Handle click event based on WebGazer state
     const handleWebGazerButtonClick = () => {
@@ -28,25 +49,54 @@ const NavbarWebGazer: React.FC = () => {
         }
     };
 
+
     return (
-        <div className="flex justify-between items-center py-4 px-8 w-full"
+        <div className="monospace-jetbrains-mono fixed flex justify-between items-center py-4 px-5 w-full"
         style={{
             background: 'linear-gradient(to bottom, rgba(7, 107, 52, 0.88), rgba(7, 107, 52, 0.8))',
             zIndex: 1000, // High z-index to ensure it's above other content
-            position: 'relative' // Add this if the z-index doesn't work by itself'
+            position: 'relative', // Add this if the z-index doesn't work by itself'
+            height: '70px'
         }}>
-            <div className="flex-1 flex items-center"> {/* Container for left side */}
-                <MobileSidebar />
-                <Link href="/analytics" passHref>
-                    <Button className="ml-4 bg-green-200/30 hover:bg-green-200/50 text-white navbar-dashboard-font">Analytics</Button>
-                </Link>
+            <div className="inline-flex text-white items-center justify-center cursor-pointer mr-8">
+            <MobileSidebar />
+                <Select defaultValue={pathname.includes('doc-mode') ? 'doc' : 'flash'}>
+                    <SelectTrigger aria-label="Select reading mode">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="flash" onSelect={() => window.location.href = '/flash-mode/adaptive'}>
+                            <div className="flex items-center">
+                                <TiFlash className="mr-1 text-lg"/>
+                                FlashMode
+                            </div>
+                        </SelectItem>
+                        <SelectItem value="doc" onSelect={() => window.location.href = '/doc-mode'}>
+                            <div className="flex items-center">
+                                <HiMiniDocumentText className="mr-2 text-md"/>
+                                DocMode
+                            </div>
+                        </SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
-            <div className="flex-1 flex justify-center"> {/* Centered mode buttons */}
-                <ModeToggle />
-            </div>
-            <div className="flex-1 flex justify-end items-center"> {/* Container for right side */}
-                <Button className={webGazerButtonClass} onClick={handleWebGazerButtonClick}>WebGazer</Button>
-            </div>
+
+            {pathname.includes('/flash-mode') && (
+                <div className="absolute left-1/2 transform -translate-x-1/2 flex space-x-6">
+                    <Switch
+                        checked={mode === 'static'}
+                        onCheckedChange={(checked) => handleModeChange(checked ? 'static' : 'adaptive')}
+                    />
+                </div>
+            )}
+
+            {pathname.includes('/flash-mode/adaptive') && (
+                <div className="webgazer-button-container pr-2">
+                    <Button className={webGazerButtonClass} onClick={handleWebGazerButtonClick}>
+                        WebGazer
+                    </Button>
+                </div>
+            )}
         </div>
     );
 };
