@@ -56,8 +56,11 @@ const UploadPage: React.FC = () => {
     <SelectedTextProvider>
       <DashboardLayout navbarType="quiz">
         <div className={`${styles.dashboardBg} flex justify-center items-start pt-2 pb-8 min-h-screen monospace-jetbrains-mono`}>
-          <div style={{ maxWidth: '45vw', width: '100%', background: '#fff', padding: '35px', borderRadius: '10px', boxShadow: '0 0 40px 8px rgba(0,0,0,0.2)', marginTop: '2vh' }}>
+          <div style={{ maxWidth: '45vw', width: '100%', background: '#fff', padding: '35px', borderRadius: '10px', boxShadow: '0 0 40px 8px rgba(0,0,0,0.2)', marginTop: '1vh' }}>
             <h1 style={{ fontSize: '25px', textAlign: 'center', marginBottom: '30px' }}>Upload Your Text</h1>
+            <div style={{ fontSize: '13px', color: 'rgb(120, 0, 140)', textAlign: 'center', marginBottom: '20px',  marginTop: '10px' }}>
+              The title should be between {minCharsTitle} and {maxCharsTitle} characters, and the text between {minCharsText} and {maxCharsText} characters.
+            </div>
             <form onSubmit={handleSubmit}>
             <label style={{ display: 'block', marginBottom: '10px' }}>
               Add a title:
@@ -86,7 +89,7 @@ const UploadPage: React.FC = () => {
             <div style={{ textAlign: 'right', fontSize: '12px', marginBottom: '10px' }}>
               {text.length} / {maxCharsText} characters
             </div>
-            <div style={{ fontSize: '13px', color: 'rgb(120, 0, 140)', marginBottom: '20px',  marginTop: '15px' }}>
+            <div style={{ fontSize: '13px', color: 'rgb(10, 100, 140)', marginBottom: '20px',  marginTop: '15px' }}>
               By uploading, you agree to our <a href="/terms" target="_blank" rel="noopener noreferrer"><u>Terms of Service</u></a>.
             </div>
 

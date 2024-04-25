@@ -88,7 +88,6 @@ const Mode2Display = () => {
 
     const [fontSize, setFontSize] = useState(44); // Start with a default font size
     const maxCharsPerChunk = wordsPerChunk * avgCharCountPerWord
-    const [shortStory, setShortStory] = useState("");
     const { selectedTextId } = useSelectedText(); // Use the ID from context
     const { userId } = useAuth();
     const [wordChunks, setWordChunks] = useState<string[]>([]);
@@ -402,7 +401,7 @@ const Mode2Display = () => {
         const monitorAndAdjust = () => {
             // The start time of monitoring the current chunk
             const startTime = performance.now();
-            // console.log('monitorAndAdjust')
+            console.log('monitorAndAdjust')
     
             // Function to analyze gaze data and decide whether to adjust WPM or move to the next chunk
             const analyzeAndAdjust = () => {
@@ -414,16 +413,16 @@ const Mode2Display = () => {
                 if (currentChunkIndex === 0) {
                     displayTimeToIgnore = 500;
                 }
-                // console.log('one iteration')
-                // console.log('WPM', WPM)
-                // console.log('currentChunkIndex', currentChunkIndex)
-                // console.log('chunkDisplayTime', chunkDisplayTime)
-                // console.log('displayTimeToIgnore', displayTimeToIgnore)
-                // console.log('deltaTime', deltaTime)
+                console.log('one iteration')
+                console.log('WPM', WPM)
+                console.log('currentChunkIndex', currentChunkIndex)
+                console.log('chunkDisplayTime', chunkDisplayTime)
+                console.log('displayTimeToIgnore', displayTimeToIgnore)
+                console.log('deltaTime', deltaTime)
 
                 // Ensure we're analyzing only after at least 60% of the expected chunk display time has passed
                 if (deltaTime > Math.min(displayTimeToIgnore, maxCutOffTime)) {
-                    // console.log('entered 0.6T')
+                    console.log('entered 0.6T')
 
                     // If significant leftward movement is detected
                     if (gazeDataRef.current.length > 0 && gazeDataRef.current[gazeDataRef.current.length - 1].Lefts >= 1) {
@@ -431,57 +430,66 @@ const Mode2Display = () => {
                         const inferredWPM = calculateWPMFromDisplayTime(deltaTime, wordChunks[currentChunkIndex])
                         const gradualSpeedIncrement = getGradualSpeedIncrement(inferredWPM, maxWPM);
                         const increasedWPM = Math.round(Math.min(WPM + maxConstIncreaseWPM, inferredWPM + gradualSpeedIncrement, maxWPM));
-                        // console.log('increasedWPM', increasedWPM)
+                        console.log('increasedWPM', increasedWPM)
 
                         let complexityAdjustment = 0; 
                         if (currentChunkIndex < wordChunks.length - 1) {
                             complexityAdjustment = Math.round(adjustWPMForComplexity(currentChunkIndex + 1));
                         } 
+                        console.log('NEW currentChunkIndex', currentChunkIndex)
+                        console.log('NEW complexityChunks', complexityChunks)
+                        console.log('NEW complexityChunks[currentChunkIndex]', complexityChunks[currentChunkIndex])
+                        console.log('NEW complexityChunks[currentChunkIndex + 1]', complexityChunks[currentChunkIndex + 1])
+                        console.log('NEW complexityAdjustment 1', complexityAdjustment)
                         
                         // Track consecutive increases
                         if (increasedWPM > WPM) {
                             consecutiveWPMIncrease.current += 1;
-                            // console.log('Incrementing consecutive increases:', consecutiveWPMIncrease.current);
+                            console.log('Incrementing consecutive increases:', consecutiveWPMIncrease.current);
                         } else {
                             consecutiveWPMIncrease.current = 0; // Reset if WPM does not increase
-                            // console.log('Resetting consecutive increases because new WPM is not greater than old WPM');
+                            console.log('Resetting consecutive increases because new WPM is not greater than old WPM');
                         }
                         
                          // Check for uncontrolled increase
                         if (consecutiveWPMIncrease.current >= consecutiveWPMIncreaseThreshold) {
-                            // console.log('Checking for uncontrolled increase:', consecutiveWPMIncrease.current, 'Threshold:', consecutiveWPMIncreaseThreshold);
+                            console.log('Checking for uncontrolled increase:', consecutiveWPMIncrease.current, 'Threshold:', consecutiveWPMIncreaseThreshold);
                             const prevWPMIncrease = WPMValues.current[WPMValues.current.length - 1] - WPMValues.current[WPMValues.current.length - 2];
                             const currentWPMIncrease = increasedWPM - WPMValues.current[WPMValues.current.length - 1];
-                            // console.log('Previous and Current WPM Increases:', prevWPMIncrease, currentWPMIncrease);
+                            console.log('Previous and Current WPM Increases:', prevWPMIncrease, currentWPMIncrease);
                             // if (currentWPMIncrease >= prevWPMIncrease * 0.5) {
                             if (currentWPMIncrease + prevWPMIncrease > cumulativeIncreaseThreshold) {
                                 // Apply damping
                                 const dampenedWPM = WPM + dampenedIncreaseWPM; // Example damping: Smaller increment
+                                console.log('NEW dampenedWPM', dampenedWPM)
                                 const adjustedDampenedWPM = Math.max(minWPM, Math.min(maxWPM, dampenedWPM + complexityAdjustment));
+                                console.log('NEW adjustedDampenedWPM', adjustedDampenedWPM)
                                 setWPM(adjustedDampenedWPM);
                                 WPMValues.current = [...WPMValues.current, adjustedDampenedWPM];
                                 consecutiveWPMIncrease.current = 0;
-                                // console.log('DAMPED increase of WPM', dampenedWPM, 'for WPM:', WPM)
+                                console.log('DAMPED increase of WPM', dampenedWPM, 'for WPM:', WPM)
                             } else {
                                 const adjustedIncreasedWPM = Math.max(minWPM, Math.min(maxWPM, increasedWPM + complexityAdjustment));
+                                console.log('NEW adjustedIncreasedWPM 1', adjustedIncreasedWPM)
                                 setWPM(adjustedIncreasedWPM);
                                 WPMValues.current = [...WPMValues.current, adjustedIncreasedWPM];
-                                // console.log('NORMAL increase of WPM', increasedWPM, 'for WPM:', WPM)
+                                console.log('NORMAL increase of WPM', increasedWPM, 'for WPM:', WPM)
                             }
                         } else {
                             const adjustedIncreasedWPM = Math.max(minWPM, Math.min(maxWPM, increasedWPM + complexityAdjustment));
+                            console.log('NEW adjustedIncreasedWPM 2', adjustedIncreasedWPM)
                             setWPM(adjustedIncreasedWPM);
                             WPMValues.current = [...WPMValues.current, adjustedIncreasedWPM];
-                            // console.log('NORMAL increase of WPM', increasedWPM, 'for WPM:', WPM)
+                            console.log('NORMAL increase of WPM', increasedWPM, 'for WPM:', WPM)
                         }
             
                         setCurrentChunkIndex(prevIndex => prevIndex + 1);
                         gazeDataRef.current = [];
                         consecutiveLeftMovements.current = 0;
                         consecutiveWPMDecrease.current = 0;
-                        // console.log('TOO SLOW - LEFT DETECTED')
-                        // console.log('WPM', WPM)
-                        // console.log('currentChunkIndex', currentChunkIndex)
+                        console.log('TOO SLOW - LEFT DETECTED')
+                        console.log('WPM', WPM)
+                        console.log('currentChunkIndex', currentChunkIndex)
 
                     } else if (deltaTime >= chunkDisplayTime) {
                         // No leftward movement detected by the end of the chunk display time,
@@ -490,7 +498,7 @@ const Mode2Display = () => {
                         const chunksReadFactor = Math.floor(currentChunkIndex / (wordChunks.length/10));
                         const adjustedDecreaseWPM = Math.max(constDecreaseWPM - chunksReadFactor * decreaseAdjustmentStep, minConstDecreaseWPM);
                         const decreasedWPM = Math.max(WPM - adjustedDecreaseWPM, minWPM)
-                        // console.log('decreasedWPM', decreasedWPM, 'for WPM:', WPM)
+                        console.log('decreasedWPM', decreasedWPM, 'for WPM:', WPM)
 
                         // Track consecutive decreases
                         if (decreasedWPM < WPM) {
@@ -503,8 +511,14 @@ const Mode2Display = () => {
                         if (currentChunkIndex < wordChunks.length - 1) {
                             complexityAdjustment = Math.round(adjustWPMForComplexity(currentChunkIndex + 1));
                         }
+                        console.log('NEW currentChunkIndex', currentChunkIndex)
+                        console.log('NEW complexityChunks', complexityChunks)
+                        console.log('NEW complexityChunks[currentChunkIndex]', complexityChunks[currentChunkIndex])
+                        console.log('NEW complexityChunks[currentChunkIndex + 1]', complexityChunks[currentChunkIndex + 1])
+                        console.log('NEW complexityAdjustment 1', complexityAdjustment)
 
                         const adjustedDecreasedWPM = Math.max(minWPM, Math.min(maxWPM, decreasedWPM + complexityAdjustment));
+                        console.log('NEW adjustedDecreasedWPM', adjustedDecreasedWPM)
                         setWPM(adjustedDecreasedWPM);
                         WPMValues.current = [...WPMValues.current, adjustedDecreasedWPM];
                         setCurrentChunkIndex(prevIndex => prevIndex + 1);
@@ -517,9 +531,9 @@ const Mode2Display = () => {
                         //     // console.log('TIRED')
                         //     // consecutiveWPMDecrease.current = 0;
                         // }
-                        // console.log('TOO FAST - LEFT NOT DETECTED')
-                        // console.log('WPM', WPM)
-                        // console.log('currentChunkIndex', currentChunkIndex)
+                        console.log('TOO FAST - LEFT NOT DETECTED')
+                        console.log('WPM', WPM)
+                        console.log('currentChunkIndex', currentChunkIndex)
                     }
                 }
     
