@@ -16,7 +16,6 @@ const Mode1Display = () => {
   const { selectedTextId } = useSelectedText(); // Use the ID from context
   const { userId } = useAuth();
   const [pastWPM, setPastWPM] = useState<number[]>([300]);
-  console.log("THIS IS TEST 1")
   
   useEffect(() => {
     const fetchTextById = async (textId: number) => {
