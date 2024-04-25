@@ -74,7 +74,8 @@ const Mode1Display = () => {
           }
           if (response.ok) {
               const data = await response.json();
-              setPracticeId(data.practice_id); // Update global practice ID
+              setPracticeId(data.practice_id);
+              window.location.href = "/quiz";
 
           } else {
               // Handle non-OK responses
