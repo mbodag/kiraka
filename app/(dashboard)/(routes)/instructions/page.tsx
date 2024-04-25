@@ -2,7 +2,11 @@ import React from 'react';
 import { auth, currentUser, UserButton } from "@clerk/nextjs";
 import styles from '../Dashboard.module.css';
 import DashboardLayout from '../layout';
-import { SelectedTextProvider } from "@/contexts/SelectedTextContext"; // Adjust the import path as necessary
+import { SelectedTextProvider } from "@/contexts/SelectedTextContext";
+import Routes from '@/config/routes';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+
 
 export default async function InstructionPage() {
   const { userId } = auth();
@@ -34,8 +38,8 @@ export default async function InstructionPage() {
   return (
     <SelectedTextProvider>
       <DashboardLayout navbarType="instructions">
-            <div className={styles.dashboardBg + " flex justify-center pt-4 pb-8 min-h-screen monospace-jetbrains-mono"}>
-                        <div className="home-container" style={{ maxWidth: '800px', width: '100%', marginTop: '20px', textAlign: 'center' }}>
+            <div className={styles.dashboardBg + " flex justify-center pb-8 min-h-screen monospace-jetbrains-mono"}>
+                        <div className="home-container" style={{ maxWidth: '800px', width: '100%', textAlign: 'center' }}>
                           <h1 style={{ fontSize: '2.5rem' }}>Welcome to Kiraka.ai!</h1>
                           <ul style={{ listStyle: 'none', fontSize: '14px', padding: '5px' , marginTop: '15px'}}>
                             <p>This platform uses real-time eye-tracking technology to enhance your reading speed through our FlashMode feature.</p>
@@ -67,7 +71,12 @@ export default async function InstructionPage() {
                             
                           </ul>
                           
-                        </div>
+                            <div>
+                      <Link href={Routes.DEFAULT_MODE} passHref>
+                        <Button className="mt-5 border-2 flash-orange-border rounded-xl bg-amber-200 hover:bg-amber-500 text-black navbar-dashboard-font">Start Your Speed Reading Session!</Button>
+                      </Link>
+                    </div>
+                </div>
                       </div>
                     </DashboardLayout>
                   </SelectedTextProvider>

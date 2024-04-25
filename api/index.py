@@ -263,6 +263,8 @@ def get_chunks_by_text_id(text_id):
     '''
     #Get the user_id for authorisation
     user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
     # Fetch the text from the database using the provided text_id
 
     chunks = ChunkComplexity.query.filter_by(text_id=text_id).order_by(ChunkComplexity.chunk_position).all()
@@ -289,6 +291,8 @@ def text_by_user_id():
     Fetches all texts from a user and returns it as JSON
     '''
     user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
     texts = Texts.query.filter_by(user_id=user_id, deleted=False).all()
     all_texts_data = []
     for text in texts:
@@ -338,7 +342,18 @@ def delete_text(text_id):
                 db.session.rollback()
                 return jsonify({'error': e.message}), 500
 
-    
+@app.route('/api/avgWpm', methods=['GET'])
+def get_avg_wpm():
+    user_id = request.args.get('user_id')
+    mode = request.args.get('mode')
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
+    practice_results = PracticeResults.query.filter_by(user_id=user_id, mode=mode).all()
+    if not practice_results:
+        return jsonify({'avgWpm': 300})
+    avg_wpm = sum([practice.wpm for practice in practice_results]) / len(practice_results)
+    return jsonify({'avgWpm': avg_wpm})
+
 @app.route('/api/texts/summarize', methods=['POST'])
 def summarize_text():
     input_text = request.json.get('text', '')

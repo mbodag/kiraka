@@ -6,7 +6,7 @@ import { useSelectedText } from '@/contexts/SelectedTextContext';
 import Image from "next/legacy/image";
 import Link from "next/link";
 import { UserButton, useUser, useAuth } from "@clerk/nextjs";
-import { HiOutlineDocumentText } from "react-icons/hi";
+import { HiOutlineClipboardList } from "react-icons/hi";
 import { TbBrandGoogleAnalytics } from "react-icons/tb";
 import { RiHome2Line } from "react-icons/ri";
 import { TbSend } from "react-icons/tb";
@@ -129,7 +129,7 @@ const Sidebar = () => {
             </Link>
             <Link href="/instructions" passHref>
               <button className="flex items-center mb-2 text-white px-2 py-1 hover:text-orange-500">
-                <HiOutlineDocumentText className="mr-2 text-lg" /> Instructions {/* Icon with margin right */}
+                <HiOutlineClipboardList className="mr-2 text-lg" /> Instructions {/* Icon with margin right */}
               </button>
             </Link>
             <Link href="/analytics" passHref>
@@ -163,8 +163,8 @@ const Sidebar = () => {
         {shouldDisplayTexts && (
           <div className="content-container px-4 flex-grow overflow-auto">
             {/* Kiraka's own texts */}
-            <div className="flex text-sm flex-col items-center mt-4"> 
-              <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-5">Kiraka&apos;s Texts</div>
+            <div className="flex text-sm flex-col items-center mt-3"> 
+              <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-3">Kiraka&apos;s Texts</div>
               {texts.map((text) => (
                 <button
                   key={text.id}
@@ -173,14 +173,18 @@ const Sidebar = () => {
                     ${text.id === selectedTextId ? 'sidebar-button-selected' : ''}`} // Apply active or hover class
                 >
                   {/* Conditionally render the icon if the text has been read */}
-                  {readTexts.includes(text.id) && <MdDone className="text-green-600 mr-2" />}
+                  {readTexts.includes(text.id) ? (
+                    <MdDone className="text-green-600 mr-2" />
+                  ) : (
+                    <MdDone className="text-gray-600 mr-2" />
+                  )}
                   {text.title}
                 </button>
               ))}
             </div>
             {/* User's own texts */}
-            <div className="flex text-sm flex-col items-center mt-3">
-                <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-5">Your Texts</div>
+            <div className="flex text-sm flex-col items-center mt-2">
+                <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-3">Your Texts</div>
                 {userTexts.map((text) => (
                   <div key={text.id} className={`text-button-container w-full max-w-xs ${activeDelete === text.id ? 'active' : ''}`} style={{ position: 'relative' }}>
                       <button
@@ -189,7 +193,11 @@ const Sidebar = () => {
                             ${text.id === selectedTextId ? 'sidebar-button-selected' : ''}`} // Apply active or hover class
                       >
                           <div className="flex items-center">
-                              {readTexts.includes(text.id) && <MdDone className="text-green-600 mr-2" />}
+                              {readTexts.includes(text.id) ? (
+                                <MdDone className="text-green-600 mr-2" />
+                              ) : (
+                                <MdDone className="text-gray-600 mr-2" />
+                              )}
                               {text.title}
                           </div>
                           <TbTrash className="trash-icon opacity-0" style={{ fontSize: '16px' }} onClick={(e) => 
@@ -225,7 +233,7 @@ const Sidebar = () => {
         </div>
         <div>
           {user ? (
-            <div className=" m-2">
+            <div className="m-2 pl-2">
               <div className="text-sm font-medium">{user.fullName}</div>
             </div>
           ) : (
