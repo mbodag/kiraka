@@ -117,7 +117,7 @@ class ChunkComplexity(db.Model):
     chunk_position = db.Column(db.Integer) #Index position w.r.t this text's other chunks, so that they can be ordered
     chunk_content = db.Column(db.Text) #The actual text content of the chunk
 
-def populate_texts(text_file = 'api/preloaded_text.json'):
+def populate_texts(text_file = 'api/preloaded_texts.json'):
     '''
     Add initial texts to the database
     '''
@@ -663,7 +663,7 @@ with app.app_context():
         for text in Texts.query.all():
             store_chunk_complexity(text)
     if len(Texts.query.filter_by(user_id='1').all()) <=5:
-        populate_texts('api/preloaded_text_2.json')
+        populate_texts('api/preloaded_texts_2.json')
         
 if __name__ == '__main__':
     app.run(debug=True, port = 8000)
