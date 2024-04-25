@@ -15,7 +15,8 @@ const Mode1Display = () => {
   const [summary, setSummary] = useState("");
   const { selectedTextId } = useSelectedText(); // Use the ID from context
   const { userId } = useAuth();
-
+  const [pastWPM, setPastWPM] = useState<number[]>([300]);
+  
   useEffect(() => {
     const fetchTextById = async (textId: number) => {
       try {
@@ -35,7 +36,23 @@ const Mode1Display = () => {
     }
   }, [selectedTextId]);
 
-  // Other functions and event handlers...
+  useEffect(() => {
+    const fetchPastWPM = async () => {
+      try {
+        const response = await fetch(`/api/avgWPM?user_id=${userId}&mode=0`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setPastWPM(data.avgWPMs);
+      } catch (error) {
+        console.error('Error fetching text:', error);
+      }
+    };
+      fetchPastWPM();
+
+  }, []);
+
 
   // Example toggle functions for background and text colors
   const toggleBackgroundColor = () => {
@@ -132,24 +149,6 @@ const Mode1Display = () => {
       console.error("Error getting summary:", error);
     }
   }
-
-  // Example fetch data function (adjust as needed)
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("/api/texts/random");
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-const data = await response.json();      
-setShortStory(data.text_content);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
 
   // Component return
   return (

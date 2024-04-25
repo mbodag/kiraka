@@ -13,6 +13,7 @@ import { TbSend } from "react-icons/tb";
 import { PiUploadSimpleBold } from "react-icons/pi";
 import { MdDone } from "react-icons/md";
 import { TbTrash } from "react-icons/tb";
+import Routes from '@/config/routes';
 
 
 const Sidebar = () => {
@@ -20,6 +21,7 @@ const Sidebar = () => {
   const [readTexts, setReadTexts] = useState<number[]>([]);
   const [userTexts, setUserTexts] = useState<{id: number, title:string}[]>([]);
   const [activeDelete, setActiveDelete] = useState(null);
+  const [adminTexts, setAdminTexts] = useState<{id: number, title:string}[]>([]);
   
   const pathname = usePathname();
   const shouldDisplayTexts = !(pathname === '/quiz' || pathname === '/upload');
@@ -41,7 +43,6 @@ const Sidebar = () => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        console.log(data)
         const user_texts = data.map((text: any) => ({ id: text.text_id, title: `${text.text_id}. ${text.title|| `Your text ${text.text_id}`}`}));
         setUserTexts(user_texts); // Update the state with the fetched data
       } catch (error) {
@@ -52,6 +53,27 @@ const Sidebar = () => {
       fetchUserTexts(userId);
     }
   }, [userId]);
+
+  useEffect(() => {
+    const fetchAdminTexts = async () => {
+      try {
+        const response = await fetch(`/api/texts/admin`);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        const admin_texts = data.map((text: any) => ({ id: text.text_id, title: text.title }));
+        console.log(data);
+        console.log(admin_texts)
+        setAdminTexts(admin_texts); // Update the state with the fetched data
+      } catch (error) {
+        console.error("Error fetching text:", error);
+      }
+    }
+    if (userId) {
+      fetchAdminTexts();
+    }
+  }, []);
 
   useEffect(() => {
     const fetchReadTexts = async (userId: string | null | undefined) => {
@@ -72,8 +94,12 @@ const Sidebar = () => {
     }
   }, [userId]);
 
-  const handleFeedbackClick = () => { 
-    window.open('https://forms.gle/AcLYF7cKN9YPbqdw7', '_blank'); // Opens the link in a new tab
+  const handleFeedbackClick = () => {
+    let win = window.open(Routes.FEEDBACK, '_blank');
+if (win) {
+    // Browser has allowed it to be opened
+    win.opener = null;
+}
   };
 
   const handleTextClick = (textId: any) => {
@@ -90,6 +116,7 @@ const Sidebar = () => {
         throw new Error("Network response was not ok");
       }
       else {
+      setSelectedTextId(null);
       window.location.reload(); 
       }   // Force a full page reload
     } catch (error) {
@@ -165,7 +192,7 @@ const Sidebar = () => {
             {/* Kiraka's own texts */}
             <div className="flex text-sm flex-col items-center mt-3"> 
               <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-3">Kiraka&apos;s Texts</div>
-              {texts.map((text) => (
+              {adminTexts.map((text) => (
                 <button
                   key={text.id}
                   onClick={() => handleTextClick(text.id)}

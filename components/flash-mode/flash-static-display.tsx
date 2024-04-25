@@ -34,6 +34,7 @@ const Mode1Display = () => {
     // const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. `;
 
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
+    const [pastWPM, setPastWPM] = useState<number[]>([300]);
     const [startWPM, setstartWPM] = useState(300);
     const [WPM, setWPM] = useState(startWPM);
     const WPMValues = useRef<number[]>([startWPM]); // To store the WPMs values and take their average at the end of the session; to be sent to the database
@@ -82,6 +83,23 @@ const Mode1Display = () => {
       }
     }, [selectedTextId]);
 
+
+    useEffect(() => {
+        const fetchPastWPM = async () => {
+          try {
+            const response = await fetch(`/api/avgWPM?user_id=${userId}&mode=1`);
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            setPastWPM(data.avgWPMs);
+          } catch (error) {
+            console.error('Error fetching text:', error);
+          }
+        };
+          fetchPastWPM();
+    
+      }, []);
 
     const handleContinueToQuiz = async () => {
         setShowCompletionPopup(false);
