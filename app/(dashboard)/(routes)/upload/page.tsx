@@ -9,6 +9,7 @@ import Routes from '@/config/routes';
 
 
 const UploadPage: React.FC = () => {
+  const [title, setTitle] = useState(''); // Add a title for the text
   const [text, setText] = useState('');
   const { userId } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -21,12 +22,16 @@ const UploadPage: React.FC = () => {
       alert(`Text must be between ${minChars} and ${maxChars} characters.`);
       return;
     }
+    else if (title.length > 30) {
+      alert(`Please write a shorter title`);
+      return;
+    }
     setLoading(true); // Start loading indicator
     setTimeout(async () => { // Simulate network request
       const response = await fetch('/api/texts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text_content: text, user_id: userId })
+        body: JSON.stringify({ text_content: text, user_id: userId, title: title })
       });
 
       if (response.ok) {
@@ -55,6 +60,18 @@ const UploadPage: React.FC = () => {
               Minimum 1500 characters and maximum 6000 characters.
             </div>
             <form onSubmit={handleSubmit}>
+            <label style={{ display: 'block', marginBottom: '10px' }}>
+                Add a title:
+                <textarea
+                  name="title"
+                  style={{ width: '100%', height: '5vh', fontSize: '14px', padding: '8px', border: '1px solid #ccc', borderRadius: '5px', overflow: 'hidden', resize: 'none'}}
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  onKeyPress={e => {
+                    if (e.key === 'Enter') e.preventDefault();
+                  }}
+                />
+              </label>
               <label style={{ display: 'block', marginBottom: '10px' }}>
                 Paste your text here:
                 <textarea
@@ -67,6 +84,10 @@ const UploadPage: React.FC = () => {
               <div style={{ textAlign: 'right', fontSize: '12px', marginBottom: '10px' }}>
                 {text.length} / 6000 characters
               </div>
+              <div style={{ fontSize: '12px', marginBottom: '10px' }}>
+                By uploading, you agree to our <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>.
+              </div>
+
               <button type="submit" className="SubmitButton" disabled={loading}>
               {loading ? (
                 <p>Please Wait

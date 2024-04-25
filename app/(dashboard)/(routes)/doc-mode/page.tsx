@@ -4,11 +4,10 @@ import styles from '../Dashboard.module.css';
 import DashboardLayout from '../layout';
 import Mode0Display from "@/components/doc-mode/doc-mode-display";
 import { SelectedTextProvider } from "@/contexts/SelectedTextContext"; // Adjust the import path as necessary
-
+import { PracticeIDProvider } from "@/contexts/PracticeIDContext";
 
 export default async function DashboardPage() {
   const { userId } = auth();
-
   const user = await currentUser();
   const data = JSON.stringify({ user_id: user?.id });
   console.log(data);
@@ -35,6 +34,7 @@ export default async function DashboardPage() {
 
   return (
     <SelectedTextProvider>
+      <PracticeIDProvider>
       <DashboardLayout navbarType="standard-manual">
         <div className={styles.dashboardBg + " flex justify-center pt-10 pb-8 min-h-screen"}>
           {/* The Sidebar component will be included via DashboardLayout based on navbarType */}
@@ -43,6 +43,7 @@ export default async function DashboardPage() {
           </div>
         </div>
       </DashboardLayout>
+      </PracticeIDProvider>
     </SelectedTextProvider>
   );
 }
