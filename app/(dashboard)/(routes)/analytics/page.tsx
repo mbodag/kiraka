@@ -47,6 +47,16 @@ const getAnalytics = async (userId: string | null | undefined) => {
     console.error("Error fetching response", error);
   }
 };
+
+const goBack = () => {
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    // Programmatically navigate using Next.js router since window.history is not feasible
+    window.location.href = Routes.DEFAULT_MODE;
+  }
+};
+
 // AnalyticsPage component
 const AnalyticsPage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
@@ -204,9 +214,7 @@ const AnalyticsPage: React.FC = () => {
       className={`${styles.analyticsBg} flex flex-col items-center pt-10 pb-8 min-h-screen analytics-font`}
     >
       <div className="self-start absolute top-4 left-4">
-        <Link href={Routes.DEFAULT_MODE}>
-          <Button className="ml-4 shadow bg-lime-50/60 hover:bg-lime-50/100 text-gray-900 bold" style={{ fontSize: "17px" }}>Back</Button>
-        </Link>
+          <Button onClick={goBack} className="ml-4 shadow rounded-xl bg-lime-50/60 hover:bg-lime-50/100 text-gray-900 bold" style={{ fontSize: "17px" }}>Back</Button>
       </div>
 
       <h1 className="text-5xl font-bold mb-4">Dashboard Analytics</h1>

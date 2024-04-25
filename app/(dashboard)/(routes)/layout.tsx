@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react";
-import StandardNavbar from "@/components/navbar";
 import StandardWebGazerNavbar from "@/components/navbar-webgazer";
 import StandardInstructionsNavbar from "@/components/navbar-instructions";
 import QuizNavbar from "@/components/quiz-navbar";

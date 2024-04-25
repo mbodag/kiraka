@@ -46,7 +46,7 @@ const NavbarWebGazer: React.FC = () => {
         : "border-2 border-red-500 hover:border-red-600"; // Inactive state: Red border
 
     // Combine base button classes with conditional border classes
-    const webGazerButtonClass = `bg-green-200/20 hover:bg-green-200/40 text-white text-sm rounded-xl ${webGazerButtonBorderClass}`;
+    const webGazerButtonClass = `bg-green-200/20 hover:bg-green-200/40 text-white navbar-dashboard-font rounded-xl ${webGazerButtonBorderClass}`;
     
     // Handle click event based on WebGazer state
     const handleWebGazerButtonClick = () => {

@@ -20,8 +20,8 @@ const Switch = React.forwardRef<
       ref={ref}
     >
       <div className="flex justify-between w-full px-2"> {/* Padding for text alignment */}
-        <span className="text-sm font-medium text-white select-none pointer-events-none flex-1 text-center pr-4">Adaptive</span>
-        <span className="text-sm font-medium text-white select-none pointer-events-none flex-1 text-center">Static</span>
+        <span className="navbar-dashboard-font font-medium text-white select-none pointer-events-none flex-1 text-center pr-4">Adaptive</span>
+        <span className="navbar-dashboard-font font-medium text-white select-none pointer-events-none flex-1 text-center">Static</span>
       </div>
       <SwitchPrimitives.Thumb
         className={cn(
