@@ -2,7 +2,7 @@ import React from 'react';
 import { auth, currentUser } from "@clerk/nextjs";
 import styles from '../Dashboard.module.css';
 import DashboardLayout from '../layout';
-import Mode1Display from "@/components/doc-mode/doc-mode-display";
+import Mode0Display from "@/components/doc-mode/doc-mode-display";
 import { SelectedTextProvider } from "@/contexts/SelectedTextContext"; // Adjust the import path as necessary
 
 
@@ -39,7 +39,7 @@ export default async function DashboardPage() {
         <div className={styles.dashboardBg + " flex justify-center pt-10 pb-8 min-h-screen"}>
           {/* The Sidebar component will be included via DashboardLayout based on navbarType */}
           <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-auto p-8 pt-2 my-2">
-            <Mode1Display />
+            <Mode0Display />
           </div>
         </div>
       </DashboardLayout>
