@@ -1,5 +1,5 @@
 import React from 'react';
-import { auth, currentUser, UserButton } from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs";
 import styles from '../Dashboard.module.css';
 import DashboardLayout from '../layout';
 import { SelectedTextProvider } from "@/contexts/SelectedTextContext";
@@ -45,7 +45,7 @@ export default async function InstructionPage() {
     <SelectedTextProvider>
       <DashboardLayout navbarType="instructions">
             <div className={styles.dashboardBg + " flex justify-center pb-8 min-h-screen monospace-jetbrains-mono"}>
-                <div className="home-container" style={{ maxWidth: '800px', width: '100%', textAlign: 'center' }}>
+                <div className="home-container" style={{ maxWidth: '70vw', width: '100%', textAlign: 'center' }}>
                   <h1 style={{ fontSize: '2.5rem' }}>Welcome to Kiraka.ai!</h1>
                   <ul style={{ listStyle: 'none', fontSize: '14px', padding: '5px' , marginTop: '15px'}}>
                     <p>This platform's main feature, FlashMode, uses real-time eye-tracking technology to enhance your reading speed.</p>
@@ -68,7 +68,7 @@ export default async function InstructionPage() {
                       To test other features of our website, try <a href="/upload"><span style={{ color: 'rgb(150, 0, 200)', fontWeight: 'bold' }}>uploading your own text.</span></a> Please <a href="https://forms.gle/CfZPnhEQu8Dnkwj67"><span style={{ color: 'rgb(0, 180, 50)', fontWeight: 'bold' }}>give us feedback</span></a> about your experience when you're done!
                     </li>
                   </ul>
-                  <div style={{ marginTop: '30px', marginBottom: '30px' }}>
+                  <div className="text-sm" style={{ marginTop: '20px', marginBottom: '20px' }}>
                     {/* <input type="checkbox" id="terms" /> */}
                     <label htmlFor="terms">By advancing, you agree to the <a href="/terms"><u>Terms and Conditions</u></a></label>
                   </div>
