@@ -70,7 +70,7 @@ export default async function InstructionPage() {
                   </ul>
                   <div className="text-sm" style={{ marginTop: '20px', marginBottom: '20px' }}>
                     {/* <input type="checkbox" id="terms" /> */}
-                    <label htmlFor="terms">By advancing, you agree to the <a href="/terms"><u>Terms and Conditions</u></a></label>
+                    <label htmlFor="terms">By advancing, you agree to the <a href="/terms" target="_blank" rel="noopener noreferrer"><u>Terms and Conditions</u></a></label>
                   </div>
                   <div>
                     <Link href={Routes.DEFAULT_MODE} passHref>

@@ -3,20 +3,20 @@
 import React from 'react';
 import styles from './TermsPage.module.css';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation'
 
 
 const TermsAndConditions: React.FC = () => {
-    const router = useRouter();
 
-    const goBack = () => {
-        if (window.history.length > 1) {
-          router.back();
-        } else {
-          // Programmatically navigate using Next.js router since window.history is not feasible
-          router.push('/instructions');
+    const handleClose = () => {
+        try {
+            window.close();
+            setTimeout(() => {
+                alert("This window cannot be closed automatically. Please close this window manually.");
+            }, 100);
+        } catch (e) {
+            alert("Failed to close the window. Please close this window manually.");
         }
-      };
+    };
 
     return (
         <div className={`${styles.termsBg} flex flex-col items-center pt-10 pb-8 min-h-screen analytics-font`}>
@@ -79,8 +79,8 @@ const TermsAndConditions: React.FC = () => {
                     By using our service, you signify your acceptance of this Privacy Policy. If you have any questions or concerns about this Privacy Policy or our practices, please contact us.
                 </p>
                 <div className="monospace-jetbrains-mono pt-14">
-                    <Button onClick={goBack} className="rounded-xl navbar-dashboard-font bg-blue-500 hover:bg-blue-600 text-white">
-                        Go Back
+                    <Button onClick={handleClose} className="rounded-xl navbar-dashboard-font bg-blue-500 hover:bg-blue-600 text-white">
+                        Close Window
                     </Button>
                 </div>
             </div>

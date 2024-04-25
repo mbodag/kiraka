@@ -309,6 +309,38 @@ const Mode2Display = () => {
         }
         return baseIncrement;
       };
+
+    const computeStrongComplexityFactor = (complexity: number): number => {
+        // Derived so that it is 0 for 0.77 and 0.9 for 1
+        const a = 10.0112;
+        const b = -7.70865;
+        return 1 - Math.exp(-(a * complexity + b)); // bounded by 1 
+    }
+    const computeWeakComplexityFactor = (complexity: number): number => {
+        // Derived so that it is 0 for 0.7 and 0.9 for 0.5
+        const a = 11.5129;
+        const b = -8.05905;
+        return 1 - Math.exp((a * complexity + b)); // bounded by 1 (i.e., 100% for factor)
+    }
+    const adjustWPMForComplexity = (chunkIndex: number): number => {
+        const complexity = complexityChunks[chunkIndex];
+        const Kmin = 5;
+        const Kmax = 35;
+
+        if (complexity >= 0.77) {
+            // Complexity is high, decrease WPM
+            const factor = computeStrongComplexityFactor(complexity);
+            const decrease = Kmin + factor * (Kmax - Kmin);
+            return -decrease;
+        } else if (complexity <= 0.7) {
+            // Complexity is low, increase WPM
+            const factor = computeWeakComplexityFactor(complexity);
+            const increase = Kmin + factor * (Kmax - Kmin);
+            return increase;
+        } else {
+            return 0
+        }
+    }
     
     
     // Hook to set up and manage the gaze listener based on WebGazer's activity and pause state
@@ -398,9 +430,14 @@ const Mode2Display = () => {
                         // Increase WPM and move to the next chunk
                         const inferredWPM = calculateWPMFromDisplayTime(deltaTime, wordChunks[currentChunkIndex])
                         const gradualSpeedIncrement = getGradualSpeedIncrement(inferredWPM, maxWPM);
-                        const increasedWPM = Math.round(Math.min(WPM + maxConstIncreaseWPM, inferredWPM + gradualSpeedIncrement, maxWPM))
+                        const increasedWPM = Math.round(Math.min(WPM + maxConstIncreaseWPM, inferredWPM + gradualSpeedIncrement, maxWPM));
                         // console.log('increasedWPM', increasedWPM)
 
+                        let complexityAdjustment = 0; 
+                        if (currentChunkIndex < wordChunks.length - 1) {
+                            complexityAdjustment = Math.round(adjustWPMForComplexity(currentChunkIndex + 1));
+                        } 
+                        
                         // Track consecutive increases
                         if (increasedWPM > WPM) {
                             consecutiveWPMIncrease.current += 1;
@@ -420,18 +457,21 @@ const Mode2Display = () => {
                             if (currentWPMIncrease + prevWPMIncrease > cumulativeIncreaseThreshold) {
                                 // Apply damping
                                 const dampenedWPM = WPM + dampenedIncreaseWPM; // Example damping: Smaller increment
-                                setWPM(dampenedWPM);
-                                WPMValues.current = [...WPMValues.current, dampenedWPM];
+                                const adjustedDampenedWPM = Math.max(minWPM, Math.min(maxWPM, dampenedWPM + complexityAdjustment));
+                                setWPM(adjustedDampenedWPM);
+                                WPMValues.current = [...WPMValues.current, adjustedDampenedWPM];
                                 consecutiveWPMIncrease.current = 0;
                                 // console.log('DAMPED increase of WPM', dampenedWPM, 'for WPM:', WPM)
                             } else {
-                                setWPM(increasedWPM);
-                                WPMValues.current = [...WPMValues.current, increasedWPM];
+                                const adjustedIncreasedWPM = Math.max(minWPM, Math.min(maxWPM, increasedWPM + complexityAdjustment));
+                                setWPM(adjustedIncreasedWPM);
+                                WPMValues.current = [...WPMValues.current, adjustedIncreasedWPM];
                                 // console.log('NORMAL increase of WPM', increasedWPM, 'for WPM:', WPM)
                             }
                         } else {
-                            setWPM(increasedWPM);
-                            WPMValues.current = [...WPMValues.current, increasedWPM];
+                            const adjustedIncreasedWPM = Math.max(minWPM, Math.min(maxWPM, increasedWPM + complexityAdjustment));
+                            setWPM(adjustedIncreasedWPM);
+                            WPMValues.current = [...WPMValues.current, adjustedIncreasedWPM];
                             // console.log('NORMAL increase of WPM', increasedWPM, 'for WPM:', WPM)
                         }
             
@@ -459,8 +499,14 @@ const Mode2Display = () => {
                             consecutiveWPMDecrease.current = 0; // Reset if WPM does not decrease
                         }
 
-                        setWPM(decreasedWPM);
-                        WPMValues.current = [...WPMValues.current, decreasedWPM];
+                        let complexityAdjustment = 0; 
+                        if (currentChunkIndex < wordChunks.length - 1) {
+                            complexityAdjustment = Math.round(adjustWPMForComplexity(currentChunkIndex + 1));
+                        }
+
+                        const adjustedDecreasedWPM = Math.max(minWPM, Math.min(maxWPM, decreasedWPM + complexityAdjustment));
+                        setWPM(adjustedDecreasedWPM);
+                        WPMValues.current = [...WPMValues.current, adjustedDecreasedWPM];
                         setCurrentChunkIndex(prevIndex => prevIndex + 1);
                         gazeDataRef.current = [];
                         consecutiveLeftMovements.current = 0;
