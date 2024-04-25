@@ -10,8 +10,6 @@ export default async function DashboardPage() {
   const { userId } = auth();
   const user = await currentUser();
   const data = JSON.stringify({ user_id: user?.id });
-  console.log(data);
-
   if (userId) {
     try {
       const response = await fetch(

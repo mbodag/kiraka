@@ -93,6 +93,7 @@ const Mode2Display = () => {
     const { userId } = useAuth();
     const [wordChunks, setWordChunks] = useState<string[]>([]);
     const [complexityChunks, setComplexityChunks] = useState<number[]>([]);
+    const [pastWPM, setPastWPM] = useState<number[]>([300]);
 
     // Accessing the current state of WebGazer
     const { isWebGazerActive, setWebGazerActive } = useWebGazer();
@@ -111,6 +112,22 @@ const Mode2Display = () => {
             sessionStorage.setItem('isExistingSession', 'true'); // Mark this session as existing
         }
     }, []);
+    useEffect(() => {
+        const fetchPastWPM = async () => {
+          try {
+            const response = await fetch(`/api/avgWPM?user_id=${userId}&mode=2`);
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            setPastWPM(data.avgWPMs);
+          } catch (error) {
+            console.error('Error fetching text:', error);
+          }
+        };
+          fetchPastWPM();
+    
+      }, []);
 
     useEffect(() => {
       const fetchTextById = async (textId: number) => {

@@ -342,17 +342,15 @@ def delete_text(text_id):
                 db.session.rollback()
                 return jsonify({'error': e.message}), 500
 
-@app.route('/api/avgWpm', methods=['GET'])
+@app.route('/api/avgWPM', methods=['GET'])
 def get_avg_wpm():
     user_id = request.args.get('user_id')
     mode = request.args.get('mode')
     if not user_id:
         return jsonify({'error': 'User ID is required'}), 400
     practice_results = PracticeResults.query.filter_by(user_id=user_id, mode=mode).all()
-    if not practice_results:
-        return jsonify({'avgWpm': 300})
-    avg_wpm = sum([practice.wpm for practice in practice_results]) / len(practice_results)
-    return jsonify({'avgWpm': avg_wpm})
+    avg_wpms = [practice.wpm for practice in practice_results]
+    return jsonify({'avgWPMs': avg_wpms})
 
 @app.route('/api/texts/summarize', methods=['POST'])
 def summarize_text():
