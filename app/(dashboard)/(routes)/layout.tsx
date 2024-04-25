@@ -22,7 +22,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, navbarType 
   // Dynamically choose the navbar based on navbarType
   switch (navbarType) {
     case 'standard-manual':
-      navbar = <StandardNavbar />;
+      navbar = <StandardWebGazerNavbar />;
       sidebar = <Sidebar />;
       break;
     case 'instructions':

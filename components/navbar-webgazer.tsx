@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MobileSidebar from "./mobile-sidebar";
 import { Button } from "./ui/button";
 import { useWebGazer } from '@/contexts/WebGazerContext';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Switch } from "@/components/ui/switch"
 import { TiFlash } from "react-icons/ti";
 import { HiMiniDocumentText } from "react-icons/hi2";
@@ -18,17 +18,27 @@ import {
 const NavbarWebGazer: React.FC = () => {
     const { isWebGazerActive } = useWebGazer(); // Accessing the current state of WebGazer
     const pathname = usePathname();
-    const [mode, setMode] = useState(pathname.includes('adaptive') ? 'adaptive' : 'static');
+    const router = useRouter();
+    const [config, setConfig] = useState(pathname.includes('adaptive') ? 'adaptive' : 'static');
+    const [selectedMode, setSelectedMode] = useState(pathname.includes('doc-mode') ? 'doc-mode' : 'flash-mode/adaptive');
     
-    const handleModeChange = (newMode: any) => {
-        setMode(newMode);
-        window.location.href = `/flash-mode/${newMode}`;
+    useEffect(() => {
+        setConfig(pathname.includes('adaptive') ? 'adaptive' : 'static');
+    }, [pathname]);
+    
+    const handleConfigChange = (newConfig: 'static' | 'adaptive') => {
+        console.log(`Changing config to: ${newConfig}`);
+        setConfig(newConfig);
+        window.location.assign(`/flash-mode/${newConfig}`);
+        // router.push(`/flash-mode/${newConfig}`);
     };
 
-    const handleSelectMode = (value: any) => {
-        window.location.href = `/${value}`;
+    const handleModeChange = (mode: string) => {
+        console.log(`Mode changed to: ${mode}`);
+        setSelectedMode(mode);
+        window.location.assign(`/${mode}`);
+        // router.push(`/${mode}`);
     };
-
 
     // Conditional border class names based on WebGazer's active state
     const webGazerButtonBorderClass = isWebGazerActive
@@ -60,18 +70,18 @@ const NavbarWebGazer: React.FC = () => {
         }}>
             <div className="inline-flex text-white items-center justify-center cursor-pointer mr-8">
             <MobileSidebar />
-                <Select defaultValue={pathname.includes('doc-mode') ? 'doc' : 'flash'}>
+                <Select onValueChange={handleModeChange} value={selectedMode}>
                     <SelectTrigger aria-label="Select reading mode">
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="flash" onSelect={() => window.location.href = '/flash-mode/adaptive'}>
+                        <SelectItem value="flash-mode/adaptive">
                             <div className="flex items-center">
                                 <TiFlash className="mr-1 text-lg"/>
                                 FlashMode
                             </div>
                         </SelectItem>
-                        <SelectItem value="doc" onSelect={() => window.location.href = '/doc-mode'}>
+                        <SelectItem value="doc-mode">
                             <div className="flex items-center">
                                 <HiMiniDocumentText className="mr-2 text-md"/>
                                 DocMode
@@ -84,8 +94,8 @@ const NavbarWebGazer: React.FC = () => {
             {pathname.includes('/flash-mode') && (
                 <div className="absolute left-1/2 transform -translate-x-1/2 flex space-x-6">
                     <Switch
-                        checked={mode === 'static'}
-                        onCheckedChange={(checked) => handleModeChange(checked ? 'static' : 'adaptive')}
+                        checked={config === 'static'}
+                        onCheckedChange={(checked) => handleConfigChange(checked ? 'static' : 'adaptive')}
                     />
                 </div>
             )}
