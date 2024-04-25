@@ -14,6 +14,7 @@ import { TbPlayerPause, TbPlayerPlay } from "react-icons/tb";
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { useRouter } from 'next/navigation';
+import { ArrowLeftSquare, ArrowRightSquare } from 'lucide-react';
 
 // Register the necessary components for Chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -55,6 +56,39 @@ const Mode1Display = () => {
     const [showCompletionPopup, setShowCompletionPopup] = useState(false);
     const [redirectingToQuiz, setRedirectingToQuiz] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
+
+    const [leftArrowActive, setLeftArrowActive] = useState(false);
+    const [rightArrowActive, setRightArrowActive] = useState(false);
+  
+    // Handle keydown event
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') {
+        setLeftArrowActive(true);
+      } else if (event.key === 'ArrowRight') {
+        setRightArrowActive(true);
+      }
+    };
+  
+    // Handle keyup event
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') {
+        setLeftArrowActive(false);
+      } else if (event.key === 'ArrowRight') {
+        setRightArrowActive(false);
+      }
+    };
+  
+    // Add event listeners for keydown and keyup
+    useEffect(() => {
+      window.addEventListener('keydown', handleKeyDown);
+      window.addEventListener('keyup', handleKeyUp);
+  
+      // Cleanup event listeners
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener('keyup', handleKeyUp);
+      };
+    }, []);
 
     const router = useRouter();
     
@@ -583,6 +617,7 @@ const Mode1Display = () => {
                         flex: 1, // Take up remaining space
                         }}
                     >
+                        
                         <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
                             <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                             <TbSquareLetterR style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
@@ -592,6 +627,13 @@ const Mode1Display = () => {
                             <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                             <RiSpace style={{ marginRight: '5px', color: '#606060', fontSize: '26px' }} />
                             <p style={{ margin: '0' }}>to Pause/Play</p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                            <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
+                            <ArrowLeftSquare color={leftArrowActive ? "rgb(200, 0, 0)" : "rgb(90, 90, 90)"} /><ArrowRightSquare color={rightArrowActive ? "rgb(200, 0, 0)" : "rgb(90, 90, 90)"} />
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                            <p style={{ margin: '0'}}>to adjust your speed</p>
                         </div>
                     </div>
                 </div>

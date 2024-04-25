@@ -6,6 +6,10 @@ import CounterDisplay from "./counter-display";
 import "@/app/globals.css";
 import  { usePracticeID } from '@/contexts/PracticeIDContext';
 import { useAuth } from "@clerk/nextjs";
+import { RiSpace } from 'react-icons/ri';
+import { ArrowLeftSquare, ArrowRightSquare } from 'lucide-react';
+import { TbSquareLetterR } from 'react-icons/tb';
+
 
 const Mode1Display = () => {
   const [wordsPerMinute, setWordsPerMinute] = useState(300);
@@ -16,6 +20,29 @@ const Mode1Display = () => {
   const { selectedTextId } = useSelectedText(); // Use the ID from context
   const { userId } = useAuth();
   const [pastWPM, setPastWPM] = useState<number[]>([300]);
+  const [averageWPM, setAverageWPM] = useState<number | null>(null);
+  const [showStartPopup, setShowStartPopup] = useState(true);
+  const [showFinishPopup, setShowFinishPopup] = useState(false);
+  const [restartTime, setRestartTime] = useState<number>(0);
+  const [readingTime, setReadingTime] = useState<number>(0);
+  const [bionicReading, setBionicReading] = useState(false);
+
+
+
+
+  const gapBetweenSize = '15px';
+  const gapEdgeSize = '20px';
+  const divHeight = '200px';
+  const plotHeight = '350px';
+
+  const handleRestartTimeChange = (newRestartTime: number) => {
+    setRestartTime(newRestartTime);
+    console.log('Restart time:', newRestartTime)
+  };
+  const handleReadingTimeChange = (newRestartTime: number) => {
+    setReadingTime(newRestartTime);
+    console.log('Reading time:', newRestartTime)
+  }; 
   
   useEffect(() => {
     const fetchTextById = async (textId: number) => {
@@ -71,6 +98,7 @@ const Mode1Display = () => {
           console.error('No average WPM available to submit.');
           return; // Optionally show an error to the user
       }
+ 
       
       try {
           const response = await fetch("/api/save-reading-speed", {
@@ -105,6 +133,10 @@ const Mode1Display = () => {
   // Other effect hooks...
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
+      if (showStartPopup || showFinishPopup) {
+        return;
+    }
+
       if (event.key === "ArrowRight") {
         setWordsPerMinute((prevWPM) => Math.min(prevWPM + 20, 1500)); // Increase WPM with upper bound
       } else if (event.key === "ArrowLeft") {
@@ -122,35 +154,226 @@ const Mode1Display = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, []);
+  }, [showStartPopup, showFinishPopup]);
 
 
   // Example handleGetSummary function (adjust as needed)
-  const handleGetSummary = async () => {
-    const inputText = shortStory;
+  const handleFinishText = async () => {
+    
+    // Calculate WPM
+    const currentTime = performance.now();
+    const deltaTime = currentTime - restartTime;
+    const totalReadingTime = readingTime + deltaTime;
+    const totalNumWords = shortStory.split(' ').length;
+    const wpm = Math.round((totalNumWords / totalReadingTime) * 60000);
+    setAverageWPM(wpm);
+    console.log('Average WPM:', wpm);
 
-    try {
-      const response = await fetch("api/texts/summarize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text: inputText }),
-      });
+    // Show the popup
+    setShowFinishPopup(true);
+    
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-      setSummary(data.summary);
-    } catch (error) {
-      console.error("Error getting summary:", error);
-    }
+  }
+  const handleCloseStartPopup = () => {
+    setShowStartPopup(false);
+  }
+  const handleCloseFinishPopupSendToQuiz = () => {
+    submitReadingSpeed(averageWPM);
+  }
+  const handleCloseFinishPopupRestart = () => {
+    setShowFinishPopup(false);
+    setRestartTime(0);
+    setReadingTime(0);
   }
 
   // Component return
   return (
+    <div>
+      {/* Smaller divs on the right */}
+      {
+                    showStartPopup && (
+                        <>
+                        <div className="modal-backdrop" style={{ zIndex: 500}}></div>
+                            <div className="modal-content" style={{ 
+                                width: '30vw', 
+                                display: 'flex', 
+                                borderRadius: '20px' ,
+                                flexDirection: 'column', // Stack children vertically
+                                alignItems: 'center', // Center children horizontally
+                                justifyContent: 'center', // Center children vertically
+                                textAlign: 'center', // Ensures that text inside children elements is centered, if needed
+                                }}> 
+                                
+                                    <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
+                                        <p>In this mode, you have the freedom to see the whole text, and read at your own pace.</p>
+                                        <p>A pointer is available for your benefit</p>
+                                        <p><b>Y</b>ou <b>c</b>an <b>al</b>so <b>ena</b>ble <b>Hyp</b>er<b>Bold</b>ing, <b>whi</b>ch <b>bol</b>ds <b>t</b>he <b>begin</b>ning <b>o</b>f <b>t</b>he <b>wor</b>ds <b>y</b>ou <b>a</b>re <b>read</b>ing.
+                                        <b>Th</b>is <b>hel</b>ps <b>so</b>me <b>peo</b>ple <b>foc</b>us <b>bet</b>ter.
+                                        </p>
+                                        <p style={{ color: 'rgb(0, 125, 0)', fontWeight: 'bold' }}>Press the spacebar to start</p>
+                                    </p>
+                                    <button className="GreenButton" onClick={handleCloseStartPopup}>
+                                        Got it
+                                    </button>
+                                
+                            </div>
+                        </>
+                    )
+        }
+        {
+                    showFinishPopup && (
+                        <>
+                        <div className="modal-backdrop" style={{ zIndex: 500}}></div>
+                            <div className="modal-content" style={{ 
+                                width: '30vw', 
+                                display: 'flex', 
+                                borderRadius: '20px' ,
+                                flexDirection: 'column', // Stack children vertically
+                                alignItems: 'center', // Center children horizontally
+                                justifyContent: 'center', // Center children vertically
+                                textAlign: 'center', // Ensures that text inside children elements is centered, if needed
+                                }}> 
+                                
+                                    <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
+                                        <p>In this mode, you have the freedom to see the whole text, and read at your own pace.</p>
+                                        <p>A pointer is available for your benefit</p>
+                                        <p><b>Y</b>ou <b>c</b>an <b>al</b>so <b>ena</b>ble <b>Hyp</b>er<b>Bold</b>ing, <b>whi</b>ch <b>bol</b>ds <b>t</b>he <b>begin</b>ning <b>o</b>f <b>t</b>he <b>wor</b>ds <b>y</b>ou <b>a</b>re <b>read</b>ing.</p>
+                                        <p style={{ color: 'rgb(0, 125, 0)', fontWeight: 'bold' }}>Press the spacebar to start</p>
+                                    </p>
+                                    <button className="GreenButton" onClick={handleCloseFinishPopupRestart}>
+                                        Restart reading
+                                    </button>
+                                    <button className="GreenButton" onClick={handleCloseFinishPopupSendToQuiz}>
+                                        Save and continue to quiz
+                                    </button>
+                                
+                            </div>
+                        </>
+                    )
+        }
+      <div className="my-2" style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "stretch",
+                    justifyContent: "space-between", // This will evenly space the children vertically
+                    height: divHeight,
+            }}>
+
+                {/* div 1 */}
+                <div
+                className="bg-white rounded-lg shadow-lg p-6 pt-2"
+                style={{
+                width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
+                display: 'flex',
+                flexDirection: 'column', // This will stack children divs on top of each other
+                alignItems: 'center',
+                justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                flexGrow: 1,
+                marginBottom: `${gapBetweenSize}`,
+                }}
+                >
+                    <div
+                        style={{
+                        backgroundColor: 'white',
+                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
+                        padding: '1px',
+                        borderRadius: '10px',
+                        margin: '5px',
+                        width: '100%', // Adjust width as necessary
+                        textAlign: 'center',
+                        }}
+                    >
+                        <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Commands</h3>
+                    </div>
+
+                    {/* Second inner div for the text "Average WPM:" centered */}
+                    <div
+                        style={{
+                        width: '100%', // Matches the width of the first inner div for consistency
+                        display: 'flex',
+                        justifyContent: 'center', // Center-align the text horizontally
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                        flex: 1, // Take up remaining space
+                        }}
+                    >
+                        
+                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                            <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
+                            <TbSquareLetterR style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
+                            <p style={{ margin: '0'}}>to Restart</p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)' , marginBottom: '5px' }}>
+                            <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
+                            <RiSpace style={{ marginRight: '5px', color: '#606060', fontSize: '26px' }} />
+                            <p style={{ margin: '0' }}>to Pause/Play</p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                            <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
+                            <ArrowLeftSquare color={"rgb(90, 90, 90)"} /><ArrowRightSquare color={"rgb(90, 90, 90)"} />
+                            <p style={{ margin: '0'}}>to adjust your speed</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* div 2 */}
+                <div
+                className="bg-white rounded-lg shadow-lg p-6 pt-2"
+                style={{
+                width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
+                display: 'flex',
+                flexDirection: 'column', // This will stack children divs on top of each other
+                alignItems: 'center',
+                justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                flexGrow: 1, 
+                marginBottom: `${gapBetweenSize}`,
+                }}
+                >
+                {/* First inner div for the title "Stats" and a gray horizontal line */}
+                    <div
+                        style={{
+                        backgroundColor: 'white',
+                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
+                        padding: '1px',
+                        borderRadius: '10px',
+                        margin: '5px',
+                        width: '100%', // Adjust width as necessary
+                        textAlign: 'center',
+                        }}
+                    >
+                        <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Stats</h3>
+                    </div>
+
+                    {/* Second inner div for the text "Average WPM:" centered */}
+                    <div
+                        style={{
+                        width: '100%', // Matches the width of the first inner div for consistency
+                        display: 'flex',
+                        alignItems: 'center', // Center-align the text vertically
+                        justifyContent: 'center',
+                        flex: 1, // Take up remaining space
+                        }}
+                    >
+                        <p style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }}>
+                        Average WPM: {averageWPM !== null ? averageWPM : <span style={{ fontStyle: 'italic', color: 'rgb(150, 150, 150)' }}>Pending</span>}
+                        </p>
+                    </div>
+                    <button
+                        onClick={() => setBionicReading(!bionicReading)}
+                        style={{
+                            backgroundColor: bionicReading ? 'green' : 'grey',
+                            color: 'white',
+                            padding: '10px',
+                            borderRadius: '5px',
+                            border: 'none',
+                            cursor: 'pointer',
+                        }}
+                        >
+                        {bionicReading ? 'Disable Bionic Reading' : 'Enable Bionic Reading'}
+                        </button>
+                </div>
+            </div>
+    <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-auto p-8 pt-2 my-2">
     <div className="centerContainer">
       <CounterDisplay count={wordsPerMinute} fontSize="16px" />
       <div className="textAndButtonContainer">
@@ -168,15 +391,21 @@ const Mode1Display = () => {
           <HighlightableText
             text={shortStory}
             highlightInterval={60000 / wordsPerMinute}
-            onFinish={() => {submitReadingSpeed(wordsPerMinute)}}
+            onFinish={() => {
+
+            }}
+            onRestartTimeChange={handleRestartTimeChange} 
+            onReadingTimeChange={handleReadingTimeChange}
+            // className= {showStartPopup||showFinishPopup ? 'blur-effect' : ''}
           />
         </div>
-        <button className="fancyButton" onClick={handleGetSummary}>
-          Get Summary
+        <button className="fancyButton" onClick={handleFinishText}>
+          I have finished reading the text
         </button>
-        {summary && <p>Summary: {summary}</p>}
       </div>
     </div>
+    </div>
+  </div>
   );
 };
 

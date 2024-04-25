@@ -5,6 +5,10 @@ interface HighlightableTextProps {
   highlightInterval?: number;
   fontSize?: string;
   onFinish?: () => void;
+  className?: string;
+  onRestartTimeChange: (newRestartTime: number) => void;
+  onReadingTimeChange: (newReadingTime: number) => void;
+
 }
 
 const HighlightableText: React.FC<HighlightableTextProps> = ({
@@ -12,6 +16,9 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
   highlightInterval = 1000,
   fontSize = "16px",
   onFinish = () => {},
+  className = "",
+  onRestartTimeChange,
+  onReadingTimeChange,
 }) => {
   const paragraphs = text
     .split("\n")
@@ -60,7 +67,52 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
     new Set<number>()
   );
   const [isPaused, setIsPaused] = useState(true); // Highlighting deactivated by default
+  const [isRestartActive, setIsRestartActive] = useState(false);
+  const [isPausePlayActive, setIsPausePlayActive] = useState(false);
+
   const [submittedWPM, setSubmittedWPM] = useState<boolean>(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [readingTime, setReadingTime] = useState<number>(0);
+  const [restartTime, setRestartTime] = useState<number>(0);
+
+
+  const togglePausePlayAction = () => {
+    if (isPaused) {
+        setCountdown(3); // Start a 3-second countdown
+    } else {
+        setIsPaused(true);
+        const currentTime = performance.now();
+        const deltaTime = currentTime - restartTime;
+        setReadingTime(readingTime + deltaTime);
+        onReadingTimeChange(readingTime + deltaTime);
+         // Pause immediately without a countdown
+    }
+    setIsPausePlayActive(true); // Set active to true
+    setTimeout(() => setIsPausePlayActive(false), 100); // Reset after 100ms
+};
+  useEffect(() => {
+    let timerId: NodeJS.Timeout;
+      if (countdown !== null && countdown > 0) {
+        // Set a timer to decrement the countdown every second
+        timerId = setTimeout(() => {
+            setCountdown(countdown - 1);
+          }, 1000);
+        } else if (countdown === 0) {
+            // Display "Go!" for a brief moment before resetting
+            timerId = setTimeout(() => {
+                setIsPaused(false);  // Ensure the display starts if it was paused
+                setCountdown(null);  // Reset countdown to not counting down state
+            }, 500);  // Allow 1 second for "Go!" to be visible
+              setRestartTime(performance.now());
+              onRestartTimeChange(performance.now());
+        }
+
+        return () => {
+          clearTimeout(timerId); // Clean up the timer
+        };
+      }, [countdown]);
+
+  
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "R" || event.key === "r") {
@@ -68,8 +120,9 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
         setHighlightedKeywordIndices(new Set());
       } else if (event.key === " ") {
         // Listen for the spacebar
+        if (countdown !== null) {}
         event.preventDefault(); // Prevent the default spacebar action (e.g., page scrolling)
-        setIsPaused((prevIsPaused) => !prevIsPaused); // Toggle pause/start
+        togglePausePlayAction(); // Call the toggle function
       }
     };
 
@@ -94,10 +147,6 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
           });
           if (prevIndex === wordCounter - 1) {
             setIsPaused(true);
-            if (!submittedWPM) {
-              setSubmittedWPM(true);
-              onFinish();
-            }
             return 0;
           }
           return prevIndex + 1;
@@ -121,6 +170,21 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
 
   return (
     <div className="highlightable-text-container">
+      {/* Countdown Display */}
+      {countdown !== null && (
+                    <div className='modal-content' style={{
+                    fontSize: '100px',
+                    width: '15%',
+                    height: '15%',
+                    color: 'rgb(200, 0, 0)',
+                    textAlign: 'center',
+                    background: 'rgba(255, 255, 255, 0.9)',
+                    padding: '0px 10px',
+                    borderRadius: '10px',
+                    }}>
+                    {countdown > 0 ? countdown : 'Go!'}
+                    </div>
+                )}
       {paragraphs.map((paragraph, pIndex) => {
         const wordsAndKeywords = breakIntoWordsAndKeywords(paragraph);
         let globalIndex = paragraphs
