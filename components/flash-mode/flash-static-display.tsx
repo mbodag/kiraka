@@ -87,8 +87,8 @@ const Mode1Display = () => {
         setShowCompletionPopup(false);
         setRedirectingToQuiz(true);
         await submitReadingSpeed(averageWPM); // Ensure this is an async function if it makes server requests
-        // window.location.href = '/quiz'; // Directly change the window location to navigate
-        router.push('/quiz')
+        window.location.href = '/quiz'; // Directly change the window location to navigate
+        // router.push('/quiz')
     };
 
       

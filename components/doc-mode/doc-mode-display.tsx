@@ -129,10 +129,10 @@ setShortStory(data.text_content);
             highlightInterval={60000 / wordsPerMinute}
           />
         </div>
-        <button className="fancyButton" onClick={handleGetSummary}>
+        {/* <button className="GreenButton" onClick={handleGetSummary}>
           Get Summary
         </button>
-        {summary && <p>Summary: {summary}</p>}
+        {summary && <p>Summary: {summary}</p>} */}
       </div>
     </div>
   );

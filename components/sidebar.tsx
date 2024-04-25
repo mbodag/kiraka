@@ -72,8 +72,8 @@ const Sidebar = () => {
     }
   }, [userId]);
 
-  const handleFeedbackClick = () => {
-    window.open('https://forms.gle/nijvaqhDHYo3QE2v5', '_blank'); // Opens the link in a new tab
+  const handleFeedbackClick = () => { 
+    window.open('https://forms.gle/AcLYF7cKN9YPbqdw7', '_blank'); // Opens the link in a new tab
   };
 
   const handleTextClick = (textId: any) => {
