@@ -4,6 +4,7 @@ import { useSelectedText } from "../../contexts/SelectedTextContext"; // Adjust 
 import HighlightableText from "./highlightable-text";
 import CounterDisplay from "./counter-display";
 import "@/app/globals.css";
+import { useAuth } from "@clerk/nextjs";
 
 const Mode1Display = () => {
   const [wordsPerMinute, setWordsPerMinute] = useState(300);
@@ -12,11 +13,12 @@ const Mode1Display = () => {
   const [shortStory, setShortStory] = useState("");
   const [summary, setSummary] = useState("");
   const { selectedTextId } = useSelectedText(); // Use the ID from context
+  const { userId } = useAuth();
 
   useEffect(() => {
     const fetchTextById = async (textId: number) => {
       try {
-        const response = await fetch(`/api/texts/${textId}`);
+        const response = await fetch(`/api/texts/${textId}?user_id=${userId}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
