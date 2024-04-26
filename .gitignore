@@ -45,3 +45,5 @@ my_env/
 api/config.py
 
 .idea/
+
+LLM_models/

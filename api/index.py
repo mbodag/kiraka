@@ -11,6 +11,11 @@ import torch
 from api.config import DATABASE_URI, ADMIN_ID
 from api.chunk_complexity import compute_chunk_complexity, transformer_reg
 
+# try:
+import api.quiz_function as quiz_function
+# except Exception as e:
+#     print(f'Failed to import quiz function: {str(e)}')
+
 
 app = Flask(__name__)
 CORS(app) # See what this does
@@ -190,6 +195,8 @@ def add_text():
             return jsonify({'error': 'Invalid request. Missing text_content or user_id'}), 400
         if not text_content_is_valid(text_content):
             return jsonify({'error': 'Invalid text_content'}), 400
+        # if not user_id_is_valid(user_id):
+        #     return jsonify({'error': 'Invalid user_id'}), 400
         else:
             new_text = Texts(
                 text_content=text_content,
@@ -200,9 +207,16 @@ def add_text():
             db.session.commit()
             store_chunk_complexity(new_text)
             try:
-                quiz = generate_quiz()
-                if quiz:
-                    pass
+                quizzes = quiz_function.take_text_generate_quiz_convert_to_dict(text_content)
+                #quizzes= [{'question': ' What is the name for the ability of living organisms to emit light?', 'options': ['Effluence', 'Bioluminescence', 'Perseveration', 'Chemiluminescence'], 'correct_answer': 'Bioluminescence'}, {'question': ' What is the major purpose of all marine organisms?', 'options': ['to emit light', 'to emanate', 'to refract', 'to extrude'], 'correct_answer': 'to emit light'}, {'question': ' Where did a person discover bioluminescence?', 'options': ['deep sea', 'coral sea', 'high sea', 'inland sea'], 'correct_answer': 'deep sea'}, {'question': ' How can one study the dark wonders of the deep sea?', 'options': ['conceptualize', 'soliloquize', 'explore techniques', 'immerse'], 'correct_answer': 'explore techniques'}, {'question': " What's the name for a natural marvel that exists to create a mesmerizing display?", 'options': ['chemiluminescence', 'bioluminescence', 'perseveration', 'effluence'], 'correct_answer': 'bioluminescence'}]
+                for quiz in quizzes:
+                    new_quiz_question = Questions(text_id=new_text.text_id,
+                                                  question_content=quiz['question'],
+                                                  multiple_choices=';'.join(quiz['options']),
+                                                  correct_answer=quiz['correct_answer']
+                                                  )
+                    db.session.add(new_quiz_question)
+                    db.session.commit()
         
             except Exception as e: 
                 db.session.rollback()
@@ -666,4 +680,6 @@ with app.app_context():
         
 if __name__ == '__main__':
     app.run(debug=True, port = 8000)
+
+
 
