@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 export const LandingHero = () => {
   const { isSignedIn } = useAuth();
   return (
-    <div className="text-white fond-bold py-20 text-center space-y-8">
-      <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl space-y-5 font-extrabold">
-        <h1>Pioneering Speed-Learning Platform for</h1>
+    <div className="text-white fond-bold pt-32 text-center space-y-8">
+      <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl space-y-8 font-extrabold">
+        <h1>Pioneering Speed-Reading <br></br> Platform for</h1>
         <div className="text-transparent bg-clip-text bg-gradient-to-r from-green-200 to-green-600">
           <TypewriterComponent
             options={{
@@ -29,16 +29,16 @@ export const LandingHero = () => {
         </div>
       </div>
       <div
-        className="text-2xl font-light text-zinc-500 landing-font"
+        className="text-xl font-light text-zinc-500 bg-clip-text landing-font"
         style={{ marginTop: "110px" }}
       >
-        Learn more. Read more. Understand more.
+        Pushing the Limits of Accelerated Reading.
       </div>
       <div>
         <Link href={isSignedIn ? "/instructions" : "/sign-in"}>
           <Button
             variant="tertiary"
-            className="md:text-lg p-4 md:p-6 rounded-full font-semibold"
+            className="animated-gradient-button md:text-lg p-4 md:p-6 rounded-full"
           >
             Start Speed Learning Now
           </Button>

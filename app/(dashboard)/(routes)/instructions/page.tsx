@@ -1,9 +1,14 @@
 import React from 'react';
-import { auth, currentUser, UserButton } from "@clerk/nextjs";
-import styles from '../dashboard/DashboardPage.module.css';
+import { auth, currentUser } from "@clerk/nextjs";
+import styles from '../Dashboard.module.css';
 import DashboardLayout from '../layout';
-import Mode1Display from "@/components/mode-1/mode-1-display";
-import { SelectedTextProvider } from "@/contexts/SelectedTextContext"; // Adjust the import path as necessary
+import { SelectedTextProvider } from "@/contexts/SelectedTextContext";
+import Routes from '@/config/routes';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { TiFlash } from "react-icons/ti";
+import { HiMiniDocumentText } from "react-icons/hi2";
+
 
 export default async function InstructionPage() {
   const { userId } = auth();
@@ -32,37 +37,58 @@ export default async function InstructionPage() {
     }
   }
 
+  const handleFeedbackClick = () => { 
+    window.open('https://forms.gle/AcLYF7cKN9YPbqdw7', '_blank'); // Opens the link in a new tab
+  };
+
   return (
     <SelectedTextProvider>
       <DashboardLayout navbarType="instructions">
-            <div className={styles.dashboardBg + " flex justify-center pt-4 pb-8 min-h-screen monospace-jetbrains-mono"}>
-                {/* The Sidebar component will be included via DashboardLayout based on navbarType */}
-                <div className="home-container" style={{ maxWidth: '800px', width: '100%', marginTop: '20px', textAlign: 'center' }}>
-                    <h1 style={{ fontSize: '2.5rem' }}>Welcome to Kiraka.ai!</h1>
-                    <ul style={{ listStyle: 'none', fontSize: '14px', padding: '5px' , marginTop: '15px'}}>
-                        <p>This platform uses real-time eye-tracking technology to enhance your reading speed through our FlashMode feature.</p>
-                    </ul>
-                    <ul style={{ listStyle: 'none', lineHeight: '1.6', fontSize: '14px', padding: '20px', marginTop: '20px' }}>
-                        <li><strong>Technology:</strong> We use WebGazer, a gaze-tracking tool developed and maintained by researchers at Brown University.</li>
-                        <li><strong>FlashMode:</strong> Experience text in chunks, displayed sequentially until the entire content is read. This method helps in improving focus and speed.</li>
-                        <li>
-                            <strong>Important Tip:</strong> In FlashMode, <span style={{ color: 'rgb(200, 0, 0)', fontWeight: 'bold' }}>promptly return your gaze to the left after reading each sentence</span>. This motion should be part of your speed reading rhythm. Our algorithm will automatically detect it and dynamically adjusts your WPM (Words Per Minute) to both challenge and match your reading speed. To ensure the gaze detection remains accurate and to prevent premature transitions, <span style={{ color: 'rgb(150, 0, 200)', fontWeight: 'bold' }}>consider blinking at the end of each sentence before shifting your gaze</span>. This helps refresh your eyes and minimises potential errors in gaze tracking due to involuntary movements.
-                        </li>
-                        <li>
-                            <strong>Adjusting for Accuracy:</strong> If you notice unusual results with WPM adjustments, it may indicate a need to <span style={{ color: 'rgb(200, 0, 0)', fontWeight: 'bold' }}>recalibrate the gaze tracking system</span>. To recalibrate, simply press the WebGazer button located on the top right corner while in FlashMode.
-                        </li>
-                        <li>
-                            After your session, you can <span style={{ color: 'rgb(0, 100, 250)', fontWeight: 'bold' }}>save your performance and tackle our custom quiz to test your understanding of the content.</span>
-                        </li>
-                        <li>
-                            <strong>To start speed reading,</strong> go to FlashMode by clicking on the button at the top of the page, then select the text you want to read from the left sidebar.
-                        </li>
-                    </ul>
+            <div className={styles.dashboardBg + " flex justify-center pb-8 min-h-screen monospace-jetbrains-mono"}>
+                <div className="home-container" style={{ maxWidth: '70vw', width: '100%', textAlign: 'center' }}>
+                  <h1 style={{ fontSize: '2.5rem' }}>Welcome to Kiraka.ai!</h1>
+                  <ul style={{ listStyle: 'none', fontSize: '14px', padding: '5px' , marginTop: '15px'}}>
+                    <p>This platform&apos;s main feature, FlashMode, uses real-time eye-tracking technology to enhance your reading speed.</p>
+                  </ul>
+                  <ul style={{ listStyle: 'none', lineHeight: '1.6', fontSize: '14px', padding: '20px', marginTop: '20px' }}>
+                    <li>Multiple reading modes are available on this website, depending on what works better for you:</li>
+                    <li><strong><span style={{ display: 'inline-flex', alignItems: 'center' }}><HiMiniDocumentText className='mr-2.5 text-xs' style={{ fontSize: "11px"}}/>DocMode:</span></strong> See the text in full, with the option to <span style={{ color: 'rgb(0, 100, 200)', fontWeight: 'bold' }}>add a pointer</span> to follow the pace you set, or <span className="hoverable" style={{ color: 'rgb(150, 70, 0)' }}><b>bo</b>ld <b>t</b>he <b>begin</b>ning <b>o</b>f <b>wor</b>ds</span> to help you focus.</li>
+                    <li><strong><span style={{ display: 'inline-flex', alignItems: 'center' }}><TiFlash className='mr-2 text-xs' />FlashMode:</span></strong> Experience text in chunks, displayed sequentially until the entire content is read. This method helps in improving focus and speed. Optional eye tracking can be used to adapt to your speed.</li>
+                    <li><strong>Technology:</strong> For gaze tracking, we use <span style={{ fontStyle: "italic"}}>WebGazer</span>, a tool developed and maintained by researchers at Brown University.</li>
+                    <li>
+                      <strong>Important Tip:</strong> In FlashMode, <span style={{ color: 'rgb(200, 0, 0)', fontWeight: 'bold' }}>promptly return your gaze to the left after reading each sentence</span>. This motion should be part of your speed reading rhythm. Our algorithm will automatically detect it and dynamically adjusts your WPM (Words Per Minute) to both challenge and match your reading speed. To ensure the gaze detection remains accurate and to prevent premature transitions, <span style={{ color: 'rgb(200, 0, 0)', fontWeight: 'bold' }}>when needed, consider blinking at the end of each sentence before shifting your gaze</span>. This helps refresh your eyes and minimises potential errors in gaze tracking due to involuntary movements.
+                    </li>
+                    <li>
+                      <strong>Adjusting for Accuracy:</strong> If you notice unusual results with WPM adjustments, it may indicate a need to <span style={{ color: 'rgb(200, 0, 0)', fontWeight: 'bold' }}>recalibrate the gaze tracking system</span>. To recalibrate, simply press the WebGazer button located on the top right corner while in FlashMode.
+                    </li>
+                    <li>
+                    <b>Thank you for being a test user!</b> These are the features we would like you to explore and give us feedback on
+                    <li>• Use <a href={Routes.DOCMODE}><b>Docmode</b></a> and explore the different <b>features</b> that can be found above the text.</li>
+                    <li>• Use <a href={Routes.DEFAULT_MODE}><b>Flashmode</b></a> and explore both the <b>static</b> and the <b>adaptive</b> settings. In the adaptive setting, we&apos;ve introduced a new toggle feature called complexity mode. Please test it to see if it improves the speed adjustment.</li>
+                    <li>• You can now speedread your own texts! Use our new <a href={Routes.UPLOAD}><b>upload</b></a> feature with any mode you want and try out the generated quizzes on your text!</li>
+                    <li>After your session, don&apos;t forget to <span style={{ color: 'rgb(0, 100, 250)', fontWeight: 'bold' }}>save your performance and tackle our custom quiz to test your understanding of the content.</span></li>
+                    <li>
+                      Please <a href={Routes.FEEDBACK} target='_blank' rel="noopener noreferrer"><span style={{ color: 'rgb(0, 180, 50)', fontWeight: 'bold' }}>give us feedback</span></a> about your experience when you&apos;re done!
+                    </li>
+                    </li>
+                    <li>
+                    </li>
+                   
+                  </ul>
+                  <div className="text-sm" style={{ marginTop: '20px', marginBottom: '20px' }}>
+                    {/* <input type="checkbox" id="terms" /> */}
+                    <label htmlFor="terms">By advancing, you agree to the <a href="/terms" target="_blank" rel="noopener noreferrer"><u>Terms and Conditions</u></a></label>
+                  </div>
+                  <div>
+                    <Link href={Routes.DEFAULT_MODE} passHref>
+                      <Button className="border-2 flash-orange-border rounded-xl bg-amber-200 hover:bg-amber-500 text-black navbar-dashboard-font">Start Your Speed Reading Session!</Button>
+                    </Link>
+                  </div>
                 </div>
-            </div>
-        </DashboardLayout>
-    </SelectedTextProvider>
-  );
+              </div>
+            </DashboardLayout>
+          </SelectedTextProvider>
+        );
 }
 
 

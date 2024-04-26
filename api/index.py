@@ -3,10 +3,19 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy.sql.expression import func
 from datetime import datetime, timezone
+from transformers import AutoModel, AutoTokenizer
 import requests
 import random
 import json
+import torch
 from api.config import DATABASE_URI, ADMIN_ID
+from api.chunk_complexity import compute_chunk_complexity, transformer_reg
+
+# try:
+import api.quiz_function as quiz_function
+# except Exception as e:
+#     print(f'Failed to import quiz function: {str(e)}')
+
 
 app = Flask(__name__)
 CORS(app) # See what this does
@@ -17,6 +26,23 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # What does this do?
 db = SQLAlchemy(app)
 
+# LLM models and tokenizers
+complexity_model = None
+complexity_tokenizer = None
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+
+# Loads LLM models and tokenizers when the server starts
+def load_model(device = "cpu"):
+    global complexity_model
+    global complexity_tokenizer
+
+    complexity_tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+    complexity_model = transformer_reg("bert-base-uncased").to(device)
+    complexity_model.load_state_dict(torch.load(f"llms/complexity_llm.pt", map_location=device))
+    complexity_model.to(device)
+    complexity_model.eval()
+
 # Creates the database model. This means we create a class for each table in the database
 class Texts(db.Model):  
     __tablename__ = 'Texts'
@@ -24,8 +50,11 @@ class Texts(db.Model):
     keywords = db.Column(db.Text)
     text_content = db.Column(db.Text)
     user_id = db.Column(db.String(50), db.ForeignKey('Users.user_id'))
-    quiz_questions = db.relationship('Questions', backref='text', lazy=True)
+    quiz_questions = db.relationship('Questions', backref='text', lazy=True, cascade='all, delete')
     title = db.Column(db.Text)
+    deleted = db.Column(db.Boolean, default=False)
+    chunk_complexity = db.relationship('ChunkComplexity', backref='text', lazy=True, cascade='all, delete')
+    practices = db.relationship('PracticeResults', backref='text', lazy=True, cascade='all, delete')
     
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -63,9 +92,9 @@ class PracticeResults(db.Model):
     user_id = db.Column(db.String(50), db.ForeignKey('Users.user_id'), nullable=False)
     wpm = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, default=datetime.today())
-    quiz_results = db.relationship('QuizResults', backref='practice', lazy=True)
+    quiz_results = db.relationship('QuizResults', backref='practice', lazy=True, cascade='all, delete')
     mode = db.Column(db.Text)
-    
+    chunks = db.relationship('Chunks', backref='practice', lazy=True, cascade='all, delete')
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
     
@@ -74,6 +103,7 @@ class Chunks(db.Model):
     chunk_id = db.Column(db.Integer, primary_key=True)
     practice_id = db.Column(db.Integer, db.ForeignKey('PracticeResults.practice_id'), nullable=False)
     chunk_position = db.Column(db.Integer) #Index position w.r.t this run's other chunks, so that they can be ordered
+    gazer_points = db.relationship('GazerPoints', backref='chunk', lazy=True, cascade='all, delete')
 
 class GazerPoints(db.Model):
     __tablename__ = 'GazerPoints'
@@ -84,13 +114,20 @@ class GazerPoints(db.Model):
     y_value = db.Column(db.Float) #y coordinate of the gaze point
     elapsed_time = db.Column(db.Float) #Time elapsed since the start of the chunk
     
+class ChunkComplexity(db.Model):
+    __tablename__ = 'ChunkComplexity'
+    chunk_complexity_id = db.Column(db.Integer, primary_key = True)
+    complexity = db.Column(db.Float) #Complexity score of the chunk
+    text_id = db.Column(db.Integer, db.ForeignKey('Texts.text_id'), nullable=False)
+    chunk_position = db.Column(db.Integer) #Index position w.r.t this text's other chunks, so that they can be ordered
+    chunk_content = db.Column(db.Text) #The actual text content of the chunk
 
-def populate_texts():
+def populate_texts(text_file = 'api/preloaded_texts.json'):
     '''
     Add initial texts to the database
     '''
     try:
-        with open('api/preloaded_text.json', 'r') as texts_file:
+        with open(text_file, 'r') as texts_file:
             texts = json.loads(texts_file.read())
             for text in texts.values():
                 print(text['title'])
@@ -103,6 +140,7 @@ def populate_texts():
                 db.session.add(new_text)
                 db.session.commit()
                 for question in text['questions']:
+                    random.shuffle(question['options'])
                     new_quiz_question = Questions(text_id=new_text.text_id,
                                                   question_content=question['question'],
                                                   multiple_choices=';'.join(question['options']),
@@ -110,6 +148,7 @@ def populate_texts():
                                                   )
                     db.session.add(new_quiz_question)
                     db.session.commit()
+                store_chunk_complexity(new_text)
         print('Texts and quizzes added successfully!')
     except Exception as e:
         db.session.rollback()
@@ -134,7 +173,7 @@ def generate_quiz():
 
 # Input validation functions
 def text_content_is_valid(text_content):
-    return text_content and isinstance(text_content, str) and len(text_content) >= 100
+    return text_content and isinstance(text_content, str) and len(text_content) >= 1500 and len(text_content) < 6000
 
 def user_id_is_valid(user_id):
     return isinstance(user_id, int) and user_id > 0 # Outdated
@@ -149,24 +188,35 @@ def add_text():
     else:
         text_content = request.json.get('text_content')
         user_id = request.json.get('user_id')
-
+        title = request.json.get('title', None)
+        if Users.query.filter_by(user_id=user_id).first() is None or user_id==1:
+            return jsonify({'error': 'User not found'}), 404
         if text_content is None or user_id is None:
             return jsonify({'error': 'Invalid request. Missing text_content or user_id'}), 400
         if not text_content_is_valid(text_content):
             return jsonify({'error': 'Invalid text_content'}), 400
-        if not user_id_is_valid(user_id):
-            return jsonify({'error': 'Invalid user_id'}), 400
+        # if not user_id_is_valid(user_id):
+        #     return jsonify({'error': 'Invalid user_id'}), 400
         else:
             new_text = Texts(
                 text_content=text_content,
-                user_id = user_id
+                user_id = user_id,
+                title = title
             )
             db.session.add(new_text)
             db.session.commit()
+            store_chunk_complexity(new_text)
             try:
-                quiz = generate_quiz()
-                if quiz:
-                    pass
+                quizzes = quiz_function.take_text_generate_quiz_convert_to_dict(text_content)
+                #quizzes= [{'question': ' What is the name for the ability of living organisms to emit light?', 'options': ['Effluence', 'Bioluminescence', 'Perseveration', 'Chemiluminescence'], 'correct_answer': 'Bioluminescence'}, {'question': ' What is the major purpose of all marine organisms?', 'options': ['to emit light', 'to emanate', 'to refract', 'to extrude'], 'correct_answer': 'to emit light'}, {'question': ' Where did a person discover bioluminescence?', 'options': ['deep sea', 'coral sea', 'high sea', 'inland sea'], 'correct_answer': 'deep sea'}, {'question': ' How can one study the dark wonders of the deep sea?', 'options': ['conceptualize', 'soliloquize', 'explore techniques', 'immerse'], 'correct_answer': 'explore techniques'}, {'question': " What's the name for a natural marvel that exists to create a mesmerizing display?", 'options': ['chemiluminescence', 'bioluminescence', 'perseveration', 'effluence'], 'correct_answer': 'bioluminescence'}]
+                for quiz in quizzes:
+                    new_quiz_question = Questions(text_id=new_text.text_id,
+                                                  question_content=quiz['question'],
+                                                  multiple_choices=';'.join(quiz['options']),
+                                                  correct_answer=quiz['correct_answer']
+                                                  )
+                    db.session.add(new_quiz_question)
+                    db.session.commit()
         
             except Exception as e: 
                 db.session.rollback()
@@ -175,18 +225,14 @@ def add_text():
             finally:      
                 return jsonify({'message': 'Text added successfully!', 'text_id':new_text.text_id}), 201
 
-@app.route('/api/texts/random', methods=['GET'])        
+@app.route('/api/texts/admin', methods=['GET'])        
 def get_random_text():
     '''
     Fetches a random admin text from the database and returns it as JSON
     '''
-    random_text = Texts.query.filter_by(user_id=ADMIN_ID).order_by(func.rand()).first()
-    if random_text:
-        text_data = {
-            'text_id': random_text.text_id,
-            'text_content': random_text.text_content,
-            'quiz_questions': [question.to_dict() for question in random_text.quiz_questions]
-        }
+    admin_texts = Texts.query.filter_by(user_id=ADMIN_ID).all()
+    if admin_texts:
+        text_data = [{'text_id': admin_text.text_id, 'title': admin_text.title} for admin_text in admin_texts if int(admin_text.text_id) > 5]
         return jsonify(text_data)
     else:
         return jsonify({'message': 'No texts found'}), 404
@@ -197,17 +243,53 @@ def get_text_by_id(text_id):
     '''
     Fetches a specific text from the database by text_id and returns it as JSON
     '''
+    user_id = request.args.get('user_id')
     # Fetch the text from the database using the provided text_id
     text = Texts.query.get(text_id)
 
+
     # If the text is found, return its details
     if text:
-        text_data = {
-            'text_id': text.text_id,
-            'text_content': text.text_content,
-            'quiz_questions': [question.to_dict() for question in text.quiz_questions]
-        }
-        return jsonify(text_data)
+        if not text.user_id in ['1', user_id]:
+            return jsonify({'error': 'Unauthorized to access this text'}), 401
+        if text.deleted:
+            return jsonify({'message': 'Text has been deleted'}), 404
+        else: 
+            text_data = {
+                'text_id': text.text_id,
+                'text_content': text.text_content,
+                'quiz_questions': [question.to_dict() for question in text.quiz_questions],
+                'title': text.title,
+            }
+            return jsonify(text_data)
+    
+    # If the text is not found, return a 404 not found error
+    else:
+        return jsonify({'message': 'Text not found'}), 404
+    
+@app.route('/api/chunks/<int:text_id>', methods=['GET'])
+def get_chunks_by_text_id(text_id):
+    '''
+    Fetches a specific text from the database by text_id and returns it as JSON
+    '''
+    #Get the user_id for authorisation
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
+    # Fetch the text from the database using the provided text_id
+
+    chunks = ChunkComplexity.query.filter_by(text_id=text_id).order_by(ChunkComplexity.chunk_position).all()
+
+    # If the text is found, return its details
+    if chunks:
+        if not Texts.query.filter_by(text_id=text_id).first().user_id in ['1', user_id]:
+            return jsonify({'error': 'Unauthorized to access this text'}), 401
+        else: 
+            text_data = {
+                'chunks': [chunk.chunk_content for chunk in chunks],
+                'complexity': [chunk.complexity for chunk in chunks],
+            }
+            return jsonify(text_data)
     
     # If the text is not found, return a 404 not found error
     else:
@@ -220,35 +302,67 @@ def text_by_user_id():
     Fetches all texts from a user and returns it as JSON
     '''
     user_id = request.args.get('user_id')
-    texts = Texts.query.filter_by(user_id=user_id).all()
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
+    texts = Texts.query.filter_by(user_id=user_id, deleted=False).all()
     all_texts_data = []
     for text in texts:
         text_data = {
             'text_id': text.text_id,
             'text_content': text.text_content,
             'quiz_questions': [question.to_dict() for question in text.quiz_questions],
-            'keywords': text.keywords
+            'keywords': text.keywords,
+            'title': text.title,
         }
         all_texts_data.append(text_data)
     return jsonify(all_texts_data)
       
-@app.route('/api/texts/<int:text_id>', methods=['DELETE'])
+@app.route('/api/texts/<string:text_id>', methods=['DELETE'])
 def delete_text(text_id):
-    user_id = int(request.args.get('user_id'))
+    try:
+        user_id = request.args.get('user_id')
+    except TypeError:
+        return jsonify({'error': 'User ID is required'}), 400
+        
     text_to_delete = Texts.query.filter_by(text_id=text_id).first()
-    if text_to_delete.user_id != user_id:
+    if text_to_delete is None:
+        return jsonify({'error': 'Text not found'}), 404
+    if text_to_delete.user_id != user_id or user_id == 1:
         return jsonify({'error': 'Unauthorized to delete this text'}), 401
     else:
-        try:
-            Questions.query.filter_by(text_id=text_id).delete()
-            Texts.query.filter_by(text_id=text_id).delete()
-            db.session.commit()
-            return jsonify({'message': 'Text deleted successfully!'}), 200
-        except:
-            db.session.rollback()
-            return jsonify({'error': 'Failed to delete text'}), 500
+        full_delete = request.args.get('full_delete')
+        print(full_delete)
+        if full_delete == 'true':
+            try:
+                my_text = Texts.query.filter_by(text_id=text_id).first()
+                db.session.delete(my_text)
+                db.session.commit()
+                print('Text deleted successfully!')
+                return jsonify({'message': 'Text deleted successfully!'}), 200
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({'error': e.message}), 500
+        else:
+            try:
+                Questions.query.filter_by(text_id=text_id).update({"question_content": "Question deleted by user", "multiple_choices": "deleted", "correct_answer": "deleted"})
+                ChunkComplexity.query.filter_by(text_id=text_id).delete()
+                Texts.query.filter_by(text_id=text_id).update({'text_content': 'Text deleted by user', 'keywords': 'deleted', 'title': 'Deleted', 'deleted': True})
+                db.session.commit()
+                return jsonify({'message': 'Text deleted successfully!'}), 200
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({'error': e.message}), 500
 
-    
+@app.route('/api/avgWPM', methods=['GET'])
+def get_avg_wpm():
+    user_id = request.args.get('user_id')
+    mode = request.args.get('mode')
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
+    practice_results = PracticeResults.query.filter_by(user_id=user_id, mode=mode).all()
+    avg_wpms = [practice.wpm for practice in practice_results]
+    return jsonify({'avgWPMs': avg_wpms})
+
 @app.route('/api/texts/summarize', methods=['POST'])
 def summarize_text():
     input_text = request.json.get('text', '')
@@ -504,7 +618,7 @@ def get_info():
     user_data = Users.query.filter_by(user_id=user_id).first()
     if user_data:
         # User exists, serialize and return user data
-        return jsonify(success=True, user_exists=True, user_data=user_data.to_dict())
+        return jsonify(success=True, user_exists=True)
     else:
         # User does not exist
         return jsonify(success=False, user_exists=False, message="User not found.")
@@ -538,16 +652,34 @@ def get_practiced_texts():
     read_texts = list(set([text.text_id for text in practiced_texts]))
     return jsonify(read_texts=read_texts), 200
 
-
+def store_chunk_complexity(text):
+    global device
+    chunk_list, total_complexity = compute_chunk_complexity(text.text_content, complexity_model, complexity_tokenizer, device=device)
+    for i, chunk in enumerate(chunk_list):
+        new_chunk_complexity = ChunkComplexity(
+            complexity=total_complexity[i],
+            text_id=text.text_id,
+            chunk_position=i,
+            chunk_content = chunk
+            )
+        db.session.add(new_chunk_complexity)
+    db.session.commit()
 
 with app.app_context():
     db.create_all()
-    
+    load_model()
     if Users.query.first() is None:
         add_admin()
     if Texts.query.first() is None:
         populate_texts()
-
+    if ChunkComplexity.query.first() is None: 
+        for text in Texts.query.all():
+            store_chunk_complexity(text)
+    if len(Texts.query.filter_by(user_id='1').all()) <=5:
+        populate_texts('api/preloaded_texts_2.json')
+        
 if __name__ == '__main__':
     app.run(debug=True, port = 8000)
+
+
 

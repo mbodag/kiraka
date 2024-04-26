@@ -1,0 +1,32 @@
+# Specify the image to use for the job
+image: node:14
+image: python
+
+stages:
+  - build
+  - test
+  - deploy
+
+job_build:
+  stage: build
+  script:
+    - echo "build stage"
+
+  only:
+    - dev
+    - master
+
+job_test:
+  stage: test
+  script:
+    - echo "Running tests"
+  only:
+    - dev
+    - master
+
+job_deploy:
+  stage: deploy
+  script:
+    - echo "Deploying the project"
+  only:
+    - master

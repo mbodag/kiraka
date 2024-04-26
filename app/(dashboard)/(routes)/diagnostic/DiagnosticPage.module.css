@@ -1,5 +1,0 @@
-.diagnosticBg {
-  min-height: 100vh;
-  /* Increase the alpha value to make the gradient more opaque, e.g., 0.8 */
-  background: linear-gradient(to right, rgba(1, 183, 250, 0.825), rgba(1, 255, 175, 0.6));
-}

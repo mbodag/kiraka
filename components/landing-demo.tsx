@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
+
 
 export const LandingDemo = () => {
   const [highlightedTextIndex, setHighlightedTextIndex] = useState(-1);

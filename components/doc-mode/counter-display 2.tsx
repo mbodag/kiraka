@@ -10,7 +10,7 @@ interface CounterDisplayProps {
 const CounterDisplay: React.FC<CounterDisplayProps> = ({
   count,
   fontSize = "14px",
-  className = "",
+  className = "bg-amber-50",
 }) => {
   const [leftArrowActive, setLeftArrowActive] = useState(false);
   const [rightArrowActive, setRightArrowActive] = useState(false);
@@ -52,7 +52,6 @@ const CounterDisplay: React.FC<CounterDisplayProps> = ({
         boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)', 
         padding: '10px 50px', 
         borderRadius: '10px', 
-        margin: '5px',
         marginBottom: '5px',
         textAlign: 'center' 
       }}>
@@ -60,7 +59,7 @@ const CounterDisplay: React.FC<CounterDisplayProps> = ({
       {/* Counter display */}
       <div>
         <p style={{ fontSize: fontSize, fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>
-          Counter (words per minute): {count}
+          Counter WPM (Words Per Minute): {count}
         </p>
       </div>
 

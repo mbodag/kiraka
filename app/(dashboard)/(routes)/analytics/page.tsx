@@ -2,11 +2,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './AnalyticsPage.module.css';
-import Link from 'next/link';
 import { Button } from "@/components/ui/button";
-import { Line, Bar } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js/auto';
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
+import Routes from '@/config/routes';
 
 
 // Register Chart.js components
@@ -46,6 +46,16 @@ const getAnalytics = async (userId: string | null | undefined) => {
     console.error("Error fetching response", error);
   }
 };
+
+const goBack = () => {
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    // Programmatically navigate using Next.js router since window.history is not feasible
+    window.location.href = Routes.DEFAULT_MODE;
+  }
+};
+
 // AnalyticsPage component
 const AnalyticsPage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
@@ -56,6 +66,7 @@ const AnalyticsPage: React.FC = () => {
   const [isAdmin, setAdmin] = useState(false)
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { userId } = useAuth();
+  const { user } = useUser();
 
   useEffect(() => {
     const fetchAnalyticsData = async () => {
@@ -95,6 +106,9 @@ const AnalyticsPage: React.FC = () => {
     const labels = userRecords.map(
       (record: any) => `${record.timestamp} (ID: ${record.textId})`
     );
+
+    // Conditional title based on the userName
+    const plotTitle = userName === "Your data" ? "Your Performance" : `${userName}'s Performance`;
 
     // Combined data for both Average WPM and Quiz Score
     const combinedData = {
@@ -170,7 +184,7 @@ const AnalyticsPage: React.FC = () => {
         },
         title: {
           display: true,
-          text: `${userName}'s Performance`,
+          text: plotTitle,
           font: {
             size: 18,
           },
@@ -199,9 +213,7 @@ const AnalyticsPage: React.FC = () => {
       className={`${styles.analyticsBg} flex flex-col items-center pt-10 pb-8 min-h-screen analytics-font`}
     >
       <div className="self-start absolute top-4 left-4">
-        <Link href="/webgazer-mode-2">
-          <Button className="text-lg ml-4 shadow bg-lime-50/60 hover:bg-lime-50/100 text-gray-900 bold">Back</Button>
-        </Link>
+          <Button onClick={goBack} className="ml-4 shadow rounded-xl bg-lime-50/60 hover:bg-lime-50/100 text-gray-900 bold" style={{ fontSize: "17px" }}>Back</Button>
       </div>
 
       <h1 className="text-5xl font-bold mb-4">Dashboard Analytics</h1>

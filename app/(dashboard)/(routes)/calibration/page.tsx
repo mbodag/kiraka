@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { useWebGazer } from '@/contexts/WebGazerContext';
 import { SiTarget } from "react-icons/si";
-// import webgazer from "webgazer";
+import Routes from '@/config/routes';
+
 
 // Type definitions for extended window object and calibration points
 interface ExtendedWindow extends Window { webgazer?: any; } // Adjust the type based on the 'webgazer' object
@@ -24,7 +24,6 @@ export default function WebgazerCalibration() {
   const [calibrationPoints, setCalibrationPoints] = useState<CalibrationPoints>({});
   const [showInstructions, setShowInstructions] = useState(true);
   const [allCalibrated, setAllCalibrated] = useState(false);
-  const [showInitButton, setShowInitButton] = useState(true);
   const [showCalibrationButton, setShowCalibrationButton] = useState(true);
 
   // Accessing setWebgazerActive from context
@@ -32,11 +31,13 @@ export default function WebgazerCalibration() {
 
   // Function to start the calibration process
   const startCalibration = () => {
+    setAllCalibrated(false);
     setCalibrationStarted(true);
     setShowCalibrationButton(false);
     if (extendedWindow && extendedWindow.webgazer) {
       // Show prediction points if WebGazer is available
       extendedWindow.webgazer.showPredictionPoints(true).addMouseEventListeners();
+      extendedWindow.webgazer.showVideo(true)
     }
     setShowInstructions(false); // Hide instructions overlay
   };
@@ -164,15 +165,54 @@ export default function WebgazerCalibration() {
   if (!isMounted) {
     return null;  // Renders nothing if the component hasn't mounted yet
   }
+
+
+  const resetAndReinitWebgazer = async () => {
+      if (extendedWindow && extendedWindow.webgazer) {
+          await extendedWindow.webgazer.clearData();
+          extendedWindow.webgazer.end();
+      }
+
+      // Reset the state
+      setWebgazerInitialized(false);
+      setCalibrationStarted(false);
+      setCalibrationPoints({});
+      setShowCalibrationButton(true);
+
+      // Reinitialize WebGazer
+      await initWebgazer();
+      startCalibration();
+  };
+
+
+  const calculateColor = (clicks: number) => {
+    const maxClicks = 5;
+    // Check if calibration is complete
+    if (clicks >= maxClicks) {
+      return 'rgb(0, 200, 0)'; // Green color when done
+    }
+  
+    // Starting RGB for red
+    const startColor = { r: 255, g: 0, b: 0 };
+    // Ending RGB for blue
+    const endColor = { r: 100, g: 0, b: 0 };
+  
+    // Linear interpolation between start and end colors based on clicks
+    const r = Math.round(startColor.r + ((endColor.r - startColor.r) * (clicks / maxClicks)));
+    const g = Math.round(startColor.g + ((endColor.g - startColor.g) * (clicks / maxClicks)));
+    const b = Math.round(startColor.b + ((endColor.b - startColor.b) * (clicks / maxClicks)));
+  
+    return `rgb(${r}, ${g}, ${b})`;
+  };
   
   return (
     <div>
       {/* Initialise WebGazer Button */}
       <button
-        onClick={allCalibrated ? startCalibration : initWebgazer} // Calls the initWebgazer function when clicked
+        onClick={allCalibrated ? resetAndReinitWebgazer : initWebgazer} // Calls the initWebgazer function when clicked
         className={allCalibrated ? "OrangeButton" : "GreenButton"}
       >
-        {allCalibrated ? "Re-calibrate WebGazer" : "Initialise WebGazer"}
+        {allCalibrated ? "Re-calibrate" : "Initialise WebGazer"}
       </button>
 
       {/* Conditionally rendered Start Calibration Button */}
@@ -202,15 +242,18 @@ export default function WebgazerCalibration() {
             }}
             disabled={point.clicks >= 5}
           >
-            <SiTarget style={{ color: point.clicks >= 5 ? "blue" : "red", fontSize: "20px" }} />
+            <SiTarget style={{
+              color: calculateColor(point.clicks),
+              fontSize: "20px"
+            }} />
           </button>
         ))}
 
       {/* Link to Dashboard if All Calibrated */}
       {allCalibrated && (
-        <Link href="../webgazer-mode-2">
-          <Button>Go Back</Button>
-        </Link>
+          <Link href={Routes.DEFAULT_MODE}>
+              <button className="GreenButton">Start Speed Reading</button>
+          </Link>
       )}
 
       {/* Instructions Overlay */}
@@ -231,13 +274,13 @@ export default function WebgazerCalibration() {
           }}
         >
           <p style={{ 
-            color: "black" ,
-            paddingTop: "5px",
-            paddingBottom: "10px",
-            }}>
-            Click each on-screen target point <em>at least 5 times</em> until it changes colour to calibrate the eye-tracking system.<br /><br />
-            <strong>While clicking, focus your gaze on the center of each target</strong>.<br /><br />
-            For best results, remain in a well-lit area, keep your head still during calibration, and avoid significant changes to your environment while using WebGazer.
+              color: "black",
+              paddingTop: "5px",
+              paddingBottom: "10px",
+          }}>
+              Click each on-screen target point <span style={{ color: 'rgb(200, 0, 0)', fontWeight: '', fontStyle: 'italic' }}>at least 5 times</span> until it changes colour <span style={{ fontStyle: 'italic', textDecoration: 'underline' }}>from red to green</span> to calibrate the eye-tracking system. <span style={{ color: 'rgb(200, 0, 0)', fontWeight: '', fontStyle: 'italic' }}>While clicking, focus your gaze on the center of each target</span>.<br /><br />
+              For best results, <span style={{ color: 'rgb(0, 0, 180)', fontWeight: '', fontStyle: 'italic' }}>remain in a well-lit area</span>, <span style={{ color: 'rgb(0, 0, 180)', fontWeight: '', fontStyle: 'italic' }}>keep your head still</span> during calibration, and <span style={{ color: 'rgb(0, 0, 180)', fontWeight: '', fontStyle: 'italic' }}>avoid significant changes to your environment</span> while using WebGazer.<br /><br />
+              When prompted, please <span style={{ color: 'rgb(150, 0, 150)', fontWeight: '', fontStyle: 'italic' }}>allow “srp.doc.ic.ac.uk” to use your camera</span>. Note that the active camera is solely used to track your eyes for calibration and speed reading purposes.
           </p>
           <div style={{ display: "flex", justifyContent: "center", gap: "5px" }}>
             {/* Got it Button */}
@@ -250,8 +293,7 @@ export default function WebgazerCalibration() {
             {/* Back Button */}
             <button
               onClick={() => {
-                // Change to the desired route, and then force a reload
-                window.location.href = '/webgazer-mode-2';
+                window.location.href = Routes.DEFAULT_MODE;
               }}
               className="BlackButton"
             >

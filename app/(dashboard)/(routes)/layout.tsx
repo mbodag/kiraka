@@ -1,12 +1,10 @@
 "use client"
 
 import React from "react";
-import StandardNavbar from "@/components/navbar";
-import StandardWebGazerNavbar from "@/components/navbar_webgazer";
-import StandardInstructionsNavbar from "@/components/navbar_instructions";
+import StandardWebGazerNavbar from "@/components/navbar-webgazer";
+import StandardInstructionsNavbar from "@/components/navbar-instructions";
 import QuizNavbar from "@/components/quiz-navbar";
 import Sidebar from "@/components/sidebar";
-import QuizSidebar from "@/components/quiz-sidebar";
 import { WebGazerProvider } from "@/contexts/WebGazerContext";
 
 
@@ -23,7 +21,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, navbarType 
   // Dynamically choose the navbar based on navbarType
   switch (navbarType) {
     case 'standard-manual':
-      navbar = <StandardNavbar />;
+      navbar = <StandardWebGazerNavbar />;
       sidebar = <Sidebar />;
       break;
     case 'instructions':
@@ -36,7 +34,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, navbarType 
       break;
     case 'quiz':
       navbar = <QuizNavbar />;
-      sidebar = <QuizSidebar />;
+      sidebar = <Sidebar />;
       break;
     default:
       navbar = null; // Default case if no navbarType is provided
