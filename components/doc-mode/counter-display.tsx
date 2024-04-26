@@ -52,7 +52,6 @@ const CounterDisplay: React.FC<CounterDisplayProps> = ({
         boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)', 
         padding: '10px 50px', 
         borderRadius: '10px', 
-        margin: '5px',
         marginBottom: '5px',
         textAlign: 'center' 
       }}>

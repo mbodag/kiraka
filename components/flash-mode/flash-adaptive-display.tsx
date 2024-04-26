@@ -101,6 +101,9 @@ const Mode2Display = () => {
     const [redirectingToCalibration, setRedirectingToCalibration] = useState(false);
     const [redirectingToQuiz, setRedirectingToQuiz] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
+
+    // Added features
+    const [integrateComplexity, setIntegrateComplexity] = useState(false);
     
     useEffect(() => {
         // Check if the session is new -- if yes, ensure webgazer is set to inactive as camera will be off
@@ -152,13 +155,6 @@ const Mode2Display = () => {
       }
     }, [selectedTextId]);
 
-
-    // useEffect(() => {
-    //     const isCalibrated = sessionStorage.getItem('isCalibrated');
-    //     if (!isCalibrated) {
-    //       setShowCalibrationPopup(true);
-    //     }
-    //   }, []);
 
     useEffect(() => {
         // Directly check if WebGazer is not active to prompt for calibration.
@@ -289,6 +285,15 @@ const Mode2Display = () => {
         return () => window.removeEventListener("keydown", handleKeyPress);
     }, [showCalibrationPopup, showCompletionPopup, isPaused]);
 
+
+
+    useEffect(() => {
+        if (showCompletionPopup) {
+            setShowCompletionPopup(false);  // Hide the popup if it's visible
+        }
+        restartAction();
+    }, [integrateComplexity]);
+    
     
     // Function to calculate display time from WPM for a chunk
     const calculateDisplayTimeFromWPM = (chunk: string) => {
@@ -338,10 +343,12 @@ const Mode2Display = () => {
         const b = -8.05905;
         return 1 - Math.exp((a * complexity + b)); // bounded by 1 (i.e., 100% for factor)
     }
-    const adjustWPMForComplexity = (chunkIndex: number): number => {
+    const adjustWPMForComplexity = (chunkIndex: number, integrateComplexity: boolean): number => {
+        if (!integrateComplexity) return 0;  // No adjustment if integration is disabled
+
         const complexity = complexityChunks[chunkIndex];
         const Kmin = 5;
-        const Kmax = 35;
+        const Kmax = complexity <= 0.7 ? 20 : 35;
 
         if (complexity >= 0.77) {
             // Complexity is high, decrease WPM
@@ -451,7 +458,7 @@ const Mode2Display = () => {
 
                         let complexityAdjustment = 0; 
                         if (currentChunkIndex < wordChunks.length - 1) {
-                            complexityAdjustment = Math.round(adjustWPMForComplexity(currentChunkIndex + 1));
+                            complexityAdjustment = Math.round(adjustWPMForComplexity(currentChunkIndex + 1, integrateComplexity));
                         } 
                         console.log('NEW currentChunkIndex', currentChunkIndex)
                         console.log('NEW complexityChunks', complexityChunks)
@@ -526,7 +533,7 @@ const Mode2Display = () => {
 
                         let complexityAdjustment = 0; 
                         if (currentChunkIndex < wordChunks.length - 1) {
-                            complexityAdjustment = Math.round(adjustWPMForComplexity(currentChunkIndex + 1));
+                            complexityAdjustment = Math.round(adjustWPMForComplexity(currentChunkIndex + 1, integrateComplexity));
                         }
                         console.log('NEW currentChunkIndex', currentChunkIndex)
                         console.log('NEW complexityChunks', complexityChunks)
@@ -960,9 +967,21 @@ const Mode2Display = () => {
                         textAlign: 'center',
                         }}
                     >
+                        
                         <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Commands</h3>
                     </div>
-
+                    {/* Checkbox for toggling complexity adjustment */}
+    <div>
+        <label style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }}>
+            <input
+                type="checkbox"
+                checked={integrateComplexity}
+                onChange={e => setIntegrateComplexity(e.target.checked)}
+                style={{ marginRight: '10px' }}
+            />
+            Integrate Complexity Adjustments
+        </label>
+    </div>
                     {/* Second inner div for the text "Average WPM:" centered */}
                     <div
                         style={{
