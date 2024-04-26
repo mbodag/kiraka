@@ -823,8 +823,17 @@ const Mode2Display = () => {
                                 {!redirectingToCalibration ? (
                                 <>
                                     <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
-                                        Click the button below to begin calibrating WebGazer and start your speed reading session!
+                                        Welcome to <b>DocMode!</b>
                                     </p>
+                                    <p></p>
+                                    <p><b>Static:</b></p>
+                                    <p>Chunks of text are shown in flashes, enforcing focus and first-time reading. The reading speed can be adjusted using the left-right arrow keys.</p>
+                                    <p></p>
+                                    <p><b>Adapative</b> (Recommended):</p>
+                                    <p>Adaptive uses eye-tracking (Webgazer) to automatically adjust your reading speed to an appropriately challenging level. If need be, speed can still be adjusted using arrow keys.</p>
+                                    <p></p>
+                                    <p>To begin WebGazer calibration, click the button below!</p>
+                                    <p></p>
                                     <button className="GreenButton" onClick={handleGoToCalibration}>
                                         Go to Calibration
                                     </button>
