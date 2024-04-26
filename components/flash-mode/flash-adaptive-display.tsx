@@ -821,15 +821,17 @@ const Mode2Display = () => {
                                         <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
                                         Welcome to <b>FlashMode!</b>
                                             </p>
-                                            <p></p>
+                                            <p>Here, there are 2 modes: Static and Adaptive. To choose, use the toggle buttons above.</p>
+                                            <br></br>
                                             <p><b>Static:</b></p>
                                             <p>Chunks of text are shown in flashes, enforcing focus and first-time reading. The reading speed can be adjusted using the left-right arrow keys.</p>
-                                            <p></p>
+                                            <br></br>
                                             <p><b>Adapative</b> (Recommended):</p>
                                             <p>Adaptive uses eye-tracking (Webgazer) to automatically adjust your reading speed to an appropriately challenging level. If need be, speed can still be adjusted using arrow keys.</p>
-                                            <p></p>
+                                            <br></br>
                                             <p>To begin WebGazer calibration, click the button below!</p>
-                                            <p></p>
+                                            <br></br>
+                                            
                                         <button className="GreenButton" onClick={handleGoToCalibration}>
                                             Go to Calibration
                                         </button>
