@@ -612,19 +612,18 @@ const Mode1Display = () => {
 
                 {/* div 1 */}
                 <div
-                className="bg-white rounded-lg shadow-lg px-6 pt-2 mt-2"
-                style={{
-                width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
-                display: 'flex',
-                flexDirection: 'column', // This will stack children divs on top of each other
-                alignItems: 'center',
-                justifyContent: 'space-evenly', // Adjust spacing between inner divs
-                flexGrow: 1,
-                marginBottom: `${gapBetweenSize}`,
-                }}
+                    className="bg-white rounded-lg shadow-lg px-6 pt-1.5 mt-2 pb-5"
+                    style={{
+                    width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
+                    display: 'flex',
+                    flexDirection: 'column', // This will stack children divs on top of each other
+                    alignItems: 'center',
+                    justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                    marginBottom: `${gapBetweenSize}`,
+                    }}
                 >
                 {/* First inner div for the title "Stats" and a gray horizontal line */}
-                <div
+                    <div
                         style={{
                         backgroundColor: 'white',
                         boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
@@ -639,7 +638,7 @@ const Mode1Display = () => {
                     </div>
 
                     {/* Second inner div for the text "Average WPM:" centered */}
-                    <div
+                    <div className="mt-3"
                         style={{
                         width: '100%', // Matches the width of the first inner div for consistency
                         display: 'flex',
@@ -656,7 +655,7 @@ const Mode1Display = () => {
 
                 {/* div 2 */}
                 <div
-                className="bg-white rounded-lg shadow-lg p-6 pt-2 mb-2"
+                className="bg-white rounded-lg shadow-lg p-6 pt-1.5 mb-2"
                 style={{
                 width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
                 display: 'flex',
@@ -678,7 +677,7 @@ const Mode1Display = () => {
                         textAlign: 'center',
                         }}
                     >
-                        <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Stats</h3>
+                        <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Features</h3>
                     </div>
 
                     {/* Second inner div for the text "Average WPM:" centered */}
@@ -692,7 +691,7 @@ const Mode1Display = () => {
                         }}
                     >
                         <p style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }}>
-                        Average WPM: {averageWPM !== null ? averageWPM : <span style={{ fontStyle: 'italic', color: 'rgb(150, 150, 150)' }}>Pending</span>}
+                        <span style={{ fontStyle: 'italic', color: 'rgb(150, 150, 150)' }}>Coming Soon</span>
                         </p>
                     </div>
                 </div>
