@@ -7,16 +7,10 @@ stages:
   - test
   - deploy
 
-before_script:
-  - cd /home/website/kiraka
-  - source venv/bin/activate
-  - pip install -r requirements.txt
-
 job_build:
   stage: build
   script:
-    - cd /home/website
-    - ./run_app.sh
+    - echo "build stage"
 
   only:
     - dev
