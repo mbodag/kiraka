@@ -8,6 +8,7 @@ import '@/app/globals.css';
 import { useWebGazer } from '@/contexts/WebGazerContext';
 import { TbSquareLetterR } from "react-icons/tb";
 import { RiSpace } from "react-icons/ri";
+import { ArrowLeftSquare, ArrowRightSquare } from 'lucide-react';
 import  { usePracticeID } from '@/contexts/PracticeIDContext';
 import { useAuth } from "@clerk/nextjs";
 import { VscDebugRestart } from "react-icons/vsc";
@@ -744,10 +745,11 @@ const Mode2Display = () => {
 
     
 
-    const gapBetweenSize = '10px';
-    const gapEdgeSize = '15px';
-    const divHeight = '250px';
-    const plotHeight = '350px';
+      const gapBetweenSize = '10px';
+      const gapEdgeSize = '17px';
+      const displayHeight = '250px';
+      const mainDivHeight = '320px';
+      const plotHeight = '350px';
 
     return (
     <div
@@ -760,296 +762,291 @@ const Mode2Display = () => {
 
         {/* Parent div with horizontal layout */}
         <div
-            className="flex justify-center items-start w-full"
-            style={{ gap: gapBetweenSize }}
+            className="flex justify-center items-start w-full bg-green-800 rounded-xl"
+            style={{ gap: gapBetweenSize, height: mainDivHeight }}
         >
-
-            {/* Div for Mode2 Display, taking more space */}
-            <div
-                className="wordDisplayDiv bg-white rounded-lg shadow-lg p-8 pt-2 my-2 flex-1"
+            <div className="rounded-lg ml-2 flex-1"
                 style={{
-                maxWidth: `calc(100% - var(--sidebar-width) - ${gapEdgeSize})`,
-                height: divHeight,
                 display: "flex",
                 flexDirection: "column",
-                position: "relative",
                 alignItems: "center",
-                justifyContent: "center",
-                }}
-            >
-                    
-                {/* Countdown Display */}
-                {countdown !== null && (
-                    <div style={{
-                    position: 'absolute',
-                    top: '50%', // Center vertically in the viewport
-                    left: '50%', // Center horizontally in the viewport
-                    transform: 'translate(-50%, -50%)',
-                    fontSize: '50px',
-                    zIndex: '1000',
-                    color: 'rgb(200, 0, 0)',
-                    background: 'rgba(255, 255, 255, 0.8)',
-                    padding: '10px 20px',
-                    borderRadius: '10px',
-                    }}>
-                    {countdown > 0 ? countdown : 'Go!'}
-                    </div>
-                )}
-                {
-                    showCalibrationPopup && (
-                        <>
-                        <div className="modal-backdrop" style={{ zIndex: 500}}></div>
-                            <div className="modal-content" style={{ 
-                                width: '30vw', 
-                                display: 'flex', 
-                                borderRadius: '20px' ,
-                                flexDirection: 'column', // Stack children vertically
-                                alignItems: 'center', // Center children horizontally
-                                justifyContent: 'center', // Center children vertically
-                                textAlign: 'center', // Ensures that text inside children elements is centered, if needed
-                                }}> 
-                                {!redirectingToCalibration ? (
-                                <>
-                                    <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
-                                        Click the button below to begin calibrating WebGazer and start your speed reading session!
-                                    </p>
-                                    <button className="GreenButton" onClick={handleGoToCalibration}>
-                                        Go to Calibration
-                                    </button>
-                                </>
-                                ) : (
-                                <p style={{ fontSize: '18px', textAlign: 'center' }}>
-                                    Redirecting to Calibration Page 
-                                    <span className="dot">.</span>
-                                    <span className="dot">.</span>
-                                    <span className="dot">.</span>
-                                </p>
-                            )}
-                            </div>
-                        </>
-                    )
-                }
-                {/* Completion Popup */}
-                {showCompletionPopup && (
-                    <>
-                        <div className="flash-orange-border" style={{ 
-                            position: 'absolute', // Position the modal absolutely relative to its nearest positioned ancestor
-                            top: `-${gapBetweenSize}`, // Center it vertically
-                            left: '50%', // Center it horizontally
-                            transform: 'translate(-50%, -100%)', // Adjust the positioning to truly center the modal
-                            width: '40vw', // Adjust the width as needed, or use a fixed width
-                            display: 'flex',
-                            borderRadius: '20px',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            textAlign: 'center',
-                            background: 'white',
-                            padding: '10px',
-                            border: '3px solid orange',
-                            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                justifyContent: "space-between", // This will evenly space the children vertically
+                height: mainDivHeight,
+            }}>
+
+                {/* Div for Mode2 Display, taking more space */}
+                <div
+                    className="wordDisplayDiv flash-mode-display-bg-color rounded-lg shadow-lg w-full mt-2"
+                    style={{
+                    height: displayHeight,
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative",
+                    alignItems: "center",
+                    }}
+                >
+                        
+                    {/* Countdown Display */}
+                    {countdown !== null && (
+                        <div style={{
+                        position: 'absolute',
+                        top: '50%', // Center vertically in the viewport
+                        left: '50%', // Center horizontally in the viewport
+                        transform: 'translate(-50%, -50%)',
+                        fontSize: '50px',
+                        zIndex: '1000',
+                        color: 'rgb(200, 0, 0)',
+                        background: 'rgba(255, 255, 255, 0.8)',
+                        padding: '10px 20px',
+                        borderRadius: '10px',
                         }}>
-                            <p style={{ fontSize: '18px', marginBottom: '20px', color: 'rgb(90, 90, 90)' }}>
-                                Congratulations on completing your speed-reading session!
-                            </p>
-                            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                                {!redirectingToQuiz ? (
+                        {countdown > 0 ? countdown : 'Go!'}
+                        </div>
+                    )}
+                    {
+                        showCalibrationPopup && (
+                            <>
+                            <div className="modal-backdrop" style={{ zIndex: 500}}></div>
+                                <div className="modal-content" style={{ 
+                                    width: '30vw', 
+                                    display: 'flex', 
+                                    borderRadius: '20px' ,
+                                    flexDirection: 'column', // Stack children vertically
+                                    alignItems: 'center', // Center children horizontally
+                                    justifyContent: 'center', // Center children vertically
+                                    textAlign: 'center', // Ensures that text inside children elements is centered, if needed
+                                    }}> 
+                                    {!redirectingToCalibration ? (
                                     <>
-                                        <button className="BlackButton" style={{ margin: '0' }}  onClick={() => {
-                                            setShowCompletionPopup(false);
-                                            restartAction();
-                                        }}>
-                                            Restart
-                                        </button>
-                                        <button className="GreenButton" style={{ margin: '0' }}  onClick={handleContinueToQuiz}>
-                                            Save Results & Start Quiz
+                                        <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
+                                            Click the button below to begin calibrating WebGazer and start your speed reading session!
+                                        </p>
+                                        <button className="GreenButton" onClick={handleGoToCalibration}>
+                                            Go to Calibration
                                         </button>
                                     </>
-                                ) : (
-                                    <p style={{ fontSize: '18px', textAlign: 'center', color: 'rgb(90, 90, 90)' }}>
-                                        Redirecting to Quiz Page 
+                                    ) : (
+                                    <p style={{ fontSize: '18px', textAlign: 'center' }}>
+                                        Redirecting to Calibration Page 
                                         <span className="dot">.</span>
                                         <span className="dot">.</span>
                                         <span className="dot">.</span>
                                     </p>
                                 )}
+                                </div>
+                            </>
+                        )
+                    }
+                    {/* Completion Popup */}
+                    {showCompletionPopup && (
+                        <>
+                            <div className="flash-orange-border" style={{ 
+                                position: 'absolute', // Position the modal absolutely relative to its nearest positioned ancestor
+                                top: `-${gapBetweenSize}`, // Center it vertically
+                                left: '50%', // Center it horizontally
+                                transform: 'translate(-50%, -105%)', // Adjust the positioning to truly center the modal
+                                width: '50vw', // Adjust the width as needed, or use a fixed width
+                                display: 'flex',
+                                borderRadius: '20px',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                textAlign: 'center',
+                                background: 'white',
+                                padding: '10px',
+                                border: '3px solid orange',
+                                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                            }}>
+                                <p style={{ fontSize: '18px', marginBottom: '20px', color: 'rgb(90, 90, 90)' }}>
+                                    Congratulations on completing your speed-reading session!
+                                </p>
+                                <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+                                    {!redirectingToQuiz ? (
+                                        <>
+                                            <button className="BlackButton" style={{ margin: '0' }}  onClick={() => {
+                                                setShowCompletionPopup(false);
+                                                restartAction();
+                                            }}>
+                                                Restart
+                                            </button>
+                                            <button className="GreenButton" style={{ margin: '0' }}  onClick={handleContinueToQuiz}>
+                                                Save Results & Start Quiz
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <p style={{ fontSize: '18px', textAlign: 'center', color: 'rgb(90, 90, 90)' }}>
+                                            Redirecting to Quiz Page 
+                                            <span className="dot">.</span>
+                                            <span className="dot">.</span>
+                                            <span className="dot">.</span>
+                                        </p>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    </>
-                )}
-            
-                {/* Flex Container for CounterDisplay and Icons */}
-                <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    width: '100%', 
-                    position: 'relative',
-                    paddingTop: '0px',
-                }}>
-                    {/* Centered Counter Display */}
-                    <CounterDisplay count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
-                    {/* <button onClick={downloadGazeData}>Download Gaze Data</button> */}
-                    {/* Container for Play/Pause and Restart Icons aligned to the top right */}
+                        </>
+                    )}
+                
+                    {/* Flex Container for CounterDisplay and Icons */}
                     <div style={{ 
-                        position: 'absolute',
-                        top: 0, 
-                        right: 0,
-                        backgroundColor: 'white',
-                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.15)', 
-                        padding: '10px 20px', 
-                        borderRadius: '10px', 
                         display: 'flex', 
                         alignItems: 'center', 
-                        gap: '10px'  // Space between icons
-                    }} className={showCalibrationPopup ? 'blur-effect' : ''}>
-                        {/* Play/Pause Icon */}
-                        <button className={`icon-button ${isPausePlayActive ? 'active' : ''}`} onClick={togglePausePlayAction} disabled={showCompletionPopup}>
-                            {isPaused ? <TbPlayerPlay size={24} /> : <TbPlayerPause size={24} />}
-                        </button>
-                                                                        
-                        {/* Restart Icon */}
-                        <button className={`icon-button ${isRestartActive ? 'active' : ''}`} onClick={restartAction} disabled={showCompletionPopup}>
-                            <VscDebugRestart size={24} />
-                        </button>
+                        justifyContent: 'center', 
+                        width: '100%', 
+                        marginTop: "20px"
+                    }}>
+                        {/* Centered Counter Display */}
+                        <CounterDisplay count={WPM} fontSize="16px" className={showCalibrationPopup ? 'blur-effect' : ''}/>
+                        {/* <button onClick={downloadGazeData}>Download Gaze Data</button> */}
+                        {/* Container for Play/Pause and Restart Icons aligned to the top right */}
+                        <div style={{ 
+                            position: 'absolute',
+                            top: 20, 
+                            right: 20,
+                            boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)', 
+                            padding: '10px 10px', 
+                            borderRadius: '10px', 
+                            display: 'flex', 
+                            gap: "10px"  // Space between icons
+                        }} className={showCalibrationPopup ? 'blur-effect' : ''}>
+                            {/* Play/Pause Icon */}
+                            <button className={`icon-button ${isPausePlayActive ? 'active' : ''}`} onClick={togglePausePlayAction} disabled={showCompletionPopup}>
+                                {isPaused ? <TbPlayerPlay size={24} /> : <TbPlayerPause size={24} />}
+                            </button>
+                                                                            
+                            {/* Restart Icon */}
+                            <button className={`icon-button ${isRestartActive ? 'active' : ''}`} onClick={restartAction} disabled={showCompletionPopup}>
+                                <VscDebugRestart size={24} />
+                            </button>
+                        </div>
+                    </div>
+                    {/* Mode 2: Chunk Display */}
+                    <div className={`wordDisplay monospaced ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{ 
+                        marginTop: "35px",
+                        fontSize: `${fontSize}px`,
+                        fontWeight: "bold",
+                        maxWidth: "100vw",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                    }}>
+                        {wordChunks[currentChunkIndex]}
+                    </div>
+                    
+                    {/* Progress Bar */}
+                    <div className={showCalibrationPopup ? 'blur-effect' : ''} style={{ 
+                        position: 'absolute',
+                        bottom: '10px', // Set at the bottom of the parent div
+                        width: '95%',
+                        backgroundColor: '#f0f0f0',
+                        borderRadius: '10px'
+                    }}>
+                        <div style={{
+                            height: '8px',
+                            borderRadius: '10px',
+                            backgroundColor: '#4CAF50',
+                            width: `${(currentChunkIndex + 1) / wordChunks.length * 100}%`
+                        }}></div>
                     </div>
                 </div>
-                {/* Mode 2: Chunk Display */}
-                <div className={`wordDisplay monospaced ${showCalibrationPopup ? 'blur-effect' : ''}`} style={{ 
-                    marginTop: "30px",
-                    fontSize: `${fontSize}px`,
-                    fontWeight: "bold",
-                    maxWidth: "100vw",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                }}>
-                    {wordChunks[currentChunkIndex]}
-                </div>
-                
-                {/* Progress Bar */}
-                <div className={showCalibrationPopup ? 'blur-effect' : ''} style={{ 
-                    position: 'absolute',
-                    bottom: '10px', // Set at the bottom of the parent div
-                    width: '95%',
-                    backgroundColor: '#f0f0f0',
-                    borderRadius: '10px'
-                }}>
-                    <div style={{
-                        height: '8px',
-                        borderRadius: '10px',
-                        backgroundColor: '#4CAF50',
-                        width: `${(currentChunkIndex + 1) / wordChunks.length * 100}%`
-                    }}></div>
-                </div>
-            </div>
-            
+                <div
+                    className="rounded-lg w-full mb-2 flex-1 text-white"
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        position: "relative",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        marginTop: gapBetweenSize,
+                    }}
+                >
+                    {/* First command div */}
+                    <div className="rounded-lg h-full mr-1"
+                        style={{ 
+                        flex: 1, 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        fontSize: '15px', 
+                        backgroundColor: 'rgb(80, 150, 80)', 
+                    }}>
+                        <p style={{ marginRight: '10px' }} className={showCalibrationPopup ? 'blur-effect' : ''}>Press</p>
+                        <TbSquareLetterR style={{ marginRight: '10px', fontSize: '24px' }} className={showCalibrationPopup ? 'blur-effect' : ''}/>
+                        <p className={showCalibrationPopup ? 'blur-effect' : ''}>to Restart</p>
+                    </div>
 
+                    {/* Second command div */}
+                    <div className="rounded-lg h-full mx-1"
+                        style={{ 
+                        flex: 1, 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        fontSize: '15px', 
+                        backgroundColor: 'rgb(80, 150, 80)',
+                    }}>
+                        <p style={{ marginRight: '10px' }} className={showCalibrationPopup ? 'blur-effect' : ''}>Press</p>
+                        <RiSpace style={{ marginRight: '10px', fontSize: '26px' }} className={showCalibrationPopup ? 'blur-effect' : ''}/>
+                        <p className={showCalibrationPopup ? 'blur-effect' : ''}>to Pause/Play</p>
+                    </div>
+
+                    {/* Third command div */}
+                    <div className="rounded-lg h-full ml-1"
+                        style={{ 
+                        flex: 1, 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        fontSize: '15px', 
+                        backgroundColor: 'rgb(80, 150, 80)',
+                    }}>
+                        <p style={{ marginRight: '10px' }} className={showCalibrationPopup ? 'blur-effect' : ''}>Press</p>
+                        <ArrowLeftSquare style={{ marginRight: '10px', fontSize: '24px' }} className={showCalibrationPopup ? 'blur-effect' : ''}/>
+                        <ArrowRightSquare style={{ marginRight: '10px', fontSize: '24px' }} className={showCalibrationPopup ? 'blur-effect' : ''}/>
+                        <p className={showCalibrationPopup ? 'blur-effect' : ''}>to Adjust WPM</p>
+                    </div>
+                </div>
+            
+            </div>
 
             {/* Smaller divs on the right */}
-            <div className="my-2" style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "space-between", // This will evenly space the children vertically
-                    height: divHeight,
+            <div className="mr-2" 
+                style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "space-between", // This will evenly space the children vertically
+                height: mainDivHeight,
             }}>
 
                 {/* div 1 */}
                 <div
-                className="bg-white rounded-lg shadow-lg p-6 pt-2"
-                style={{
-                width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
-                display: 'flex',
-                flexDirection: 'column', // This will stack children divs on top of each other
-                alignItems: 'center',
-                justifyContent: 'space-evenly', // Adjust spacing between inner divs
-                flexGrow: 1,
-                marginBottom: `${gapBetweenSize}`,
-                }}
+                    className="flash-mode-display-bg-color rounded-lg shadow-lg px-6 pt-1.5 mt-2 pb-5"
+                    style={{
+                    width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
+                    display: 'flex',
+                    flexDirection: 'column', // This will stack children divs on top of each other
+                    alignItems: 'center',
+                    justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                    marginBottom: `${gapBetweenSize}`,
+                    }}
                 >
                 {/* First inner div for the title "Stats" and a gray horizontal line */}
                     <div
-                        className={showCalibrationPopup ? 'blur-effect' : ''}
+                        className={`flash-mode-display-bg-color ${showCalibrationPopup ? 'blur-effect' : ''}`}
                         style={{
-                        backgroundColor: 'white',
-                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
-                        padding: '1px',
-                        borderRadius: '10px',
-                        margin: '5px',
-                        width: '100%', // Adjust width as necessary
-                        textAlign: 'center',
-                        }}
-                    >
+                            boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
+                            padding: '1px',
+                            borderRadius: '10px',
+                            margin: '5px',
+                            width: '100%', // Adjust width as necessary
+                            textAlign: 'center',
+                            }}
+                        >
                         
-                        <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Commands</h3>
-                    </div>
-                    {/* Checkbox for toggling complexity adjustment */}
-    <div>
-        <label style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }}>
-            <input
-                type="checkbox"
-                checked={integrateComplexity}
-                onChange={e => setIntegrateComplexity(e.target.checked)}
-                style={{ marginRight: '10px' }}
-            />
-            Integrate Complexity Adjustments
-        </label>
-    </div>
-                    {/* Second inner div for the text "Average WPM:" centered */}
-                    <div
-                        style={{
-                        width: '100%', // Matches the width of the first inner div for consistency
-                        display: 'flex',
-                        justifyContent: 'center', // Center-align the text horizontally
-                        alignItems: 'center',
-                        flexDirection: 'column',
-                        flex: 1, // Take up remaining space
-                        }}
-                    >
-                        <div className={showCalibrationPopup ? 'blur-effect' : ''} style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
-                            <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
-                            <TbSquareLetterR style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
-                            <p style={{ margin: '0'}}>to Restart</p>
-                        </div>
-                        <div className={showCalibrationPopup ? 'blur-effect' : ''} style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)' , marginBottom: '5px' }}>
-                            <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
-                            <RiSpace style={{ marginRight: '5px', color: '#606060', fontSize: '26px' }} />
-                            <p style={{ margin: '0' }}>to Pause/Play</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* div 2 */}
-                <div
-                className="bg-white rounded-lg shadow-lg p-6 pt-2"
-                style={{
-                width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
-                display: 'flex',
-                flexDirection: 'column', // This will stack children divs on top of each other
-                alignItems: 'center',
-                justifyContent: 'space-evenly', // Adjust spacing between inner divs
-                flexGrow: 1, 
-                }}
-                >
-                {/* First inner div for the title "Stats" and a gray horizontal line */}
-                    <div
-                        className={showCalibrationPopup ? 'blur-effect' : ''}
-                        style={{
-                        backgroundColor: 'white',
-                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
-                        padding: '1px',
-                        borderRadius: '10px',
-                        margin: '5px',
-                        width: '100%', // Adjust width as necessary
-                        textAlign: 'center',
-                        }}
-                    >
                         <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Stats</h3>
                     </div>
-
-                    {/* Second inner div for the text "Average WPM:" centered */}
-                    <div
+                    {/* Checkbox for toggling complexity adjustment */}
+                    <div className="mt-3"
                         style={{
                         width: '100%', // Matches the width of the first inner div for consistency
                         display: 'flex',
@@ -1063,25 +1060,83 @@ const Mode2Display = () => {
                         </p>
                     </div>
                 </div>
+
+                {/* div 2 */}
+                <div
+                    className="flash-mode-display-bg-color rounded-lg shadow-lg p-6 pt-1.5 mb-2"
+                    style={{
+                    width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
+                    display: 'flex',
+                    flexDirection: 'column', // This will stack children divs on top of each other
+                    alignItems: 'center',
+                    justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                    flexGrow: 1, 
+                    }}
+                >
+                {/* First inner div for the title "Stats" and a gray horizontal line */}
+                    <div
+                        className={showCalibrationPopup ? 'blur-effect' : ''}
+                        style={{
+                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
+                        padding: '1px',
+                        borderRadius: '10px',
+                        margin: '5px',
+                        width: '100%', // Adjust width as necessary
+                        textAlign: 'center',
+                        }}
+                    >
+                        <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Features</h3>
+                    </div>
+
+                    {/* Second inner div for the text "Average WPM:" centered */}
+                    <div
+                        style={{
+                        width: '100%', // Matches the width of the first inner div for consistency
+                        display: 'flex',
+                        alignItems: 'center', // Center-align the text vertically
+                        justifyContent: 'center',
+                        flex: 1, // Take up remaining space
+                        }}
+                    >
+                        <div>
+                            <label style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }} className={showCalibrationPopup ? 'blur-effect' : ''}>
+                                <input
+                                    type="checkbox"
+                                    checked={integrateComplexity}
+                                    onChange={e => setIntegrateComplexity(e.target.checked)}
+                                    style={{ marginRight: '10px',
+                                            //  accentColor: integrateComplexity ? 'green' : 'initial'  
+                                            }}
+                                />
+                                Further adjust WPM based on the complexity of each chunk of words
+                            </label>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         {/* Chart display on completion */}
-        {showCompletionPopup && WPMValues.current.length > 0 && (
-            <div className="bg-white rounded-lg shadow-lg mx-2" style={{
-                width: `calc(100% - ${gapEdgeSize})`, // Ensure full width
-                height: plotHeight, 
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                position: "relative",
-                marginTop: '0.1rem',
-                padding: '30px', // Padding to prevent content from touching the edges
-                // border: '2px solid gray',
-            }}>
-                <ReadingSpeedChart wpmValues={WPMValues.current} averageWPM={averageWPM || 0} />
-            </div>
-        )}
+        <div
+            className={`flex justify-center items-start w-full rounded-xl mt-2 py-2 ${
+                showCompletionPopup && WPMValues.current.length > 0 ? 'bg-green-800' : 'bg-transparent'
+            }`}
+            style={{height: plotHeight }}
+        >
+            {showCompletionPopup && WPMValues.current.length > 0 && (
+                <div className="bg-white rounded-lg shadow-lg mx-2 h-full" style={{
+                    width: `calc(100% - ${gapEdgeSize})`, // Ensure full width
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    position: "relative",
+                    padding: '30px', // Padding to prevent content from touching the edges
+                    // border: '2px solid gray',
+                }}>
+                    <ReadingSpeedChart wpmValues={WPMValues.current} averageWPM={averageWPM || 0} />
+                </div>
+            )}
+        </div>
     </div>
 
     );

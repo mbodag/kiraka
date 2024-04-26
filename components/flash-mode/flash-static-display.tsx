@@ -397,7 +397,7 @@ const Mode1Display = () => {
 
         {/* Parent div with horizontal layout */}
         <div
-            className="flex justify-center items-start w-full bg-green-800 rounded-xl"
+            className="flex justify-center items-start w-full bg-cyan-800 rounded-xl"
             style={{ gap: gapBetweenSize, height: mainDivHeight }}
         >
             <div className="rounded-lg ml-2 flex-1"
@@ -411,7 +411,7 @@ const Mode1Display = () => {
 
                 {/* Div for Mode2 Display, taking more space */}
                 <div
-                    className="wordDisplayDiv bg-white rounded-lg shadow-lg w-full mt-2"
+                    className="wordDisplayDiv flash-mode-display-bg-color rounded-lg shadow-lg w-full mt-2"
                     style={{
                     height: displayHeight,
                     display: "flex",
@@ -500,13 +500,11 @@ const Mode1Display = () => {
                         <CounterDisplay count={WPM} fontSize="16px"/>
                         {/* <button onClick={downloadGazeData}>Download Gaze Data</button> */}
                         {/* Container for Play/Pause and Restart Icons aligned to the top right */}
-                        <div className=""
-                            style={{ 
+                        <div style={{ 
                             position: 'absolute',
                             top: 20, 
                             right: 20,
-                            backgroundColor: 'white',
-                            boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.15)', 
+                            boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)', 
                             padding: '10px 10px', 
                             borderRadius: '10px', 
                             display: 'flex', 
@@ -544,16 +542,16 @@ const Mode1Display = () => {
                         backgroundColor: '#f0f0f0',
                         borderRadius: '10px'
                     }}>
-                        <div style={{
+                        <div className="bg-blue-700"
+                            style={{
                             height: '8px',
                             borderRadius: '10px',
-                            backgroundColor: '#4CAF50',
                             width: `${(currentChunkIndex + 1) / wordChunks.length * 100}%`
                         }}></div>
                     </div>
                 </div>
                 <div
-                    className="rounded-lg w-full mb-2 flex-1"
+                    className="rounded-lg w-full mb-2 flex-1 text-white"
                     style={{
                         display: "flex",
                         flexDirection: "row",
@@ -561,7 +559,6 @@ const Mode1Display = () => {
                         alignItems: "center",
                         justifyContent: "space-between",
                         marginTop: gapBetweenSize,
-                        color: 'rgb(255, 255, 255)', 
                     }}
                 >
                     {/* First command div */}
@@ -572,7 +569,7 @@ const Mode1Display = () => {
                         alignItems: 'center', 
                         justifyContent: 'center', 
                         fontSize: '15px', 
-                        backgroundColor: 'rgb(80, 150, 80)', 
+                        backgroundColor: 'rgb(130, 180, 200)', 
                     }}>
                         <p style={{ marginRight: '10px' }}>Press</p>
                         <TbSquareLetterR style={{ marginRight: '10px', fontSize: '24px' }} />
@@ -587,7 +584,7 @@ const Mode1Display = () => {
                         alignItems: 'center', 
                         justifyContent: 'center', 
                         fontSize: '15px', 
-                        backgroundColor: 'rgb(80, 150, 80)',
+                        backgroundColor: 'rgb(130, 180, 200)',  
                     }}>
                         <p style={{ marginRight: '10px' }}>Press</p>
                         <RiSpace style={{ marginRight: '10px', fontSize: '26px' }} />
@@ -602,7 +599,7 @@ const Mode1Display = () => {
                         alignItems: 'center', 
                         justifyContent: 'center', 
                         fontSize: '15px', 
-                        backgroundColor: 'rgb(80, 150, 80)',
+                        backgroundColor: 'rgb(130, 180, 200)', 
                     }}>
                         <p style={{ marginRight: '10px' }}>Press</p>
                         <ArrowLeftSquare style={{ marginRight: '10px', fontSize: '24px' }} />
@@ -625,7 +622,7 @@ const Mode1Display = () => {
 
                 {/* div 1 */}
                 <div
-                    className="bg-white rounded-lg shadow-lg px-6 pt-1.5 mt-2 pb-5"
+                    className="flash-mode-display-bg-color rounded-lg shadow-lg px-6 pt-1.5 mt-2 pb-5"
                     style={{
                     width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
                     display: 'flex',
@@ -636,10 +633,9 @@ const Mode1Display = () => {
                     }}
                 >
                 {/* First inner div for the title "Stats" and a gray horizontal line */}
-                    <div
+                    <div className="flash-mode-display-bg-color"
                         style={{
-                        backgroundColor: 'white',
-                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
+                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
                         padding: '1px',
                         borderRadius: '10px',
                         margin: '5px',
@@ -668,21 +664,20 @@ const Mode1Display = () => {
 
                 {/* div 2 */}
                 <div
-                className="bg-white rounded-lg shadow-lg p-6 pt-1.5 mb-2"
-                style={{
-                width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
-                display: 'flex',
-                flexDirection: 'column', // This will stack children divs on top of each other
-                alignItems: 'center',
-                justifyContent: 'space-evenly', // Adjust spacing between inner divs
-                flexGrow: 1, 
-                }}
+                    className="flash-mode-display-bg-color rounded-lg shadow-lg p-6 pt-1.5 mb-2"
+                    style={{
+                    width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
+                    display: 'flex',
+                    flexDirection: 'column', // This will stack children divs on top of each other
+                    alignItems: 'center',
+                    justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                    flexGrow: 1, 
+                    }}
                 >
                 {/* First inner div for the title "Stats" and a gray horizontal line */}
-                    <div
+                    <div className="flash-mode-display-bg-color"
                         style={{
-                        backgroundColor: 'white',
-                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
+                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
                         padding: '1px',
                         borderRadius: '10px',
                         margin: '5px',
@@ -704,7 +699,7 @@ const Mode1Display = () => {
                         }}
                     >
                         <p style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }}>
-                        <span style={{ fontStyle: 'italic', color: 'rgb(150, 150, 150)' }}>Coming Soon</span>
+                        <span style={{ fontStyle: 'italic', color: 'rgb(150, 150, 150)' }}>Coming Soon...</span>
                         </p>
                     </div>
                 </div>
@@ -713,7 +708,7 @@ const Mode1Display = () => {
         {/* Chart display on completion */}
         <div
             className={`flex justify-center items-start w-full rounded-xl mt-2 py-2 ${
-                showCompletionPopup && WPMValues.current.length > 0 ? 'bg-green-800' : 'bg-transparent'
+                showCompletionPopup && WPMValues.current.length > 0 ? 'bg-cyan-800' : 'bg-transparent'
             }`}
             style={{height: plotHeight }}
         >
