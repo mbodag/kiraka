@@ -51,6 +51,7 @@ interface GazeDataToSend {
 // and estimating the average character count per word
 const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
+const startWPM = 300;
 const minWPM = 180;
 const maxWPM = 700;
 const significantLeftNormSpeed = -2/1201*100; // defined experimentally, based on the mac word display width (1201px) at the time of the experiment, and the value of -2px/s for threshold speed. Scaled by 100 (giving percentage)
@@ -71,9 +72,10 @@ const Mode2Display = () => {
     // const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. `;
 
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
-    const [startWPM, setstartWPM] = useState(300);
+    const [pastAvgWPMs, setPastAvgWPMs] = useState<number[]>([startWPM]);
     const [WPM, setWPM] = useState(startWPM);
     const WPMValues = useRef<number[]>([startWPM]); // To store the WPMs values and take their average at the end of the session; to be sent to the database
+    const adjustedStartWPM = useRef<number>(startWPM); 
     const [averageWPM, setAverageWPM] = useState<number | null>(null);
     const gazeDataRef = useRef<GazeDataPoint[]>([]);
     const gazeDataByChunk = useRef<GazeDataToSend[][]>([]);
@@ -92,7 +94,6 @@ const Mode2Display = () => {
     const { userId } = useAuth();
     const [wordChunks, setWordChunks] = useState<string[]>([]);
     const [complexityChunks, setComplexityChunks] = useState<number[]>([]);
-    const [pastWPM, setPastWPM] = useState<number[]>([300]);
 
     // Accessing the current state of WebGazer
     const { isWebGazerActive, setWebGazerActive } = useWebGazer();
@@ -122,14 +123,27 @@ const Mode2Display = () => {
               throw new Error('Network response was not ok');
             }
             const data = await response.json();
-            setPastWPM(data.avgWPMs);
+            setPastAvgWPMs(data.avgWPMs);
           } catch (error) {
             console.error('Error fetching text:', error);
           }
         };
           fetchPastWPM();
+    }, []);
+
+    useEffect(() => {
+        if (pastAvgWPMs.length > 0) {
+            // Consider only the last 10 entries for averaging
+            const recentWPMs = pastAvgWPMs.slice(-10);
+            const sum = recentWPMs.reduce((acc, curr) => acc + curr, 0);
+            const average = Math.round(sum / recentWPMs.length);
     
-      }, []);
+            adjustedStartWPM.current = Math.min(Math.max(average, 150), 450);
+            setWPM(adjustedStartWPM.current);
+            WPMValues.current = [adjustedStartWPM.current]
+        }
+    }, [pastAvgWPMs]);
+
 
     useEffect(() => {
       const fetchTextById = async (textId: number) => {
@@ -225,12 +239,12 @@ const Mode2Display = () => {
     const restartAction = () => {
         setCurrentChunkIndex(0); // Restart from the first chunk
         setIsPaused(true); // Pause the session
-        WPMValues.current = [startWPM];
+        WPMValues.current = [adjustedStartWPM.current];
         consecutiveLeftMovements.current = 0;
         consecutiveWPMDecrease.current = 0;
         consecutiveWPMIncrease.current = 0;
         gazeDataByChunk.current = [];
-        setWPM(startWPM); // Reset the WPM value
+        setWPM(adjustedStartWPM.current); // Reset the WPM value
         setAverageWPM(null); // Reset the averageWPM value
         setIsRestartActive(true); // Set active to true
         setTimeout(() => setIsRestartActive(false), 100); // Reset after 500ms
@@ -348,7 +362,7 @@ const Mode2Display = () => {
 
         const complexity = complexityChunks[chunkIndex];
         const Kmin = 5;
-        const Kmax = complexity <= 0.7 ? 20 : 35;
+        const Kmax = complexity <= 0.7 ? 20 : 30;
 
         if (complexity >= 0.77) {
             // Complexity is high, decrease WPM

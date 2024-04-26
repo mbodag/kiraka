@@ -24,6 +24,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 // and estimating the average character count per word
 const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
+const startWPM = 300;
 const minWPM = 100;
 const maxWPM = 1000;
 const constIncreaseWPM = 25;
@@ -35,10 +36,10 @@ const Mode1Display = () => {
     // const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. `;
 
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
-    const [pastWPM, setPastWPM] = useState<number[]>([300]);
-    const [startWPM, setstartWPM] = useState(300);
+    const [pastAvgWPMs, setPastAvgWPMs] = useState<number[]>([startWPM]);
     const [WPM, setWPM] = useState(startWPM);
     const WPMValues = useRef<number[]>([startWPM]); // To store the WPMs values and take their average at the end of the session; to be sent to the database
+    const adjustedStartWPM = useRef<number>(startWPM); 
     const [averageWPM, setAverageWPM] = useState<number | null>(null);
 
     const [isPaused, setIsPaused] = useState(true); // Add a state to track whether the flashing is paused
@@ -93,14 +94,26 @@ const Mode1Display = () => {
               throw new Error('Network response was not ok');
             }
             const data = await response.json();
-            setPastWPM(data.avgWPMs);
+            setPastAvgWPMs(data.avgWPMs);
           } catch (error) {
             console.error('Error fetching text:', error);
           }
         };
           fetchPastWPM();
+    }, []);
+
+    useEffect(() => {
+        if (pastAvgWPMs.length > 0) {
+            // Consider only the last 10 entries for averaging
+            const recentWPMs = pastAvgWPMs.slice(-10);
+            const sum = recentWPMs.reduce((acc, curr) => acc + curr, 0);
+            const average = Math.round(sum / recentWPMs.length);
     
-      }, []);
+            adjustedStartWPM.current = Math.min(Math.max(average, 150), 500);
+            setWPM(adjustedStartWPM.current);
+            WPMValues.current = [adjustedStartWPM.current]
+        }
+    }, [pastAvgWPMs]);
 
     const handleContinueToQuiz = async () => {
         setShowCompletionPopup(false);
@@ -152,8 +165,8 @@ const Mode1Display = () => {
     const restartAction = () => {
         setCurrentChunkIndex(0); // Restart from the first chunk
         setIsPaused(true); // Pause the session
-        WPMValues.current = [startWPM];
-        setWPM(startWPM); // Reset the WPM value
+        WPMValues.current = [adjustedStartWPM.current];
+        setWPM(adjustedStartWPM.current); // Reset the WPM value
         setAverageWPM(null); // Reset the averageWPM value
         setIsRestartActive(true); // Set active to true
         setTimeout(() => setIsRestartActive(false), 100); // Reset after 500ms
