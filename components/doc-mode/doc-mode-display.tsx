@@ -240,11 +240,17 @@ const Mode1Display = () => {
                                 }}> 
                                 
                                     <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
-                                        <p>In this mode, you have the freedom to see the whole text, and read at your own pace.</p>
-                                        <p>A pointer is available for your benefit</p>
-                                        <p><b>Y</b>ou <b>c</b>an <b>al</b>so <b>ena</b>ble <b>Hyp</b>er<b>Bold</b>ing, <b>whi</b>ch <b>bol</b>ds <b>t</b>he <b>begin</b>ning <b>o</b>f <b>t</b>he <b>wor</b>ds <b>y</b>ou <b>a</b>re <b>read</b>ing.
-                                        <b>Th</b>is <b>hel</b>ps <b>so</b>me <b>peo</b>ple <b>foc</b>us <b>bet</b>ter.
-                                        </p>
+                                        <p>Welcome to <b>DocMode!</b></p>
+                                        <p></p>
+                                        <p>Here, you have the freedom to see the whole text and read it at your own pace.</p>
+                                        <p></p>
+                                        <p>However, we have some extra features you may find useful. These are controlled via the above control panel. These are:</p>
+                                        <ul>
+                                          <li><b>Pointer:</b> Highlighting words karaoke-style. Width and pace adjustable.</li>
+                                          <li><b>Text Size:</b> Adjusted via slider</li>
+                                          <li><b>Hyperbold:</b> <b>Bol</b>ds the <b>beg</b>inning of <b>wor</b>ds to <b>cre</b>ate <b>art</b>ificial <b>fix</b>ation <b>poin</b>ts.</li>
+                                        </ul>
+                                        <p></p>
                                         <p style={{ color: 'rgb(0, 125, 0)', fontWeight: 'bold' }}>Press the spacebar to start</p>
                                     </p>
                                     <button className="GreenButton" onClick={handleCloseStartPopup}>
