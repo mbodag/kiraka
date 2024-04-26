@@ -232,7 +232,7 @@ useEffect(() => {
                       </>
                     ): <span>{wordOrKeyword}</span>}
                   </span>
-                  <span> </span>
+                  <span className={pointerSize > 1 ? className: ""}> </span>
                 </span>
               );
             })}
