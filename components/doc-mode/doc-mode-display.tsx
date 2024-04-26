@@ -52,7 +52,7 @@ const Mode1Display = () => {
   useEffect(() => {
     const fetchTextById = async (textId: number) => {
       try {
-        const response = await fetch(`/api/texts/${textId}`);
+        const response = await fetch(`/api/texts/${textId}?user_id=${userId}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -140,7 +140,7 @@ const Mode1Display = () => {
                   user_id: userId,
                   wpm: averageWpm,
                   mode: 0,
-                  chunks_data:{},
+                  chunks_data: [],
               }),
           });
           if (response.status === 207) {
@@ -159,6 +159,7 @@ const Mode1Display = () => {
           console.error('Error in submitReadingSpeed:', error);
       }
   };
+  
   // Other effect hooks...
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {

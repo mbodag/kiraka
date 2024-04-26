@@ -13,17 +13,19 @@ const UploadPage: React.FC = () => {
   const [text, setText] = useState('');
   const { userId } = useAuth();
   const [loading, setLoading] = useState(false);
-  const minChars = 1500;
-  const maxChars = 6000;
+  const minCharsText = 1500;
+  const maxCharsText = 6000;
+  const minCharsTitle = 2;
+  const maxCharsTitle = 10;
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    if (text.length < minChars || text.length > maxChars) {
-      alert(`Text must be between ${minChars} and ${maxChars} characters.`);
+    if (text.length < minCharsText || text.length > maxCharsText) {
+      alert(`Text must be between ${minCharsText} and ${maxCharsText} characters.`);
       return;
     }
-    else if (title.length > 30) {
-      alert(`Please write a shorter title`);
+    else if (title.length < minCharsTitle || title.length > maxCharsTitle) {
+      alert(`Title must be between ${minCharsTitle} and ${maxCharsTitle} characters.`);
       return;
     }
     setLoading(true); // Start loading indicator
@@ -54,48 +56,51 @@ const UploadPage: React.FC = () => {
     <SelectedTextProvider>
       <DashboardLayout navbarType="quiz">
         <div className={`${styles.dashboardBg} flex justify-center items-start pt-2 pb-8 min-h-screen monospace-jetbrains-mono`}>
-          <div style={{ maxWidth: '45vw', width: '100%', background: '#fff', padding: '25px', borderRadius: '10px', boxShadow: '0 0 40px 8px rgba(0,0,0,0.2)', marginTop: '5vh' }}>
-            <h1 style={{ fontSize: '25px', textAlign: 'center' }}>Upload Your Text</h1>
+          <div style={{ maxWidth: '45vw', width: '100%', background: '#fff', padding: '35px', borderRadius: '10px', boxShadow: '0 0 40px 8px rgba(0,0,0,0.2)', marginTop: '1vh' }}>
+            <h1 style={{ fontSize: '25px', textAlign: 'center', marginBottom: '30px' }}>Upload Your Text</h1>
             <div style={{ fontSize: '13px', color: 'rgb(120, 0, 140)', textAlign: 'center', marginBottom: '20px',  marginTop: '10px' }}>
-              Minimum 1500 characters and maximum 6000 characters.
+              The title should be between {minCharsTitle} and {maxCharsTitle} characters, and the text between {minCharsText} and {maxCharsText} characters.
             </div>
             <form onSubmit={handleSubmit}>
             <label style={{ display: 'block', marginBottom: '10px' }}>
-                Add a title:
-                <textarea
-                  name="title"
-                  style={{ width: '100%', height: '5vh', fontSize: '14px', padding: '8px', border: '1px solid #ccc', borderRadius: '5px', overflow: 'hidden', resize: 'none'}}
-                  value={title}
-                  onChange={e => setTitle(e.target.value)}
-                  onKeyPress={e => {
-                    if (e.key === 'Enter') e.preventDefault();
-                  }}
-                />
-              </label>
-              <label style={{ display: 'block', marginBottom: '10px' }}>
-                Paste your text here:
-                <textarea
-                  name="uploaded_text"
-                  style={{ width: '100%', height: '40vh', fontSize: '14px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
-                  value={text}
-                  onChange={e => setText(e.target.value)}
-                />
-              </label>
-              <div style={{ textAlign: 'right', fontSize: '12px', marginBottom: '10px' }}>
-                {text.length} / 6000 characters
-              </div>
-              <div style={{ fontSize: '12px', marginBottom: '10px' }}>
-                By uploading, you agree to our <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>.
-              </div>
+              Add a title:
+              <textarea
+                name="title"
+                style={{ width: '100%', height: '5vh', fontSize: '14px', padding: '8px', border: '1px solid #ccc', borderRadius: '5px', overflow: 'hidden', resize: 'none' }}
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') e.preventDefault();
+                }}
+              />
+            </label>
+            <div style={{ textAlign: 'right', fontSize: '12px', marginBottom: '10px' }}>
+              {title.length} / {maxCharsTitle} characters
+            </div>
+            <label style={{ display: 'block', marginBottom: '10px' }}>
+              Paste your text here:
+              <textarea
+                name="uploaded_text"
+                style={{ width: '100%', height: '40vh', fontSize: '14px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
+                value={text}
+                onChange={e => setText(e.target.value)}
+              />
+            </label>
+            <div style={{ textAlign: 'right', fontSize: '12px', marginBottom: '10px' }}>
+              {text.length} / {maxCharsText} characters
+            </div>
+            <div style={{ fontSize: '13px', color: 'rgb(10, 100, 140)', marginBottom: '20px',  marginTop: '15px' }}>
+              By uploading, you agree to our <a href="/terms" target="_blank" rel="noopener noreferrer"><u>Terms of Service</u></a>.
+            </div>
 
-              <button type="submit" className="SubmitButton" disabled={loading}>
-              {loading ? (
-                <p>Please Wait
-                  <span className="dot">.</span>
-                  <span className="dot">.</span>
-                  <span className="dot">.</span>
-                </p>
-              ) : 'Upload'}
+            <button type="submit" className="SubmitButton" disabled={loading}>
+            {loading ? (
+              <p>Please Wait
+                <span className="dot">.</span>
+                <span className="dot">.</span>
+                <span className="dot">.</span>
+              </p>
+            ) : 'Upload'}
             </button>
             </form>
           </div>
