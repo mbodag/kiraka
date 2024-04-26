@@ -106,7 +106,7 @@ const Mode2Display = () => {
 
     // Added features
     const [integrateComplexity, setIntegrateComplexity] = useState(false);
-    
+
     useEffect(() => {
         // Check if the session is new -- if yes, ensure webgazer is set to inactive as camera will be off
         const isExistingSession = sessionStorage.getItem('isExistingSession');
