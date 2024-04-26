@@ -48,7 +48,7 @@ export default async function InstructionPage() {
                 <div className="home-container" style={{ maxWidth: '70vw', width: '100%', textAlign: 'center' }}>
                   <h1 style={{ fontSize: '2.5rem' }}>Welcome to Kiraka.ai!</h1>
                   <ul style={{ listStyle: 'none', fontSize: '14px', padding: '5px' , marginTop: '15px'}}>
-                    <p>This platform's main feature, FlashMode, uses real-time eye-tracking technology to enhance your reading speed.</p>
+                    <p>This platform&apos;s main feature, FlashMode, uses real-time eye-tracking technology to enhance your reading speed.</p>
                   </ul>
                   <ul style={{ listStyle: 'none', lineHeight: '1.6', fontSize: '14px', padding: '20px', marginTop: '20px' }}>
                     <li>Multiple reading modes are available on this website, depending on what works better for you:</li>
@@ -65,7 +65,7 @@ export default async function InstructionPage() {
                       After your session, you can <span style={{ color: 'rgb(0, 100, 250)', fontWeight: 'bold' }}>save your performance and tackle our custom quiz to test your understanding of the content.</span>
                     </li>
                     <li>
-                      To test other features of our website, try <a href="/upload"><span style={{ color: 'rgb(150, 0, 200)', fontWeight: 'bold' }}>uploading your own text.</span></a> Please <a href="https://forms.gle/CfZPnhEQu8Dnkwj67"><span style={{ color: 'rgb(0, 180, 50)', fontWeight: 'bold' }}>give us feedback</span></a> about your experience when you're done!
+                      To test other features of our website, try <a href="/upload"><span style={{ color: 'rgb(150, 0, 200)', fontWeight: 'bold' }}>uploading your own text.</span></a> Please <a href="https://forms.gle/CfZPnhEQu8Dnkwj67"><span style={{ color: 'rgb(0, 180, 50)', fontWeight: 'bold' }}>give us feedback</span></a> about your experience when you&apos;re done!
                     </li>
                   </ul>
                   <div className="text-sm" style={{ marginTop: '20px', marginBottom: '20px' }}>
