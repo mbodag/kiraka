@@ -62,11 +62,18 @@ export default async function InstructionPage() {
                       <strong>Adjusting for Accuracy:</strong> If you notice unusual results with WPM adjustments, it may indicate a need to <span style={{ color: 'rgb(200, 0, 0)', fontWeight: 'bold' }}>recalibrate the gaze tracking system</span>. To recalibrate, simply press the WebGazer button located on the top right corner while in FlashMode.
                     </li>
                     <li>
-                      After your session, you can <span style={{ color: 'rgb(0, 100, 250)', fontWeight: 'bold' }}>save your performance and tackle our custom quiz to test your understanding of the content.</span>
+                    <b>Thank you for being a test user!</b> These are the features we would like you to explore and give us feedback on
+                    <li>• Use <a href={Routes.DOCMODE}><b>Docmode</b></a> and explore the different <b>features</b> that can be found above the text.</li>
+                    <li>• Use <a href={Routes.DEFAULT_MODE}><b>Flashmode</b></a> and explore both the <b>static</b> and the <b>adaptive</b> settings. In the adaptive setting, we've introduced a new toggle feature called complexity mode. Please test it to see if it improves the speed adjustment.</li>
+                    <li>• You can now speedread your own texts! Use our new <a href={Routes.UPLOAD}><b>upload</b></a> feature with any mode you want and try out the generated quizzes on your text!</li>
+                    <li>After your session, don't forget to <span style={{ color: 'rgb(0, 100, 250)', fontWeight: 'bold' }}>save your performance and tackle our custom quiz to test your understanding of the content.</span></li>
+                    <li>
+                      Please <a href={Routes.FEEDBACK} target='_blank' rel="noopener noreferrer"><span style={{ color: 'rgb(0, 180, 50)', fontWeight: 'bold' }}>give us feedback</span></a> about your experience when you&apos;re done!
+                    </li>
                     </li>
                     <li>
-                      To test other features of our website, try <a href="/upload"><span style={{ color: 'rgb(150, 0, 200)', fontWeight: 'bold' }}>uploading your own text.</span></a> Please <a href="https://forms.gle/CfZPnhEQu8Dnkwj67"><span style={{ color: 'rgb(0, 180, 50)', fontWeight: 'bold' }}>give us feedback</span></a> about your experience when you&apos;re done!
                     </li>
+                   
                   </ul>
                   <div className="text-sm" style={{ marginTop: '20px', marginBottom: '20px' }}>
                     {/* <input type="checkbox" id="terms" /> */}
