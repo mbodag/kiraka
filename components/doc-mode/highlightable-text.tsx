@@ -9,7 +9,10 @@ interface HighlightableTextProps {
   onRestartTimeChange: (newRestartTime: number) => void;
   onReadingTimeChange: (newReadingTime: number) => void;
   fontFamily?: string;
-  bionicReading?: boolean;
+  hyperBold?: boolean;
+  pointer? : boolean;
+  restartText?: boolean;
+  pointerSize?: number;
 
 }
 
@@ -21,8 +24,11 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
   className = "",
   onRestartTimeChange,
   onReadingTimeChange,
-  fontFamily = "monospace",
-  bionicReading = false,
+  fontFamily = "monospace-jetbrains-mono",
+  hyperBold = false,
+  pointer = false,
+  restartText = false,
+  pointerSize = 1,
 }) => {
   const paragraphs = text
     .split("\n")
@@ -67,11 +73,7 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
   );
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [highlightedKeywordIndices, setHighlightedKeywordIndices] = useState(
-    new Set<number>()
-  );
   const [isPaused, setIsPaused] = useState(true); // Highlighting deactivated by default
-  const [isRestartActive, setIsRestartActive] = useState(false);
   const [isPausePlayActive, setIsPausePlayActive] = useState(false);
 
   const [submittedWPM, setSubmittedWPM] = useState<boolean>(false);
@@ -79,6 +81,21 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
   const [readingTime, setReadingTime] = useState<number>(0);
   const [restartTime, setRestartTime] = useState<number>(0);
 
+  const restartAction = () => {
+    setIsPaused(true); // Pause the display
+    setRestartTime(0); // Reset the restart time
+    setReadingTime(0); // Reset the reading time
+    setCurrentIndex(0); // Reset the current index
+    setCountdown(null); // Reset the countdown
+
+
+};
+
+useEffect(() => {
+    if (restartText){
+        restartAction();
+        console.log('RESTARTING HERE')}  // Then call the restart action
+  }, [text, restartText]);
 
   const togglePausePlayAction = () => {
     if (isPaused) {
@@ -121,7 +138,6 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "R" || event.key === "r") {
         setCurrentIndex(0);
-        setHighlightedKeywordIndices(new Set());
       } else if (event.key === " ") {
         // Listen for the spacebar
         if (countdown !== null) {}
@@ -142,16 +158,12 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
             const words = breakIntoWordsAndKeywords(paragraph);
             words.forEach((word: string, idx: number) => {
               if (keywords.includes(word) && wordCounter + idx === prevIndex) {
-                setHighlightedKeywordIndices(
-                  (prevSet) => new Set(prevSet.add(prevIndex))
-                );
               }
             });
             wordCounter += words.length;
           });
           if (prevIndex === wordCounter - 1) {
-            setIsPaused(true);
-            return 0;
+            setCurrentIndex(0);
           }
           return prevIndex + 1;
         });
@@ -198,29 +210,25 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
         return (
           <p
             key={pIndex}
-            style={{ margin: "5px 0", padding: "0", fontSize: fontSize }}
+            style={{ margin: "5px 0", padding: "0", fontSize: fontSize, fontFamily: "arial"}}
+            // className= "monospace-roboto-mono"
           >
             {wordsAndKeywords.map((wordOrKeyword: string, wIndex: number) => {
-              const isHighlighted = globalIndex === currentIndex;
-              const isKeyword = keywords.includes(wordOrKeyword);
-              const className = isHighlighted
-                ? isKeyword
-                  ? "highlighted keyword-highlighted"
-                  : "highlighted"
-                : highlightedKeywordIndices.has(globalIndex) && isKeyword
-                ? "keyword-highlighted"
-                : "";
+                const isHighlighted = Math.abs(globalIndex - currentIndex) < pointerSize;
+              const className = isHighlighted && pointer
+                ? isPaused ? "highlighted blur" : "highlighted"
+                : isPaused ? "blur" :"";
               globalIndex++;
               const cleanWord = wordOrKeyword.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
               return (
                 <span key={`${pIndex}-${wIndex}`}>
                   <span className={className}>
-                    {bionicReading ? (
+                    {hyperBold ? (
                       <>
                         <span style={{ fontWeight: "bold" }}>
-                          {wordOrKeyword.slice(0, Math.floor((1 + cleanWord.length) / 2))}
+                          {wordOrKeyword.slice(0, Math.floor(( cleanWord.length) / 2))}
                         </span>
-                        <span>{wordOrKeyword.slice(Math.floor((1 + cleanWord.length) / 2))}</span>
+                        <span>{wordOrKeyword.slice(Math.floor(( cleanWord.length) / 2))}</span>
                       </>
                     ): <span>{wordOrKeyword}</span>}
                   </span>

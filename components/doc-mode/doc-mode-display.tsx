@@ -9,6 +9,7 @@ import { useAuth } from "@clerk/nextjs";
 import { RiSpace } from 'react-icons/ri';
 import { ArrowLeftSquare, ArrowRightSquare } from 'lucide-react';
 import { TbSquareLetterR } from 'react-icons/tb';
+import Routes from '@/config/routes';
 
 
 const Mode1Display = () => {
@@ -17,7 +18,7 @@ const Mode1Display = () => {
   const [textColor, setTextColor] = useState("black");
   const [shortStory, setShortStory] = useState("");
   const [summary, setSummary] = useState("");
-  const { selectedTextId } = useSelectedText(); // Use the ID from context
+  const { selectedTextId, setSelectedTextId } = useSelectedText(); // Use the ID from context
   const { userId } = useAuth();
   const [pastWPM, setPastWPM] = useState<number[]>([300]);
   const [averageWPM, setAverageWPM] = useState<number | null>(null);
@@ -25,8 +26,11 @@ const Mode1Display = () => {
   const [showFinishPopup, setShowFinishPopup] = useState(false);
   const [restartTime, setRestartTime] = useState<number>(0);
   const [readingTime, setReadingTime] = useState<number>(0);
-  const [bionicReading, setBionicReading] = useState(false);
-
+  const [hyperBold, sethyperBold] = useState(false);
+  const [pointer, setPointer] = useState<boolean>(true);
+  const [restartText, setRestartText] = useState<boolean>(false);
+  const [pointerSize, setPointerSize] = useState(1)
+  const [fontSize, setFontSize] = useState("16px");
 
 
 
@@ -37,6 +41,7 @@ const Mode1Display = () => {
 
   const handleRestartTimeChange = (newRestartTime: number) => {
     setRestartTime(newRestartTime);
+    setRestartText(false);
     console.log('Restart time:', newRestartTime)
   };
   const handleReadingTimeChange = (newRestartTime: number) => {
@@ -80,18 +85,38 @@ const Mode1Display = () => {
 
   }, []);
 
+    // Function to handle restart action
+    const restartAction = () => {
+      setAverageWPM(null); // Reset the averageWPM value
+      setWordsPerMinute(300); // Reset the WPM value
+      setRestartTime(0); // Reset the restart time
+      setReadingTime(0); // Reset the reading time
+      setShowFinishPopup(false); // Hide the finish popup
+      setRestartText(true);
 
+  };
+  
+  useEffect(() => {
+      if (selectedTextId !== null) {
+          restartAction();  // Then call the restart action
+      }
+  }, [selectedTextId]);
   // Example toggle functions for background and text colors
   const toggleBackgroundColor = () => {
     setBackgroundColor((prevColor) => (prevColor === "white" ? "black" : "white"));
   };
 
+
+
   const toggleTextColor = () => {
     setTextColor((prevColor) => (prevColor === "white" ? "black" : "white"));
   };
 
-  const toggleBionicReading = () => {
-    setBionicReading((prevValue) => !prevValue);
+  const togglehyperBold = () => {
+    sethyperBold((prevValue) => !prevValue);
+  }
+  const togglePointer = () => {
+    setPointer((prevValue) => !prevValue);
   }
 
   const { practiceId, setPracticeId } = usePracticeID(); // Accessing the setPracticeId method from the global context
@@ -145,14 +170,18 @@ const Mode1Display = () => {
         setWordsPerMinute((prevWPM) => Math.min(prevWPM + 20, 1500)); // Increase WPM with upper bound
       } else if (event.key === "ArrowLeft") {
         setWordsPerMinute((prevWPM) => Math.max(prevWPM - 20, 50)); // Decrease WPM with lower bound
-      } else if (event.key === "b" || event.key === "B") {
-        // When the "b" or "B" key is pressed, toggle the background color
-        toggleBionicReading();
-      } else if (event.key === "t" || event.key === "T") {
-        // When the "t" or "T" key is pressed, toggle the text color
+      } else if (event.key === "p" || event.key === "P") {
+        togglePointer();
+      } else if (event.key === "c" || event.key === "C") {
         toggleTextColor();
         toggleBackgroundColor();
-      }
+      } else if (event.key === "h" || event.key === "H") {
+        togglehyperBold();
+      } else if (event.key === "b" || event.key === "B") {
+        toggleBackgroundColor();
+      } else if (event.key === "t" || event.key === "T") {
+        toggleTextColor();
+      } 
     };
 
     window.addEventListener("keydown", handleKeyPress);
@@ -184,13 +213,12 @@ const Mode1Display = () => {
   }
   const handleCloseFinishPopupSendToQuiz = () => {
     submitReadingSpeed(averageWPM);
+    window.location.href = Routes.QUIZ;
     
   }
   const handleCloseFinishPopupRestart = () => {
     setShowFinishPopup(false);
-    setRestartTime(0);
-    setReadingTime(0);
-  }
+    restartAction();}
 
   // Component return
   return (
@@ -241,10 +269,7 @@ const Mode1Display = () => {
                                 }}> 
                                 
                                     <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
-                                        <p>In this mode, you have the freedom to see the whole text, and read at your own pace.</p>
-                                        <p>A pointer is available for your benefit</p>
-                                        <p><b>Y</b>ou <b>c</b>an <b>al</b>so <b>ena</b>ble <b>Hyp</b>er<b>Bold</b>ing, <b>whi</b>ch <b>bol</b>ds <b>t</b>he <b>begin</b>ning <b>o</b>f <b>t</b>he <b>wor</b>ds <b>y</b>ou <b>a</b>re <b>read</b>ing.</p>
-                                        <p style={{ color: 'rgb(0, 125, 0)', fontWeight: 'bold' }}>Press the spacebar to start</p>
+                                        <p>Congrats on finishing the text!</p>
                                     </p>
                                     <button className="GreenButton" onClick={handleCloseFinishPopupRestart}>
                                         Reread the text
@@ -292,7 +317,6 @@ const Mode1Display = () => {
                         <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Commands</h3>
                     </div>
 
-                    {/* Second inner div for the text "Average WPM:" centered */}
                     <div
                         style={{
                         width: '100%', // Matches the width of the first inner div for consistency
@@ -364,10 +388,10 @@ const Mode1Display = () => {
                         Average WPM: {averageWPM !== null ? averageWPM : <span style={{ fontStyle: 'italic', color: 'rgb(150, 150, 150)' }}>Pending</span>}
                         </p>
                     </div>
-                    <button
-                        onClick={() => setBionicReading(!bionicReading)}
+                    <div style={{justifyContent: 'space-between'}}><button
+                        onClick={() => sethyperBold(!hyperBold)}
                         style={{
-                            backgroundColor: bionicReading ? 'green' : 'grey',
+                            backgroundColor: hyperBold ? 'green' : 'grey',
                             color: 'white',
                             padding: '10px',
                             borderRadius: '5px',
@@ -375,9 +399,53 @@ const Mode1Display = () => {
                             cursor: 'pointer',
                         }}
                         >
-                        {bionicReading ? 'Disable Bionic Reading' : 'Enable Bionic Reading'}
+                        {hyperBold ? 'Disable HyperBold' : 'Enable HyperBold'}
                         </button>
-                        
+                        <button
+                        onClick={() => setPointer(!pointer)}
+                        style={{
+                            backgroundColor: pointer ? 'green' : 'grey',
+                            color: 'white',
+                            padding: '10px',
+                            borderRadius: '5px',
+                            border: 'none',
+                            cursor: 'pointer',
+                        }}
+                        >
+                        {pointer ? 'Hide Pointer' : 'Show Pointer'}
+                        </button>
+                      </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', }}>
+                        <div>
+                          <p>Change pointer size</p>
+                          <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          defaultValue="1"
+                          className="slider"
+                          onChange={(event) => {
+                            const newValue = Number(event.target.value); // Convert the value to a number
+                            setPointerSize(newValue);
+                          }}
+                          />
+                        </div>
+                        <div>
+                          <p>Change text size</p>
+                          <input
+                          type="range"
+                          min="8"
+                          max="32"
+                          defaultValue="16"
+                          className="slider"
+                          onChange={(event) => {
+                            const newValue = event.target.value + "px"; // Convert the value to a number
+                            setFontSize(newValue);
+                          }}
+                          />
+                        </div>
+                      </div>
+                      
                 </div>
             </div>
     <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-auto p-8 pt-2 my-2">
@@ -403,8 +471,12 @@ const Mode1Display = () => {
             }}
             onRestartTimeChange={handleRestartTimeChange} 
             onReadingTimeChange={handleReadingTimeChange}
-            bionicReading={bionicReading}
+            hyperBold={hyperBold}
             fontFamily = "monospace"
+            pointer={pointer}
+            restartText={restartText}
+            pointerSize={pointerSize}
+            fontSize={fontSize}
             // className= {showStartPopup||showFinishPopup ? 'blur-effect' : ''}
           />
         </div>
