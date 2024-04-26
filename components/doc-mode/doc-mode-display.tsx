@@ -230,7 +230,7 @@ const Mode1Display = () => {
                         <>
                         <div className="modal-backdrop" style={{ zIndex: 500}}></div>
                             <div className="modal-content" style={{ 
-                                width: '30vw', 
+                                width: '40vw', 
                                 display: 'flex', 
                                 borderRadius: '20px' ,
                                 flexDirection: 'column', // Stack children vertically
@@ -241,16 +241,19 @@ const Mode1Display = () => {
                                 
                                     <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
                                         <p>Welcome to <b>DocMode!</b></p>
-                                        <p></p>
-                                        <p>Here, you have the freedom to see the whole text and read it at your own pace.</p>
-                                        <p></p>
-                                        <p>However, we have some extra features you may find useful. These are controlled via the above control panel. These are:</p>
+                                        <br></br>
+                                        <p>Here, you have the freedom to see the whole text and read it at your own pace. However, we have some extra features you may find useful. These are controlled via the above control panel.</p>
+                                        <br></br>
+                                        <p>Features include:</p>
+                                        <br></br>
                                         <ul>
+                                          <div style={{ textAlign: 'left'}}>
                                           <li><b>Pointer:</b> Highlighting words karaoke-style. Width and pace adjustable.</li>
                                           <li><b>Text Size:</b> Adjusted via slider</li>
                                           <li><b>Hyperbold:</b> <b>Bol</b>ds the <b>beg</b>inning of <b>wor</b>ds to <b>cre</b>ate <b>art</b>ificial <b>fix</b>ation <b>poin</b>ts.</li>
+                                          </div>
                                         </ul>
-                                        <p></p>
+                                        <br></br>
                                         <p style={{ color: 'rgb(0, 125, 0)', fontWeight: 'bold' }}>Press the spacebar to start</p>
                                     </p>
                                     <button className="GreenButton" onClick={handleCloseStartPopup}>

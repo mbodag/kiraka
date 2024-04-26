@@ -10,7 +10,7 @@ interface CounterDisplayProps {
 const CounterDisplay: React.FC<CounterDisplayProps> = ({
   count,
   fontSize = "14px",
-  className = "",
+  className = "bg-amber-50",
 }) => {
   const [leftArrowActive, setLeftArrowActive] = useState(false);
   const [rightArrowActive, setRightArrowActive] = useState(false);
@@ -48,7 +48,8 @@ const CounterDisplay: React.FC<CounterDisplayProps> = ({
   return (
     // Outer container with white background and shadow
     <div className={className} style={{ 
-        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)', 
+        backgroundColor: 'white', 
+        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)', 
         padding: '10px 50px', 
         borderRadius: '10px', 
         marginBottom: '5px',
