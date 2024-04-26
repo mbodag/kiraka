@@ -102,10 +102,10 @@ export default async function InstructionPage() {
                 <strong>Thank you for being a test user!</strong> These are the features we would like you to explore and give us feedback on:
                 <br></br><br></br>
                 <div className='mx-5 mt-2'> {/* Adjust marginBottom as needed */}
-                  • Use <a href={Routes.DOCMODE}><b>Docmode</b></a> and explore the different <b>features</b> that can be found above the text.
+                  • Use <a href={Routes.DOCMODE}><b>Docmode</b></a> and explore the different <b>features</b> that can be found in the control panel above the text.
                 </div>
                 <div className='mx-5 mt-2'> {/* Adjust marginBottom as needed */}
-                  • Use <a href={Routes.DEFAULT_MODE}><b>Flashmode</b></a> and explore both the <b>static</b> and the <b>adaptive</b> settings. In the adaptive setting, we've introduced a new toggle feature called complexity mode. Please test it to see if it improves the speed adjustment.
+                  • Use <a href={Routes.DEFAULT_MODE}><b>Flashmode</b></a> and explore both the <b>static</b> and <b>adaptive</b> configurations. In FlashMode Adaptive, we have introduced a new toggle feature called complexity mode. Please test it out to see if it improves the speed adjustment.
                 </div>
                 <div className='mx-5 mt-2'> {/* Last item does not need bottom margin unless you want space to another element below */}
                   • You can now speedread your own texts! Use our new <a href={Routes.UPLOAD}><b>upload</b></a> feature with any mode you want and try out the generated quizzes on your text!
