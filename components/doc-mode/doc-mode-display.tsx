@@ -246,7 +246,8 @@ const Mode1Display = () => {
                                         <p></p>
                                         <p>However, we have some extra features you may find useful. These are controlled via the above control panel. These are:</p>
                                         <ul>
-                                          <li><b>Pointer:</b> Highlighting words karaoke-style at a constant pace.</li>
+                                          <li><b>Pointer:</b> Highlighting words karaoke-style. Width and pace adjustable.</li>
+                                          <li><b>Text Size:</b> Adjusted via slider</li>
                                           <li><b>Hyperbold:</b> <b>Bol</b>ds the <b>beg</b>inning of <b>wor</b>ds to <b>cre</b>ate <b>art</b>ificial <b>fix</b>ation <b>poin</b>ts.</li>
                                         </ul>
                                         <p></p>
