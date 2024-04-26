@@ -52,7 +52,7 @@ const TermsAndConditions: React.FC = () => {
                     <li>
                         <strong>Camera Usage:</strong>
                         <br />
-                        Our service may utilize your device's camera for specific features or functionalities. We do not record, store, or transmit any images or video footage captured by your camera without your explicit consent. Any use of your camera is solely for the purpose of providing the intended functionality of our service, and we do not access or use your camera for any other purposes.
+                        Our service may utilize your device&apos;s camera for specific features or functionalities. We do not record, store, or transmit any images or video footage captured by your camera without your explicit consent. Any use of your camera is solely for the purpose of providing the intended functionality of our service, and we do not access or use your camera for any other purposes.
                     </li>
                     <li>
                         <strong>Data Security:</strong>
