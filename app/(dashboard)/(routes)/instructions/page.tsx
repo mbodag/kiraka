@@ -64,9 +64,9 @@ export default async function InstructionPage() {
                     <li>
                     <b>Thank you for being a test user!</b> These are the features we would like you to explore and give us feedback on
                     <li>• Use <a href={Routes.DOCMODE}><b>Docmode</b></a> and explore the different <b>features</b> that can be found above the text.</li>
-                    <li>• Use <a href={Routes.DEFAULT_MODE}><b>Flashmode</b></a> and explore both the <b>static</b> and the <b>adaptive</b> settings. In the adaptive setting, we've introduced a new toggle feature called complexity mode. Please test it to see if it improves the speed adjustment.</li>
+                    <li>• Use <a href={Routes.DEFAULT_MODE}><b>Flashmode</b></a> and explore both the <b>static</b> and the <b>adaptive</b> settings. In the adaptive setting, we&apos;ve introduced a new toggle feature called complexity mode. Please test it to see if it improves the speed adjustment.</li>
                     <li>• You can now speedread your own texts! Use our new <a href={Routes.UPLOAD}><b>upload</b></a> feature with any mode you want and try out the generated quizzes on your text!</li>
-                    <li>After your session, don't forget to <span style={{ color: 'rgb(0, 100, 250)', fontWeight: 'bold' }}>save your performance and tackle our custom quiz to test your understanding of the content.</span></li>
+                    <li>After your session, don&apos;t forget to <span style={{ color: 'rgb(0, 100, 250)', fontWeight: 'bold' }}>save your performance and tackle our custom quiz to test your understanding of the content.</span></li>
                     <li>
                       Please <a href={Routes.FEEDBACK} target='_blank' rel="noopener noreferrer"><span style={{ color: 'rgb(0, 180, 50)', fontWeight: 'bold' }}>give us feedback</span></a> about your experience when you&apos;re done!
                     </li>
