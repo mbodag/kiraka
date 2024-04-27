@@ -1,6 +1,7 @@
 "use client"; 
 
 import { useEffect, useState, useRef, FC } from "react";
+import { usePathname } from 'next/navigation';
 import { useSelectedText } from "@/contexts/SelectedTextContext";
 import CounterDisplay from "@/components/doc-mode/counter-display";
 import styles from '@/app/(dashboard)/(routes)/Dashboard.module.css';
@@ -72,6 +73,8 @@ const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
     // const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. `;
 
+    const pathname = usePathname();
+
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
     const [pastAvgWPMs, setPastAvgWPMs] = useState<number[]>([startWPM]);
     const [WPM, setWPM] = useState(startWPM);
@@ -117,6 +120,16 @@ const Mode2Display = () => {
         }
     }, []);
     
+    useEffect(() => {
+        const handleBeforeUnload = (event: any) => {
+            localStorage.setItem('webGazerActive', 'false');
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+          window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+      }, []);
+
     useEffect(() => {
         const fetchPastWPM = async () => {
           try {

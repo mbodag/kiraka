@@ -36,10 +36,7 @@ export default async function InstructionPage() {
       console.error(error);
     }
   }
-
-  const handleFeedbackClick = () => { 
-    window.open('https://forms.gle/AcLYF7cKN9YPbqdw7', '_blank'); // Opens the link in a new tab
-  };
+  
 
   return (
     <SelectedTextProvider>
