@@ -808,7 +808,7 @@ const Mode2Display = () => {
                             <>
                             <div className="modal-backdrop" style={{ zIndex: 500}}></div>
                                 <div className="modal-content" style={{ 
-                                    width: '650px', 
+                                    width: '600px', 
                                     display: 'flex', 
                                     borderRadius: '20px' ,
                                     flexDirection: 'column', // Stack children vertically
@@ -1114,10 +1114,11 @@ const Mode2Display = () => {
                                     checked={integrateComplexity}
                                     onChange={e => setIntegrateComplexity(e.target.checked)}
                                     style={{ marginRight: '10px',
-                                            //  accentColor: integrateComplexity ? 'green' : 'initial'  
+                                             accentColor: integrateComplexity ? 'orange' : 'initial'  
                                             }}
+                                    disabled={showCompletionPopup}
                                 />
-                                Further adjust WPM based on the complexity of each chunk of words
+                                Further adjust WPM based on the complexity of each text chunk
                             </label>
                         </div>
                     </div>
