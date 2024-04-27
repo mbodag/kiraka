@@ -808,7 +808,7 @@ const Mode2Display = () => {
                             <>
                             <div className="modal-backdrop" style={{ zIndex: 500}}></div>
                                 <div className="modal-content" style={{ 
-                                    width: '30vw', 
+                                    width: '650px', 
                                     display: 'flex', 
                                     borderRadius: '20px' ,
                                     flexDirection: 'column', // Stack children vertically
@@ -819,19 +819,17 @@ const Mode2Display = () => {
                                     {!redirectingToCalibration ? (
                                     <>
                                         <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
-                                        Welcome to <b>FlashMode!</b>
-                                            </p>
-                                            <p>Here, there are 2 modes: Static and Adaptive. To choose, use the toggle buttons above.</p>
-                                            <br></br>
-                                            <p><b>Static:</b></p>
-                                            <p>Chunks of text are shown in flashes, enforcing focus and first-time reading. The reading speed can be adjusted using the left-right arrow keys.</p>
-                                            <br></br>
-                                            <p><b>Adapative</b> (Recommended):</p>
-                                            <p>Adaptive uses eye-tracking (Webgazer) to automatically adjust your reading speed to an appropriately challenging level. If need be, speed can still be adjusted using arrow keys.</p>
-                                            <br></br>
-                                            <p>To begin WebGazer calibration, click the button below!</p>
-                                            <br></br>
-                                            
+                                            Welcome to <strong>FlashMode!</strong>
+                                        </p>
+                                        <p>Explore two FlashMode configurations: <span style={{ color: 'darkblue' }}><strong>Static</strong></span> and <span style={{ color: 'darkgreen' }}><strong>Adaptive</strong></span>. To choose, use the toggle switch button above.</p>
+                                        <div className='mx-2 mt-4 bg-blue-50 shadow-lg rounded-xl p-4'>
+                                        <p><strong>Static:</strong> Chunks of text successively appear in brief, rapid bursts or "flashes". Speed, measured in <span style={{ fontStyle: 'italic' }}>WPM (Words Per Minute)</span>, can be adjusted with the arrow keys. Otions to pause, start, or restart are also available at any time.</p>
+                                        </div>
+                                        <div className='mx-2 my-6 bg-green-50 shadow-lg rounded-xl p-4'>
+                                            <p><strong>Adaptive</strong> <span style={{ fontStyle: 'italic' }}>(Recommended)</span>: Integrates Webgazer's eye-tracking technology to automatically adjust your WPM, encouraging faster reading. <span style={{ textDecoration: 'underline'  }}>If pace feels too fast</span>, manual WPM adjustments via arrow keys and controls to pause, start, or restart are still available.</p>
+                                        </div>
+                                        <p>To begin WebGazer calibration, click the button below!</p>
+                                        <br></br>
                                         <button className="GreenButton" onClick={handleGoToCalibration}>
                                             Go to Calibration
                                         </button>
