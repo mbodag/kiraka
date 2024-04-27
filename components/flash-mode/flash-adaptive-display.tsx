@@ -838,10 +838,10 @@ const Mode2Display = () => {
                                         </p>
                                         <p>Explore two FlashMode configurations: <span style={{ color: 'darkblue' }}><strong>Static</strong></span> and <span style={{ color: 'darkgreen' }}><strong>Adaptive</strong></span>. To choose, use the toggle switch button above.</p>
                                         <div className='mx-2 mt-4 bg-blue-50 shadow-lg rounded-xl p-4'>
-                                        <p><strong>Static:</strong> Chunks of text successively appear in brief, rapid bursts or "flashes". Speed, measured in <span style={{ fontStyle: 'italic' }}>WPM (Words Per Minute)</span>, can be adjusted with the arrow keys. Options to pause, start, or restart are also available at any time.</p>
+                                        <p><strong>Static:</strong> Chunks of text successively appear in brief, rapid bursts or &quot;flashes&quot;. Speed, measured in <span style={{ fontStyle: 'italic' }}>WPM (Words Per Minute)</span>, can be adjusted with the arrow keys. Options to pause, start, or restart are also available at any time.</p>
                                         </div>
                                         <div className='mx-2 my-6 bg-green-50 shadow-lg rounded-xl p-4'>
-                                            <p><strong>Adaptive</strong> <span style={{ fontStyle: 'italic' }}>(Recommended)</span>: Integrates Webgazer's eye-tracking to automatically adjust your WPM, encouraging faster reading. <span style={{ textDecoration: 'underline'  }}>If the pace feels too fast</span>, manual WPM adjustments via arrow keys and controls to pause, start, or restart are still available.</p>
+                                            <p><strong>Adaptive</strong> <span style={{ fontStyle: 'italic' }}>(Recommended)</span>: Integrates Webgazer&apos;s eye-tracking to automatically adjust your WPM, encouraging faster reading. <span style={{ textDecoration: 'underline'  }}>If the pace feels too fast</span>, manual WPM adjustments via arrow keys and controls to pause, start, or restart are still available.</p>
                                         </div>
                                         <p>To begin WebGazer calibration, click the button below!</p>
                                         <br></br>
