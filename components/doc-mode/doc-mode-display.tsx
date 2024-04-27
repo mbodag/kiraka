@@ -226,71 +226,70 @@ const Mode1Display = () => {
     <div>
       {/* Smaller divs on the right */}
       {
-                    showStartPopup && (
-                        <>
-                        <div className="modal-backdrop" style={{ zIndex: 500}}></div>
-                            <div className="modal-content" style={{ 
-                                width: '40vw', 
-                                display: 'flex', 
-                                borderRadius: '20px' ,
-                                flexDirection: 'column', // Stack children vertically
-                                alignItems: 'center', // Center children horizontally
-                                justifyContent: 'center', // Center children vertically
-                                textAlign: 'center', // Ensures that text inside children elements is centered, if needed
-                                }}> 
-                                
-                                    <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
-                                        <p>Welcome to <b>DocMode!</b></p>
-                                        <br></br>
-                                        <p>Here, you have the freedom to see the whole text and read it at your own pace. However, we have some extra features you may find useful. These are controlled via the above control panel.</p>
-                                        <br></br>
-                                        <p>Features include:</p>
-                                        <br></br>
-                                        <ul>
-                                          <div style={{ textAlign: 'left'}}>
-                                          <li><b>Pointer:</b> Highlighting words karaoke-style. Width and pace adjustable.</li>
-                                          <li><b>Text Size:</b> Adjusted via slider</li>
-                                          <li><b>Hyperbold:</b> <b>Bol</b>ds the <b>beg</b>inning of <b>wor</b>ds to <b>cre</b>ate <b>art</b>ificial <b>fix</b>ation <b>poin</b>ts.</li>
-                                          </div>
-                                        </ul>
-                                        <br></br>
-                                        <p style={{ color: 'rgb(0, 125, 0)', fontWeight: 'bold' }}>Press the spacebar to start</p>
-                                    </p>
-                                    <button className="GreenButton" onClick={handleCloseStartPopup}>
-                                        Got it
-                                    </button>
-                                
-                            </div>
-                        </>
-                    )
+          showStartPopup && (
+              <>
+              <div className="modal-backdrop" style={{ zIndex: 500}}></div>
+                  <div className="modal-content" style={{ 
+                      width: '600px', 
+                      display: 'flex', 
+                      borderRadius: '20px' ,
+                      flexDirection: 'column', // Stack children vertically
+                      alignItems: 'center', // Center children horizontally
+                      justifyContent: 'center', // Center children vertically
+                      textAlign: 'center', // Ensures that text inside children elements is centered, if needed
+                  }}>
+                    <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
+                        Welcome to <strong>DocMode!</strong>
+                    </p>
+                    <p>Here, you have the freedom to see the whole text and read it at your own pace. However, we have some <span style={{ color: 'purple' }}><strong>extra features</strong></span> you may find useful. These are controlled via the above control panel.</p>
+                    <br></br>
+                    <p>Features include:</p>
+                    <div className='mx-4 mt-2 bg-purple-50 shadow-lg rounded-xl p-4'>
+                      <p><strong style={{ fontStyle: 'italic', color: 'purple' }}>Pointer:</strong> Highlighting words karaoke-style. Width and pace adjustable.</p>
+                    </div>
+                    <div className='mx-4 my-2 bg-purple-50 shadow-lg rounded-xl p-4'>
+                      <p><strong style={{ fontStyle: 'italic', color: 'purple' }}>Font Size:</strong> Adjusted via slider.</p>
+                    </div>
+                    <div className='mx-4 mb-6 bg-purple-50 shadow-lg rounded-xl p-4'>
+                      <p><strong style={{ fontStyle: 'italic', color: 'purple' }}>Hyperbold:</strong> <b>Bol</b>ds the <b>beg</b>inning of <b>wor</b>ds to <b>cre</b>ate <b>art</b>ificial <b>fix</b>ation <b>poin</b>ts.</p>
+                    </div>
+                    <p style={{ color: '', fontWeight: '' }}>Press the spacebar to start reading in DocMode!</p>
+                    <br></br>
+                    <button className="GreenButton" onClick={handleCloseStartPopup}>
+                        Got it
+                    </button>
+                      
+                  </div>
+              </>
+          )
         }
         {
-                    showFinishPopup && (
-                        <>
-                        <div className="modal-backdrop" style={{ zIndex: 500}}></div>
-                            <div className="modal-content" style={{ 
-                                width: '30vw', 
-                                display: 'flex', 
-                                borderRadius: '20px' ,
-                                flexDirection: 'column', // Stack children vertically
-                                alignItems: 'center', // Center children horizontally
-                                justifyContent: 'center', // Center children vertically
-                                textAlign: 'center', // Ensures that text inside children elements is centered, if needed
-                                }}> 
-                                
-                                    <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
-                                        <p>Congrats on finishing the text!</p>
-                                    </p>
-                                    <button className="GreenButton" onClick={handleCloseFinishPopupRestart}>
-                                        Reread the text
-                                    </button>
-                                    <button className="GreenButton" onClick={handleCloseFinishPopupSendToQuiz}>
-                                        Save and continue to quiz
-                                    </button>
-                                
-                            </div>
-                        </>
-                    )
+          showFinishPopup && (
+              <>
+              <div className="modal-backdrop" style={{ zIndex: 500}}></div>
+                  <div className="modal-content" style={{ 
+                      width: '600px', 
+                      display: 'flex', 
+                      borderRadius: '20px' ,
+                      flexDirection: 'column', // Stack children vertically
+                      alignItems: 'center', // Center children horizontally
+                      justifyContent: 'center', // Center children vertically
+                      textAlign: 'center', // Ensures that text inside children elements is centered, if needed
+                      }}> 
+                      
+                          <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
+                              <p>Congrats on finishing the text!</p>
+                          </p>
+                          <button className="GreenButton" onClick={handleCloseFinishPopupRestart}>
+                              Reread the text
+                          </button>
+                          <button className="GreenButton" onClick={handleCloseFinishPopupSendToQuiz}>
+                              Save and continue to quiz
+                          </button>
+                      
+                  </div>
+              </>
+          )
         }
       <div className="my-2" style={{
                     display: "flex",
