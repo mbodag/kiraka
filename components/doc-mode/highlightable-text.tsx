@@ -24,7 +24,6 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
   className = "",
   onRestartTimeChange,
   onReadingTimeChange,
-  fontFamily = "monospace-jetbrains-mono",
   hyperBold = false,
   pointer = false,
   restartText = false,
@@ -36,21 +35,7 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
 
   const keywords = useMemo(
     () => [
-      "work-life balance",
-      "personal well-being",
-      "professional success",
-      "stress and burnout",
-      "time management",
-      "fulfilling life",
-      "hobbies",
-      "quality time",
-      "relaxation",
-      "flexible working conditions",
-      "mental health",
-      "productive work environment",
-      "job satisfaction",
-      "career progression",
-      "long-term happiness",
+      "wordthatdoesnotexisttonottriggerhighlight",
     ],
     []
   );
@@ -117,7 +102,7 @@ useEffect(() => {
         // Set a timer to decrement the countdown every second
         timerId = setTimeout(() => {
             setCountdown(countdown - 1);
-          }, 1000);
+          }, 700);
         } else if (countdown === 0) {
             // Display "Go!" for a brief moment before resetting
             timerId = setTimeout(() => {
@@ -184,6 +169,33 @@ useEffect(() => {
     paragraphs,
   ]); // Add isPaused to the dependency array
 
+  const renderWithHyperBold = (wordOrKeyword: any) => {
+    if (!hyperBold) {
+        return <span>{wordOrKeyword}</span>;
+    }
+
+    // Split the word by hyphens to handle composite words
+    const parts = wordOrKeyword.split(/(\-)/g); // Include hyphens in the result to keep them in the text
+
+    return (
+        <>
+            {parts.map((part: any, index: any) => {
+                // Apply hyperbold to each part separately
+                if (part !== '-') {
+                    const midIndex = Math.floor(part.length / 2);
+                    return (
+                        <React.Fragment key={index}>
+                            <span style={{ fontWeight: "bold" }}>{part.slice(0, midIndex)}</span>
+                            <span>{part.slice(midIndex)}</span>
+                        </React.Fragment>
+                    );
+                }
+                return <span key={index}>{part}</span>; // Return hyphens as normal
+            })}
+        </>
+    );
+  };
+
   return (
     <div className="highlightable-text-container">
       {/* Countdown Display */}
@@ -208,35 +220,23 @@ useEffect(() => {
           .flatMap((p) => breakIntoWordsAndKeywords(p)).length;
 
         return (
-          <p
-            key={pIndex}
-            style={{ margin: "5px 0", padding: "0", fontSize: fontSize, fontFamily: "arial"}}
-            // className= "monospace-roboto-mono"
-          >
-            {wordsAndKeywords.map((wordOrKeyword: string, wIndex: number) => {
+          <p key={pIndex} className="monospace-jetbrains-mono" style={{ margin: "5px 0", padding: "0", fontSize: fontSize }}>
+            {wordsAndKeywords.map((wordOrKeyword, wIndex) => {
                 const isHighlighted = Math.abs(globalIndex - currentIndex) < pointerSize;
-              const className = isHighlighted && pointer
-                ? isPaused ? "highlighted blur" : "highlighted"
-                : isPaused ? "blur" :"";
-              globalIndex++;
-              const cleanWord = wordOrKeyword.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
-              return (
-                <span key={`${pIndex}-${wIndex}`}>
-                  <span className={className}>
-                    {hyperBold ? (
-                      <>
-                        <span style={{ fontWeight: "bold" }}>
-                          {wordOrKeyword.slice(0, Math.floor(( cleanWord.length) / 2))}
+                const className = isHighlighted && pointer
+                    ? isPaused ? "highlighted blur" : "highlighted"
+                    : isPaused ? "blur" : "";
+                globalIndex++;
+                return (
+                    <span key={`${pIndex}-${wIndex}`}>
+                        <span className={className}>
+                            {renderWithHyperBold(wordOrKeyword)}
                         </span>
-                        <span>{wordOrKeyword.slice(Math.floor(( cleanWord.length) / 2))}</span>
-                      </>
-                    ): <span>{wordOrKeyword}</span>}
-                  </span>
-                  <span className={pointerSize > 1 ? className: ""}> </span>
-                </span>
-              );
+                        <span className={pointerSize > 1 ? className : ""}> </span>
+                    </span>
+                );
             })}
-          </p>
+        </p>
         );
       })}
     </div>

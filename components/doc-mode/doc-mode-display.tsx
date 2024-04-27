@@ -9,13 +9,17 @@ import { useAuth } from "@clerk/nextjs";
 import { RiSpace } from 'react-icons/ri';
 import { ArrowLeftSquare, ArrowRightSquare } from 'lucide-react';
 import { TbSquareLetterR } from 'react-icons/tb';
+import { TbSquareLetterT } from 'react-icons/tb';
+import { TbSquareLetterB } from 'react-icons/tb';
+import { TbSquareLetterH } from 'react-icons/tb';
+import { TbSquareLetterP } from 'react-icons/tb';
 import Routes from '@/config/routes';
 
 
 const Mode1Display = () => {
   const [wordsPerMinute, setWordsPerMinute] = useState(300);
-  const [backgroundColor, setBackgroundColor] = useState("white");
-  const [textColor, setTextColor] = useState("black");
+  const [backgroundClass, setBackgroundClass] = useState("flash-mode-display-bg-color");
+    const [textColorClass, setTextColorClass] = useState("text-color-black");
   const [shortStory, setShortStory] = useState("");
   const [summary, setSummary] = useState("");
   const { selectedTextId, setSelectedTextId } = useSelectedText(); // Use the ID from context
@@ -32,12 +36,6 @@ const Mode1Display = () => {
   const [pointerSize, setPointerSize] = useState(1)
   const [fontSize, setFontSize] = useState("16px");
 
-
-
-  const gapBetweenSize = '15px';
-  const gapEdgeSize = '20px';
-  const divHeight = '200px';
-  const plotHeight = '350px';
 
   const handleRestartTimeChange = (newRestartTime: number) => {
     setRestartTime(newRestartTime);
@@ -102,14 +100,14 @@ const Mode1Display = () => {
       }
   }, [selectedTextId]);
   // Example toggle functions for background and text colors
-  const toggleBackgroundColor = () => {
-    setBackgroundColor((prevColor) => (prevColor === "white" ? "black" : "white"));
+    const toggleBackgroundColor = () => {
+    setBackgroundClass((prevClass) => (prevClass === "flash-mode-display-bg-color" ? "bg-color-black " : "flash-mode-display-bg-color"));
   };
 
 
 
   const toggleTextColor = () => {
-    setTextColor((prevColor) => (prevColor === "white" ? "black" : "white"));
+    setTextColorClass((prevClass) => (prevClass === "text-color-black " ? "flash-mode-display-text-color" : "text-color-black "));
   };
 
   const togglehyperBold = () => {
@@ -168,9 +166,9 @@ const Mode1Display = () => {
     }
 
       if (event.key === "ArrowRight") {
-        setWordsPerMinute((prevWPM) => Math.min(prevWPM + 20, 1500)); // Increase WPM with upper bound
+        setWordsPerMinute((prevWPM) => Math.min(prevWPM + 50, 1500)); // Increase WPM with upper bound
       } else if (event.key === "ArrowLeft") {
-        setWordsPerMinute((prevWPM) => Math.max(prevWPM - 20, 50)); // Decrease WPM with lower bound
+        setWordsPerMinute((prevWPM) => Math.max(prevWPM - 50, 50)); // Decrease WPM with lower bound
       } else if (event.key === "p" || event.key === "P") {
         togglePointer();
       } else if (event.key === "c" || event.key === "C") {
@@ -221,107 +219,112 @@ const Mode1Display = () => {
     setShowFinishPopup(false);
     restartAction();}
 
+
+  const gapBetweenSize = '8px';
+  const gapBetweenSize2 = '10px';
+
+
   // Component return
   return (
-    <div>
+    <div className="justify-center items-start rounded-xl bg-pink-900"
+    style={{ minWidth: "800px", width: "80vw", maxWidth: "1000px", }}>
       {/* Smaller divs on the right */}
       {
-                    showStartPopup && (
-                        <>
-                        <div className="modal-backdrop" style={{ zIndex: 500}}></div>
-                            <div className="modal-content" style={{ 
-                                width: '40vw', 
-                                display: 'flex', 
-                                borderRadius: '20px' ,
-                                flexDirection: 'column', // Stack children vertically
-                                alignItems: 'center', // Center children horizontally
-                                justifyContent: 'center', // Center children vertically
-                                textAlign: 'center', // Ensures that text inside children elements is centered, if needed
-                                }}> 
-                                
-                                    <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
-                                        <p>Welcome to <b>DocMode!</b></p>
-                                        <br></br>
-                                        <p>Here, you have the freedom to see the whole text and read it at your own pace. However, we have some extra features you may find useful. These are controlled via the above control panel.</p>
-                                        <br></br>
-                                        <p>Features include:</p>
-                                        <br></br>
-                                        <ul>
-                                          <div style={{ textAlign: 'left'}}>
-                                          <li><b>Pointer:</b> Highlighting words karaoke-style. Width and pace adjustable.</li>
-                                          <li><b>Text Size:</b> Adjusted via slider</li>
-                                          <li><b>Hyperbold:</b> <b>Bol</b>ds the <b>beg</b>inning of <b>wor</b>ds to <b>cre</b>ate <b>art</b>ificial <b>fix</b>ation <b>poin</b>ts.</li>
-                                          </div>
-                                        </ul>
-                                        <br></br>
-                                        <p style={{ color: 'rgb(0, 125, 0)', fontWeight: 'bold' }}>Press the spacebar to start</p>
-                                    </p>
-                                    <button className="GreenButton" onClick={handleCloseStartPopup}>
-                                        Got it
-                                    </button>
-                                
-                            </div>
-                        </>
-                    )
+          showStartPopup && (
+              <>
+              <div className="modal-backdrop" style={{ zIndex: 500}}></div>
+                  <div className="modal-content" style={{ 
+                      width: '600px', 
+                      display: 'flex', 
+                      borderRadius: '20px' ,
+                      flexDirection: 'column', // Stack children vertically
+                      alignItems: 'center', // Center children horizontally
+                      justifyContent: 'center', // Center children vertically
+                      textAlign: 'center', // Ensures that text inside children elements is centered, if needed
+                  }}>
+                    <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
+                        Welcome to <strong>DocMode!</strong>
+                    </p>
+                    <p>Here, you have the freedom to see the whole text and read it at your own pace. However, we have some <span className="text-pink-800"><strong>extra features</strong></span> you may find useful. These are controlled via the above control panel.</p>
+                    <br></br>
+                    <p>Features include:</p>
+                    <div className='mx-4 mt-2 bg-red-50 shadow-lg rounded-xl p-4'>
+                      <p><strong style={{ fontStyle: 'italic'}} className="text-pink-800">Pointer:</strong> Highlighting words karaoke-style. Width and pace adjustable.</p>
+                    </div>
+                    <div className='mx-4 my-2 bg-red-50 shadow-lg rounded-xl p-4'>
+                      <p><strong style={{ fontStyle: 'italic'}} className="text-pink-800">Font Size:</strong> Adjusted via slider.</p>
+                    </div>
+                    <div className='mx-4 mb-6 bg-red-50 shadow-lg rounded-xl p-4'>
+                      <p><strong style={{ fontStyle: 'italic'}} className="text-pink-800">Hyperbold:</strong> <b>Bol</b>ds the <b>beg</b>inning of <b>wor</b>ds to <b>cre</b>ate <b>art</b>ificial <b>fix</b>ation <b>poin</b>ts.</p>
+                    </div>
+                    <p style={{ color: '', fontWeight: '' }}>Press the spacebar to start reading in DocMode!</p>
+                    <br></br>
+                    <button className="GreenButton" onClick={handleCloseStartPopup}>
+                        Got it
+                    </button>
+                      
+                  </div>
+              </>
+          )
         }
         {
-                    showFinishPopup && (
-                        <>
-                        <div className="modal-backdrop" style={{ zIndex: 500}}></div>
-                            <div className="modal-content" style={{ 
-                                width: '30vw', 
-                                display: 'flex', 
-                                borderRadius: '20px' ,
-                                flexDirection: 'column', // Stack children vertically
-                                alignItems: 'center', // Center children horizontally
-                                justifyContent: 'center', // Center children vertically
-                                textAlign: 'center', // Ensures that text inside children elements is centered, if needed
-                                }}> 
-                                
-                                    <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
-                                        <p>Congrats on finishing the text!</p>
-                                    </p>
-                                    <button className="GreenButton" onClick={handleCloseFinishPopupRestart}>
-                                        Reread the text
-                                    </button>
-                                    <button className="GreenButton" onClick={handleCloseFinishPopupSendToQuiz}>
-                                        Save and continue to quiz
-                                    </button>
-                                
-                            </div>
-                        </>
-                    )
+          showFinishPopup && (
+            <>
+            <div className="modal-backdrop" style={{ zIndex: 500}}></div>
+                <div className="modal-content" style={{ 
+                    width: '600px', 
+                    display: 'flex', 
+                    borderRadius: '20px' ,
+                    flexDirection: 'column', // Stack children vertically
+                    alignItems: 'center', // Center children horizontally
+                    justifyContent: 'center', // Center children vertically
+                    textAlign: 'center', // Ensures that text inside children elements is centered, if needed
+                }}> 
+                    
+                    <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
+                        <p>Congrats on finishing the text!</p>
+                    </p>
+                    <button className="GreenButton" onClick={handleCloseFinishPopupRestart}>
+                        Reread the text
+                    </button>
+                    <button className="GreenButton" onClick={handleCloseFinishPopupSendToQuiz}>
+                        Save and continue to quiz
+                    </button>
+                    
+                </div>
+            </>
+        )
         }
-      <div className="my-2" style={{
+      <div className="" style={{
                     display: "flex",
                     flexDirection: "row",
                     alignItems: "stretch",
                     justifyContent: "space-between", // This will evenly space the children vertically
-                    height: divHeight,
+                    height: '280px',
+                    gap: gapBetweenSize2,
+                    margin: gapBetweenSize,
             }}>
 
                 {/* div 1 */}
                 <div
-                className="bg-white rounded-lg shadow-lg p-6 pt-2"
+                className="flash-mode-display-bg-color rounded-lg shadow-lg p-6 pt-2"
                 style={{
-                width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
                 display: 'flex',
                 flexDirection: 'column', // This will stack children divs on top of each other
                 alignItems: 'center',
                 justifyContent: 'space-evenly', // Adjust spacing between inner divs
-                flexGrow: 1,
-                marginBottom: `${gapBetweenSize}`,
+                width: "350px",
                 }}
                 >
-                    <div
+                    <div 
                         style={{
-                        backgroundColor: 'white',
-                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
+                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
                         padding: '1px',
                         borderRadius: '10px',
                         margin: '5px',
                         width: '100%', // Adjust width as necessary
                         textAlign: 'center',
+                        marginBottom: '15px'
                         }}
                     >
                         <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Commands</h3>
@@ -341,7 +344,7 @@ const Mode1Display = () => {
                         <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
                             <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                             <TbSquareLetterR style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
-                            <p style={{ margin: '0'}}>to Restart</p>
+                            <p style={{ margin: '0'}}>to Restart Pointer</p>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)' , marginBottom: '5px' }}>
                             <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
@@ -351,126 +354,201 @@ const Mode1Display = () => {
                         <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
                             <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                             <ArrowLeftSquare color={"rgb(90, 90, 90)"} /><ArrowRightSquare color={"rgb(90, 90, 90)"} />
-                            <p style={{ margin: '0'}}>to adjust your speed</p>
+                            <p style={{ marginLeft: '5px'}}>to Adjust your WPM</p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                            <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
+                            <TbSquareLetterP style={{ marginRight: '', color: '#606060', fontSize: '24px' }} />
+                            <p style={{ margin: '0'}}>/</p>
+                            <TbSquareLetterH style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
+                            <p style={{ margin: '0'}}>to use Pointer/HyperBold</p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                            <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
+                            <TbSquareLetterT style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
+                            <p style={{ margin: '0'}}>to Change Text Colour</p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                            <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
+                            <TbSquareLetterB style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
+                            <p style={{ margin: '0'}}>to Change Background Colour</p>
                         </div>
                     </div>
                 </div>
 
                 {/* div 2 */}
                 <div
-                className="bg-white rounded-lg shadow-lg p-6 pt-2"
+                className="rounded-lg shadow-lg"
                 style={{
-                width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
-                display: 'flex',
-                flexDirection: 'column', // This will stack children divs on top of each other
-                alignItems: 'center',
-                justifyContent: 'space-evenly', // Adjust spacing between inner divs
-                flexGrow: 1, 
-                marginBottom: `${gapBetweenSize}`,
+                  display: 'flex',
+                  flexDirection: 'column', // This will stack children divs on top of each other
+                  alignItems: 'center',
+                  justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                  flexGrow: 1, 
                 }}
                 >
-                {/* First inner div for the title "Stats" and a gray horizontal line */}
-                    <div
-                        style={{
-                        backgroundColor: 'white',
-                        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
-                        padding: '1px',
-                        borderRadius: '10px',
-                        margin: '5px',
-                        width: '100%', // Adjust width as necessary
-                        textAlign: 'center',
-                        }}
+                  <div
+                    className="flash-mode-display-bg-color rounded-lg w-full shadow-lg px-6 py-2"
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column', // This will stack children divs on top of each other
+                      alignItems: 'center',
+                      justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                      flexGrow: 1, 
+                      marginBottom: gapBetweenSize2,
+                    }}
                     >
-                        <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Stats</h3>
-                    </div>
+                  {/* First inner div for the title "Stats" and a gray horizontal line */}
+                      <div className="my-1"
+                          style={{
+                          boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
+                          borderRadius: '10px',
+                          margin: '5px',
+                          width: '100%', // Adjust width as necessary
+                          textAlign: 'center',
+                          }}
+                      >
+                          <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Stats</h3>
+                      </div>
 
-                    {/* Second inner div for the text "Average WPM:" centered */}
-                    <div
-                        style={{
-                        width: '100%', // Matches the width of the first inner div for consistency
-                        display: 'flex',
-                        alignItems: 'center', // Center-align the text vertically
-                        justifyContent: 'center',
-                        flex: 1, // Take up remaining space
-                        }}
-                    >
-                        <p style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }}>
-                        Average WPM: {averageWPM !== null ? averageWPM : <span style={{ fontStyle: 'italic', color: 'rgb(150, 150, 150)' }}>Pending</span>}
-                        </p>
+                      {/* Second inner div for the text "Average WPM:" centered */}
+                      <div
+                          style={{
+                          width: '100%', // Matches the width of the first inner div for consistency
+                          display: 'flex',
+                          alignItems: 'center', // Center-align the text vertically
+                          justifyContent: 'center',
+                          flex: 1, // Take up remaining space
+                          }}
+                      >
+                          <p style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }}>
+                          Average WPM: {averageWPM !== null ? averageWPM : <span style={{ fontStyle: 'italic', color: 'rgb(150, 150, 150)' }}>Pending</span>}
+                          </p>
+                      </div>
                     </div>
-                    <div style={{justifyContent: 'space-between'}}><button
-                        onClick={() => sethyperBold(!hyperBold)}
-                        style={{
-                            backgroundColor: hyperBold ? 'green' : 'grey',
-                            color: 'white',
-                            padding: '10px',
-                            borderRadius: '5px',
-                            border: 'none',
-                            cursor: 'pointer',
-                        }}
-                        >
-                        {hyperBold ? 'Disable HyperBold' : 'Enable HyperBold'}
-                        </button>
-                        <button
-                        onClick={() => setPointer(!pointer)}
-                        style={{
-                            backgroundColor: pointer ? 'green' : 'grey',
-                            color: 'white',
-                            padding: '10px',
-                            borderRadius: '5px',
-                            border: 'none',
-                            cursor: 'pointer',
-                        }}
-                        >
-                        {pointer ? 'Hide Pointer' : 'Show Pointer'}
-                        </button>
-                      </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', }}>
-                        <div>
-                          <p>Change pointer size</p>
-                          <input
-                          type="range"
-                          min="1"
-                          max="10"
-                          defaultValue="1"
-                          className="slider"
-                          onChange={(event) => {
-                            const newValue = Number(event.target.value); // Convert the value to a number
-                            setPointerSize(newValue);
+                  <div
+                    className="flash-mode-display-bg-color rounded-lg w-full px-6 py-2"
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column', // This will stack children divs on top of each other
+                      alignItems: 'center',
+                      justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                      flexGrow: 1, 
+                    }}
+                    >
+                  {/* First inner div for the title "Stats" and a gray horizontal line */}
+                      <div className="my-1 mb-3"
+                          style={{
+                          boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
+                          padding: '1px',
+                          borderRadius: '10px',
+                          width: '100%', // Adjust width as necessary
+                          textAlign: 'center',
                           }}
-                          />
-                        </div>
-                        <div>
-                          <p>Change text size</p>
-                          <input
-                          type="range"
-                          min="8"
-                          max="32"
-                          defaultValue="16"
-                          className="slider"
-                          onChange={(event) => {
-                            const newValue = event.target.value + "px"; // Convert the value to a number
-                            setFontSize(newValue);
-                          }}
-                          />
-                        </div>
+                      >
+                          <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Features</h3>
                       </div>
-                      
+                      <div className="justify-center" style={{
+                          width: '80%',
+                          display: 'grid',
+                          gridTemplateColumns: '1fr 1fr', // Two columns
+                          gridGap: '20px', // Space between grid items
+                          maxWidth: '800px', // Maximum width of the grid
+                          margin: 'auto'
+                        }}>
+                          <div style={{ width: '100%' }}> {/* Wrapper to maintain button size */}
+                            <button
+                              onClick={() => sethyperBold(!hyperBold)}
+                              style={{
+                                backgroundColor: hyperBold ? 'rgb(250, 212, 212)' : 'rgb(235, 235, 235)',
+                                color: 'rgb(90, 90, 90)',
+                                padding: '10px 15px',
+                                borderRadius: '16px',
+                                border: 'none',
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                transition: 'background-color 0.3s, box-shadow 0.3s',
+                                width: '100%', // Ensures the button fills the container
+                                textAlign: 'center', // Center text
+                                minWidth: '170px' // Minimum width to accommodate the largest text
+                              }}
+                              onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgb(250, 190, 212)'}
+                              onMouseOut={e => e.currentTarget.style.backgroundColor = hyperBold ? 'rgb(250, 212, 212)' : 'rgb(235, 235, 235)'}
+                            >
+                              {hyperBold ? 'Disable HyperBold' : 'Enable HyperBold'}
+                            </button>
+                          </div>
+                          <div style={{ width: '100%' }}> {/* Same wrapper approach for consistency */}
+                            <button
+                              onClick={() => setPointer(!pointer)}
+                              style={{
+                                backgroundColor: pointer ? 'rgb(250, 212, 212)' : 'rgb(235, 235, 235)',
+                                color: 'rgb(90, 90, 90)',
+                                padding: '10px 15px',
+                                borderRadius: '16px',
+                                border: 'none',
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                transition: 'background-color 0.3s, box-shadow 0.3s',
+                                width: '100%', // Ensures the button fills the container
+                                textAlign: 'center', // Center text
+                                minWidth: '170px' // Minimum width to accommodate the largest text
+                              }}
+                              onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgb(250, 190, 212)'}
+                              onMouseOut={e => e.currentTarget.style.backgroundColor = pointer ? 'rgb(250, 212, 212)' : 'rgb(235, 235, 235)'}
+                            >
+                              {pointer ? 'Hide Pointer' : 'Show Pointer'}
+                            </button>
+                          </div>
+                          <div style={{ width: '100%', color: 'rgb(90, 90, 90)', }}>
+                            <p style={{ textAlign: 'center' }}>Change pointer size</p>
+                            <input
+                              type="range"
+                              min="1"
+                              max="10"
+                              defaultValue="1"
+                              className="slider"
+                              onChange={(event) => {
+                                const newValue = Number(event.target.value);
+                                setPointerSize(newValue);
+                              }}
+                              style={{ width: '100%',  accentColor: 'pink' }}
+                            />
+                          </div>
+                          <div style={{ width: '100%', color: 'rgb(90, 90, 90)' }}>
+                            <p style={{ textAlign: 'center' }}>Change text size</p>
+                            <input
+                              type="range"
+                              min="12"
+                              max="28"
+                              defaultValue="16"
+                              className="slider"
+                              onChange={(event) => {
+                                const newValue = event.target.value + "px";
+                                setFontSize(newValue);
+                              }}
+                              style={{ width: '100%',  accentColor: 'pink' }}
+                            />
+                          </div>
+                        </div>
+
+                      </div> 
                 </div>
             </div>
-    <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-auto p-8 pt-2 my-2">
+    <div className="flash-mode-display-bg-color rounded-lg shadow-lg px-6 pt-2"
+         style={{ minWidth: "", width: "", margin: gapBetweenSize, marginTop: gapBetweenSize2 }}>
     <div className="centerContainer">
       <CounterDisplay count={wordsPerMinute} fontSize="16px" />
       <div className="textAndButtonContainer">
         <div
-          className="monospaced"
+          className={`${backgroundClass} ${textColorClass}`}
           style={{
-            color: textColor,
-            backgroundColor,
-            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-            padding: "20px",
+            // color: textColor,
+            // backgroundColor: backgroundColor,
+            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
+            padding: "25px",
             borderRadius: "10px",
-            margin: "10px",
+            margin: "10px", 
           }}
         >
           <HighlightableText
@@ -482,7 +560,7 @@ const Mode1Display = () => {
             onRestartTimeChange={handleRestartTimeChange} 
             onReadingTimeChange={handleReadingTimeChange}
             hyperBold={hyperBold}
-            fontFamily = "monospace"
+            fontFamily = "monospace-jetbrains-mono"
             pointer={pointer}
             restartText={restartText}
             pointerSize={pointerSize}
@@ -490,7 +568,7 @@ const Mode1Display = () => {
             // className= {showStartPopup||showFinishPopup ? 'blur-effect' : ''}
           />
         </div>
-        <button className="fancyButton" onClick={handleFinishText}>
+        <button className="GreenButton" onClick={handleFinishText}>
           I have finished reading the text
         </button>
       </div>

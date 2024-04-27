@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useSelectedText } from '@/contexts/SelectedTextContext';
 import Image from "next/legacy/image";
 import Link from "next/link";
@@ -24,6 +24,7 @@ const Sidebar = () => {
   const [adminTexts, setAdminTexts] = useState<{id: number, title:string}[]>([]);
   
   const pathname = usePathname();
+  const router = useRouter();
   const shouldDisplayTexts = !(pathname === '/quiz' || pathname === '/upload');
 
   // Array of texts with their IDs
@@ -95,11 +96,16 @@ const Sidebar = () => {
   }, [userId]);
 
   const handleFeedbackClick = () => {
+    localStorage.setItem('webGazerActive', 'false');
     let win = window.open(Routes.FEEDBACK, '_blank');
-if (win) {
-    // Browser has allowed it to be opened
-    win.opener = null;
-}
+    if (win) {
+        // Browser has allowed it to be opened
+        win.opener = null;
+    }
+  };
+  const navigateAndClearWebGazer = (path: string) => {
+    localStorage.setItem('webGazerActive', 'false'); // Clear the webGazerActive flag
+    router.push(path); // Navigate to the specified path
   };
 
   const handleTextClick = (textId: any) => {
@@ -149,26 +155,26 @@ if (win) {
           {/* Horizontal line */}
           {/* Link buttons with icons */}
           <div className="flex text-sm flex-col items-start mt-3"> {/* Changed to items-start and added padding left */}
-            <Link href="/" passHref>
-              <button className="flex items-center mb-2 text-white px-2 py-1 hover:text-cyan-500">
+            {/* <Link href="/" passHref> */}
+              <button className="flex items-center mb-2 text-white px-2 py-1 hover:text-cyan-500" onClick={() => navigateAndClearWebGazer('/')}>
                 <RiHome2Line className="mr-2 text-lg" /> Home {/* Icon with margin right */}
               </button>
-            </Link>
-            <Link href="/instructions" passHref>
-              <button className="flex items-center mb-2 text-white px-2 py-1 hover:text-orange-500">
+            {/* </Link> */}
+            {/* <Link href="/instructions" passHref> */}
+              <button className="flex items-center mb-2 text-white px-2 py-1 hover:text-orange-500" onClick={() => navigateAndClearWebGazer('/instructions')}>
                 <HiOutlineClipboardList className="mr-2 text-lg" /> Instructions {/* Icon with margin right */}
               </button>
-            </Link>
-            <Link href="/analytics" passHref>
-              <button className="flex items-center mb-2 text-white px-2 py-1 hover:text-blue-500">
+            {/* </Link> */}
+            {/* <Link href="/analytics" passHref> */}
+              <button className="flex items-center mb-2 text-white px-2 py-1 hover:text-blue-500" onClick={() => navigateAndClearWebGazer('/analytics')}>
                 <TbBrandGoogleAnalytics className="mr-2 text-lg" /> Analytics {/* Icon with margin right */}
               </button>
-            </Link>
-            <Link href="/upload">
-              <button className="flex items-center text-white px-2 py-1 hover:text-purple-500">
+            {/* </Link> */}
+            {/* <Link href="/upload"> */}
+              <button className="flex items-center text-white px-2 py-1 hover:text-purple-500" onClick={() => navigateAndClearWebGazer('/upload')}>
                 <PiUploadSimpleBold className="mr-2 text-lg" /> Upload your own text
               </button>
-            </Link>
+            {/* </Link> */}
           </div>
 
           {/* Conditional Feedback button with icon */}
