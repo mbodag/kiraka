@@ -123,6 +123,7 @@ const Mode2Display = () => {
     useEffect(() => {
         const handleBeforeUnload = (event: any) => {
             localStorage.setItem('webGazerActive', 'false');
+            // event.returnValue = `Are you sure you want to leave?`;
         };
         window.addEventListener('beforeunload', handleBeforeUnload);
         return () => {

@@ -94,7 +94,7 @@ const NavbarWebGazer: React.FC = () => {
             {pathname.includes('/flash-mode') && (
                 <div className="absolute left-1/2 transform -translate-x-1/2 flex space-x-6">
                     <Switch
-                        checked={config === 'static'}
+                        checked={pathname.includes('static')} 
                         onCheckedChange={(checked) => handleConfigChange(checked ? 'static' : 'adaptive')}
                     />
                 </div>
