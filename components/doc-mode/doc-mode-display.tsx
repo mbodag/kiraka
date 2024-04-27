@@ -265,31 +265,31 @@ const Mode1Display = () => {
         }
         {
           showFinishPopup && (
-              <>
-              <div className="modal-backdrop" style={{ zIndex: 500}}></div>
-                  <div className="modal-content" style={{ 
-                      width: '600px', 
-                      display: 'flex', 
-                      borderRadius: '20px' ,
-                      flexDirection: 'column', // Stack children vertically
-                      alignItems: 'center', // Center children horizontally
-                      justifyContent: 'center', // Center children vertically
-                      textAlign: 'center', // Ensures that text inside children elements is centered, if needed
-                      }}> 
-                      
-                          <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
-                              <p>Congrats on finishing the text!</p>
-                          </p>
-                          <button className="GreenButton" onClick={handleCloseFinishPopupRestart}>
-                              Reread the text
-                          </button>
-                          <button className="GreenButton" onClick={handleCloseFinishPopupSendToQuiz}>
-                              Save and continue to quiz
-                          </button>
-                      
-                  </div>
-              </>
-          )
+            <>
+            <div className="modal-backdrop" style={{ zIndex: 500}}></div>
+                <div className="modal-content" style={{ 
+                    width: '600px', 
+                    display: 'flex', 
+                    borderRadius: '20px' ,
+                    flexDirection: 'column', // Stack children vertically
+                    alignItems: 'center', // Center children horizontally
+                    justifyContent: 'center', // Center children vertically
+                    textAlign: 'center', // Ensures that text inside children elements is centered, if needed
+                    }}> 
+                    
+                        <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
+                            <p>Congrats on finishing the text!</p>
+                        </p>
+                        <button className="GreenButton" onClick={handleCloseFinishPopupRestart}>
+                            Reread the text
+                        </button>
+                        <button className="GreenButton" onClick={handleCloseFinishPopupSendToQuiz}>
+                            Save and continue to quiz
+                        </button>
+                    
+                </div>
+            </>
+        )
         }
       <div className="my-2" style={{
                     display: "flex",
@@ -457,7 +457,8 @@ const Mode1Display = () => {
                       
                 </div>
             </div>
-    <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-auto p-8 pt-2 my-2">
+    <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-auto p-8 pt-2 my-2"
+         style={{ minWidth: "800px", width: "90vw" }}>
     <div className="centerContainer">
       <CounterDisplay count={wordsPerMinute} fontSize="16px" />
       <div className="textAndButtonContainer">
