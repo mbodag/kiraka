@@ -752,3 +752,15 @@ body,
 .flash-mode-display-bg-color {
   background-color: #FFFAF0; /* Light grey background on hover */
 }
+
+.bg-color-black {
+  background-color: black; /* Light grey background on hover */
+}
+
+.flash-mode-display-text-color {
+  color: #FFFAF0; /* Light grey background on hover */
+}
+
+.text-color-black {
+  color: black;
+}

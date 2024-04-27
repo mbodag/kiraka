@@ -9,13 +9,17 @@ import { useAuth } from "@clerk/nextjs";
 import { RiSpace } from 'react-icons/ri';
 import { ArrowLeftSquare, ArrowRightSquare } from 'lucide-react';
 import { TbSquareLetterR } from 'react-icons/tb';
+import { TbSquareLetterT } from 'react-icons/tb';
+import { TbSquareLetterB } from 'react-icons/tb';
+import { TbSquareLetterH } from 'react-icons/tb';
+import { TbSquareLetterP } from 'react-icons/tb';
 import Routes from '@/config/routes';
 
 
 const Mode1Display = () => {
   const [wordsPerMinute, setWordsPerMinute] = useState(300);
-  const [backgroundColor, setBackgroundColor] = useState("white");
-  const [textColor, setTextColor] = useState("black");
+  const [backgroundClass, setBackgroundClass] = useState("flash-mode-display-bg-color");
+    const [textColorClass, setTextColorClass] = useState("text-color-black");
   const [shortStory, setShortStory] = useState("");
   const [summary, setSummary] = useState("");
   const { selectedTextId, setSelectedTextId } = useSelectedText(); // Use the ID from context
@@ -27,7 +31,7 @@ const Mode1Display = () => {
   const [restartTime, setRestartTime] = useState<number>(0);
   const [readingTime, setReadingTime] = useState<number>(0);
   const [hyperBold, sethyperBold] = useState(false);
-  const [pointer, setPointer] = useState<boolean>(false);
+  const [pointer, setPointer] = useState<boolean>(true);
   const [restartText, setRestartText] = useState<boolean>(false);
   const [pointerSize, setPointerSize] = useState(1)
   const [fontSize, setFontSize] = useState("16px");
@@ -96,14 +100,14 @@ const Mode1Display = () => {
       }
   }, [selectedTextId]);
   // Example toggle functions for background and text colors
-  const toggleBackgroundColor = () => {
-    setBackgroundColor((prevColor) => (prevColor === "white" ? "black" : "white"));
+    const toggleBackgroundColor = () => {
+    setBackgroundClass((prevClass) => (prevClass === "flash-mode-display-bg-color" ? "bg-color-black " : "flash-mode-display-bg-color"));
   };
 
 
 
   const toggleTextColor = () => {
-    setTextColor((prevColor) => (prevColor === "white" ? "black" : "white"));
+    setTextColorClass((prevClass) => (prevClass === "text-color-black " ? "flash-mode-display-text-color" : "text-color-black "));
   };
 
   const togglehyperBold = () => {
@@ -162,9 +166,9 @@ const Mode1Display = () => {
     }
 
       if (event.key === "ArrowRight") {
-        setWordsPerMinute((prevWPM) => Math.min(prevWPM + 20, 1500)); // Increase WPM with upper bound
+        setWordsPerMinute((prevWPM) => Math.min(prevWPM + 50, 1500)); // Increase WPM with upper bound
       } else if (event.key === "ArrowLeft") {
-        setWordsPerMinute((prevWPM) => Math.max(prevWPM - 20, 50)); // Decrease WPM with lower bound
+        setWordsPerMinute((prevWPM) => Math.max(prevWPM - 50, 50)); // Decrease WPM with lower bound
       } else if (event.key === "p" || event.key === "P") {
         togglePointer();
       } else if (event.key === "c" || event.key === "C") {
@@ -216,7 +220,8 @@ const Mode1Display = () => {
     restartAction();}
 
 
-  const gapBetweenSize = '10px';
+  const gapBetweenSize = '8px';
+  const gapBetweenSize2 = '10px';
 
 
   // Component return
@@ -243,13 +248,13 @@ const Mode1Display = () => {
                     <p>Here, you have the freedom to see the whole text and read it at your own pace. However, we have some <span className="text-pink-800"><strong>extra features</strong></span> you may find useful. These are controlled via the above control panel.</p>
                     <br></br>
                     <p>Features include:</p>
-                    <div className='mx-4 mt-2 bg-pink-50 shadow-lg rounded-xl p-4'>
+                    <div className='mx-4 mt-2 bg-red-50 shadow-lg rounded-xl p-4'>
                       <p><strong style={{ fontStyle: 'italic'}} className="text-pink-800">Pointer:</strong> Highlighting words karaoke-style. Width and pace adjustable.</p>
                     </div>
-                    <div className='mx-4 my-2 bg-pink-50 shadow-lg rounded-xl p-4'>
+                    <div className='mx-4 my-2 bg-red-50 shadow-lg rounded-xl p-4'>
                       <p><strong style={{ fontStyle: 'italic'}} className="text-pink-800">Font Size:</strong> Adjusted via slider.</p>
                     </div>
-                    <div className='mx-4 mb-6 bg-pink-50 shadow-lg rounded-xl p-4'>
+                    <div className='mx-4 mb-6 bg-red-50 shadow-lg rounded-xl p-4'>
                       <p><strong style={{ fontStyle: 'italic'}} className="text-pink-800">Hyperbold:</strong> <b>Bol</b>ds the <b>beg</b>inning of <b>wor</b>ds to <b>cre</b>ate <b>art</b>ificial <b>fix</b>ation <b>poin</b>ts.</p>
                     </div>
                     <p style={{ color: '', fontWeight: '' }}>Press the spacebar to start reading in DocMode!</p>
@@ -296,7 +301,7 @@ const Mode1Display = () => {
                     alignItems: "stretch",
                     justifyContent: "space-between", // This will evenly space the children vertically
                     height: '280px',
-                    gap: gapBetweenSize,
+                    gap: gapBetweenSize2,
                     margin: gapBetweenSize,
             }}>
 
@@ -319,6 +324,7 @@ const Mode1Display = () => {
                         margin: '5px',
                         width: '100%', // Adjust width as necessary
                         textAlign: 'center',
+                        marginBottom: '15px'
                         }}
                     >
                         <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Commands</h3>
@@ -338,7 +344,7 @@ const Mode1Display = () => {
                         <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
                             <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                             <TbSquareLetterR style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
-                            <p style={{ margin: '0'}}>to Restart</p>
+                            <p style={{ margin: '0'}}>to Restart Pointer</p>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)' , marginBottom: '5px' }}>
                             <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
@@ -348,7 +354,24 @@ const Mode1Display = () => {
                         <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
                             <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                             <ArrowLeftSquare color={"rgb(90, 90, 90)"} /><ArrowRightSquare color={"rgb(90, 90, 90)"} />
-                            <p style={{ margin: '0'}}>to adjust your speed</p>
+                            <p style={{ marginLeft: '5px'}}>to Adjust your WPM</p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                            <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
+                            <TbSquareLetterP style={{ marginRight: '', color: '#606060', fontSize: '24px' }} />
+                            <p style={{ margin: '0'}}>/</p>
+                            <TbSquareLetterH style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
+                            <p style={{ margin: '0'}}>to use Pointer/HyperBold</p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                            <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
+                            <TbSquareLetterT style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
+                            <p style={{ margin: '0'}}>to Change Text Colour</p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                            <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
+                            <TbSquareLetterB style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
+                            <p style={{ margin: '0'}}>to Change Background Colour</p>
                         </div>
                     </div>
                 </div>
@@ -372,7 +395,7 @@ const Mode1Display = () => {
                       alignItems: 'center',
                       justifyContent: 'space-evenly', // Adjust spacing between inner divs
                       flexGrow: 1, 
-                      marginBottom: gapBetweenSize,
+                      marginBottom: gapBetweenSize2,
                     }}
                     >
                   {/* First inner div for the title "Stats" and a gray horizontal line */}
@@ -489,22 +512,22 @@ const Mode1Display = () => {
                                 const newValue = Number(event.target.value);
                                 setPointerSize(newValue);
                               }}
-                              style={{ width: '100%' }}
+                              style={{ width: '100%',  accentColor: 'pink' }}
                             />
                           </div>
                           <div style={{ width: '100%', color: 'rgb(90, 90, 90)' }}>
                             <p style={{ textAlign: 'center' }}>Change text size</p>
                             <input
                               type="range"
-                              min="8"
-                              max="32"
+                              min="12"
+                              max="28"
                               defaultValue="16"
                               className="slider"
                               onChange={(event) => {
                                 const newValue = event.target.value + "px";
                                 setFontSize(newValue);
                               }}
-                              style={{ width: '100%' }}
+                              style={{ width: '100%',  accentColor: 'pink' }}
                             />
                           </div>
                         </div>
@@ -513,14 +536,15 @@ const Mode1Display = () => {
                 </div>
             </div>
     <div className="flash-mode-display-bg-color rounded-lg shadow-lg px-6 pt-2"
-         style={{ minWidth: "", width: "", margin: gapBetweenSize }}>
+         style={{ minWidth: "", width: "", margin: gapBetweenSize, marginTop: gapBetweenSize2 }}>
     <div className="centerContainer">
       <CounterDisplay count={wordsPerMinute} fontSize="16px" />
       <div className="textAndButtonContainer">
         <div
-          className="flash-mode-display-bg-color"
+          className={`${backgroundClass} ${textColorClass}`}
           style={{
-            color: textColor,
+            // color: textColor,
+            // backgroundColor: backgroundColor,
             boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
             padding: "25px",
             borderRadius: "10px",
