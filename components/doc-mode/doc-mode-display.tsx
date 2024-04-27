@@ -460,7 +460,7 @@ const Mode1Display = () => {
                             <button
                               onClick={() => sethyperBold(!hyperBold)}
                               style={{
-                                backgroundColor: hyperBold ? 'rgb(250, 212, 212)' : 'rgb(235, 235, 235)',
+                                backgroundColor: hyperBold ? 'rgb(250, 212, 212)' : 'rgb(245, 245, 245)',
                                 color: 'rgb(90, 90, 90)',
                                 padding: '10px 15px',
                                 borderRadius: '16px',
@@ -472,8 +472,8 @@ const Mode1Display = () => {
                                 textAlign: 'center', // Center text
                                 minWidth: '170px' // Minimum width to accommodate the largest text
                               }}
-                              onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgb(250, 190, 212)'}
-                              onMouseOut={e => e.currentTarget.style.backgroundColor = hyperBold ? 'rgb(250, 212, 212)' : 'rgb(235, 235, 235)'}
+                              onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgb(250, 205, 212)'}
+                              onMouseOut={e => e.currentTarget.style.backgroundColor = hyperBold ? 'rgb(250, 212, 212)' : 'rgb(245, 245, 245)'}
                             >
                               {hyperBold ? 'Disable HyperBold' : 'Enable HyperBold'}
                             </button>
@@ -482,7 +482,7 @@ const Mode1Display = () => {
                             <button
                               onClick={() => setPointer(!pointer)}
                               style={{
-                                backgroundColor: pointer ? 'rgb(250, 212, 212)' : 'rgb(235, 235, 235)',
+                                backgroundColor: pointer ? 'rgb(250, 212, 212)' : 'rgb(245, 245, 245)',
                                 color: 'rgb(90, 90, 90)',
                                 padding: '10px 15px',
                                 borderRadius: '16px',
@@ -494,8 +494,8 @@ const Mode1Display = () => {
                                 textAlign: 'center', // Center text
                                 minWidth: '170px' // Minimum width to accommodate the largest text
                               }}
-                              onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgb(250, 190, 212)'}
-                              onMouseOut={e => e.currentTarget.style.backgroundColor = pointer ? 'rgb(250, 212, 212)' : 'rgb(235, 235, 235)'}
+                              onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgb(250, 205, 212)'}
+                              onMouseOut={e => e.currentTarget.style.backgroundColor = pointer ? 'rgb(250, 212, 212)' : 'rgb(245, 245, 245)'}
                             >
                               {pointer ? 'Hide Pointer' : 'Show Pointer'}
                             </button>
@@ -519,7 +519,7 @@ const Mode1Display = () => {
                             <p style={{ textAlign: 'center' }}>Change text size</p>
                             <input
                               type="range"
-                              min="12"
+                              min="8"
                               max="28"
                               defaultValue="16"
                               className="slider"
@@ -549,6 +549,7 @@ const Mode1Display = () => {
             padding: "25px",
             borderRadius: "10px",
             margin: "10px", 
+            marginBottom: "20px", 
           }}
         >
           <HighlightableText

@@ -378,7 +378,7 @@ const Mode2Display = () => {
 
         const complexity = complexityChunks[chunkIndex];
         const Kmin = 5;
-        const Kmax = complexity <= 0.7 ? 20 : 30;
+        const Kmax = complexity <= 0.7 ? 15 : 30;
 
         if (complexity >= 0.77) {
             // Complexity is high, decrease WPM
