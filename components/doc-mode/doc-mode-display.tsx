@@ -227,7 +227,7 @@ const Mode1Display = () => {
   // Component return
   return (
     <div className="justify-center items-start rounded-xl bg-pink-900"
-    style={{ minWidth: "800px", width: "80vw", maxWidth: "1000px", }}>
+    style={{ minWidth: "800px", width: "80%", maxWidth: "1100px", }}>
       {/* Smaller divs on the right */}
       {
           showStartPopup && (
@@ -361,7 +361,7 @@ const Mode1Display = () => {
                             <TbSquareLetterP style={{ marginRight: '', color: '#606060', fontSize: '24px' }} />
                             <p style={{ margin: '0'}}>/</p>
                             <TbSquareLetterH style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
-                            <p style={{ margin: '0'}}>to use Pointer/HyperBold</p>
+                            <p style={{ margin: '0'}}>to Use Pointer/HyperBold</p>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
                             <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
