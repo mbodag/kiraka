@@ -36,21 +36,7 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
 
   const keywords = useMemo(
     () => [
-      "work-life balance",
-      "personal well-being",
-      "professional success",
-      "stress and burnout",
-      "time management",
-      "fulfilling life",
-      "hobbies",
-      "quality time",
-      "relaxation",
-      "flexible working conditions",
-      "mental health",
-      "productive work environment",
-      "job satisfaction",
-      "career progression",
-      "long-term happiness",
+      "wordthatdoesnotexisttonottriggerhighlight",
     ],
     []
   );
