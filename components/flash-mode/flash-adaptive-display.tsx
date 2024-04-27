@@ -1,6 +1,7 @@
 "use client"; 
 
-import { useEffect, useState, useRef, useMemo, FC } from "react";
+import { useEffect, useState, useRef, FC } from "react";
+import { usePathname } from 'next/navigation';
 import { useSelectedText } from "@/contexts/SelectedTextContext";
 import CounterDisplay from "@/components/doc-mode/counter-display";
 import styles from '@/app/(dashboard)/(routes)/Dashboard.module.css';
@@ -72,6 +73,8 @@ const Mode2Display = () => {
     // Predefined text same as from Mode1Display component
     // const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. `;
 
+    const pathname = usePathname();
+
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
     const [pastAvgWPMs, setPastAvgWPMs] = useState<number[]>([startWPM]);
     const [WPM, setWPM] = useState(startWPM);
@@ -116,6 +119,18 @@ const Mode2Display = () => {
             sessionStorage.setItem('isExistingSession', 'true'); // Mark this session as existing
         }
     }, []);
+    
+    useEffect(() => {
+        const handleBeforeUnload = (event: any) => {
+            localStorage.setItem('webGazerActive', 'false');
+            // event.returnValue = `Are you sure you want to leave?`;
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+          window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+      }, []);
+
     useEffect(() => {
         const fetchPastWPM = async () => {
           try {
@@ -808,7 +823,7 @@ const Mode2Display = () => {
                             <>
                             <div className="modal-backdrop" style={{ zIndex: 500}}></div>
                                 <div className="modal-content" style={{ 
-                                    width: '30vw', 
+                                    width: '600px', 
                                     display: 'flex', 
                                     borderRadius: '20px' ,
                                     flexDirection: 'column', // Stack children vertically
@@ -819,19 +834,17 @@ const Mode2Display = () => {
                                     {!redirectingToCalibration ? (
                                     <>
                                         <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
-                                        Welcome to <b>FlashMode!</b>
-                                            </p>
-                                            <p>Here, there are 2 modes: Static and Adaptive. To choose, use the toggle buttons above.</p>
-                                            <br></br>
-                                            <p><b>Static:</b></p>
-                                            <p>Chunks of text are shown in flashes, enforcing focus and first-time reading. The reading speed can be adjusted using the left-right arrow keys.</p>
-                                            <br></br>
-                                            <p><b>Adapative</b> (Recommended):</p>
-                                            <p>Adaptive uses eye-tracking (Webgazer) to automatically adjust your reading speed to an appropriately challenging level. If need be, speed can still be adjusted using arrow keys.</p>
-                                            <br></br>
-                                            <p>To begin WebGazer calibration, click the button below!</p>
-                                            <br></br>
-                                            
+                                            Welcome to <strong>FlashMode!</strong>
+                                        </p>
+                                        <p>Explore two FlashMode configurations: <span style={{ color: 'darkblue' }}><strong>Static</strong></span> and <span style={{ color: 'darkgreen' }}><strong>Adaptive</strong></span>. To choose, use the toggle switch button above.</p>
+                                        <div className='mx-2 mt-4 bg-blue-50 shadow-lg rounded-xl p-4'>
+                                        <p><strong>Static:</strong> Chunks of text successively appear in brief, rapid bursts or "flashes". Speed, measured in <span style={{ fontStyle: 'italic' }}>WPM (Words Per Minute)</span>, can be adjusted with the arrow keys. Options to pause, start, or restart are also available at any time.</p>
+                                        </div>
+                                        <div className='mx-2 my-6 bg-green-50 shadow-lg rounded-xl p-4'>
+                                            <p><strong>Adaptive</strong> <span style={{ fontStyle: 'italic' }}>(Recommended)</span>: Integrates Webgazer's eye-tracking to automatically adjust your WPM, encouraging faster reading. <span style={{ textDecoration: 'underline'  }}>If the pace feels too fast</span>, manual WPM adjustments via arrow keys and controls to pause, start, or restart are still available.</p>
+                                        </div>
+                                        <p>To begin WebGazer calibration, click the button below!</p>
+                                        <br></br>
                                         <button className="GreenButton" onClick={handleGoToCalibration}>
                                             Go to Calibration
                                         </button>
@@ -1116,10 +1129,11 @@ const Mode2Display = () => {
                                     checked={integrateComplexity}
                                     onChange={e => setIntegrateComplexity(e.target.checked)}
                                     style={{ marginRight: '10px',
-                                            //  accentColor: integrateComplexity ? 'green' : 'initial'  
+                                             accentColor: integrateComplexity ? 'orange' : 'initial'  
                                             }}
+                                    disabled={showCompletionPopup}
                                 />
-                                Further adjust WPM based on the complexity of each chunk of words
+                                Further adjust WPM based on the complexity of each text chunk
                             </label>
                         </div>
                     </div>
