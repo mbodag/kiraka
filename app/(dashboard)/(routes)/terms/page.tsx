@@ -58,7 +58,7 @@ const TermsAndConditions: React.FC = () => {
                     <li>
                         <strong>5. Camera Usage:</strong>
                         <br />
-                        Our service may utilise your device's camera to collect gaze data for specific features or functionalities, through the use of the third-party tool <a href='https://webgazer.cs.brown.edu' target='_blank' rel='noopener noreferrer'><span style={{ fontStyle: 'italic', color: '', fontWeight: '' }}>WebGazer</span></a>, developed and maintained by researchers at Brown University. This technology tracks gaze positions at regular intervals, which we use for calibration and to enhance your speed reading experience. We strictly limit camera use to these functionalities alone and do not record, store, or transmit any images or video footage.
+                        Our service may utilise your device&apos;s camera to collect gaze data for specific features or functionalities, through the use of the third-party tool <a href='https://webgazer.cs.brown.edu' target='_blank' rel='noopener noreferrer'><span style={{ fontStyle: 'italic', color: '', fontWeight: '' }}>WebGazer</span></a>, developed and maintained by researchers at Brown University. This technology tracks gaze positions at regular intervals, which we use for calibration and to enhance your speed reading experience. We strictly limit camera use to these functionalities alone and do not record, store, or transmit any images or video footage.
                     </li>
                     <br></br>
                     <li>

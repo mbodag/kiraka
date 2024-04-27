@@ -38,8 +38,8 @@ def take_text_generate_quiz_convert_to_dict(text):
             
         try:
             question, answer = question_ans.split(tokenizer_qa.sep_token)
-            #question = question.lstrip()
-            #answer = answer.lstrip()
+            question = question.lstrip()
+            answer = answer.lstrip()
             
             if len(answer.split()) <= 100:
                 list_to_return[idx]['question'] = question
