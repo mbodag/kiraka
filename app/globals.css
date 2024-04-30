@@ -764,3 +764,7 @@ body,
 .text-color-black {
   color: black;
 }
+
+.highlightable-text-container {
+  font-weight: 100; /* Lighter font weight for normal text */
+}

@@ -110,8 +110,8 @@ export default async function InstructionPage() {
               </li>
               <br></br>
 
-              <li>After your session, don't forget to <span style={{ color: 'rgb(0, 100, 250)', fontWeight: 'bold' }}>save your performance and tackle our custom quiz to test your understanding of the content.</span></li>
-              <li>Please <a href={Routes.FEEDBACK} target='_blank' rel="noopener noreferrer"><span style={{ color: 'rgb(0, 180, 50)', fontWeight: 'bold' }}>give us feedback</span></a> about your experience when you're done!</li>
+              <li>After your session, don&apos;t forget to <span style={{ color: 'rgb(0, 100, 250)', fontWeight: 'bold' }}>save your performance and tackle our custom quiz to test your understanding of the content.</span></li>
+              <li>Please <a href={Routes.FEEDBACK} target='_blank' rel="noopener noreferrer"><span style={{ color: 'rgb(0, 180, 50)', fontWeight: 'bold' }}>give us feedback</span></a> about your experience when you&apos;re done!</li>
             </ul>
             <div className="text-sm" style={{ marginTop: '20px', marginBottom: '20px' }}>
               <label htmlFor="terms">By advancing, you agree to the <a href="/terms" target='_blank' rel="noopener noreferrer"><u>Terms and Conditions</u></a></label>
