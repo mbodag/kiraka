@@ -11,10 +11,10 @@ import torch
 from api.config import DATABASE_URI, ADMIN_ID
 from api.chunk_complexity import compute_chunk_complexity, transformer_reg
 
-# # try:
-# import api.quiz_function as quiz_function
-# # except Exception as e:
-# #     print(f'Failed to import quiz function: {str(e)}')
+# try:
+import api.quiz_function as quiz_function
+# except Exception as e:
+#     print(f'Failed to import quiz function: {str(e)}')
 
 
 app = Flask(__name__)

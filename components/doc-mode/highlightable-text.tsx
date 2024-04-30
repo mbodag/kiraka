@@ -171,7 +171,7 @@ useEffect(() => {
 
   const renderWithHyperBold = (wordOrKeyword: any) => {
     if (!hyperBold) {
-        return <span>{wordOrKeyword}</span>;
+      return <span>{wordOrKeyword}</span>;
     }
 
     // Split the word by hyphens to handle composite words
@@ -182,11 +182,11 @@ useEffect(() => {
             {parts.map((part: any, index: any) => {
                 // Apply hyperbold to each part separately
                 if (part !== '-') {
-                    const midIndex = Math.floor(part.length / 2);
+                    const midIndex = Math.floor(part.length / 2)+1;
                     return (
                         <React.Fragment key={index}>
-                            <span style={{ fontWeight: "bold" }}>{part.slice(0, midIndex)}</span>
-                            <span>{part.slice(midIndex)}</span>
+                            <span style={{ fontWeight: 'bold', color: 'black' }}>{part.slice(0, midIndex)}</span>
+                            <span style={{ color: 'rgb(90, 90, 90)' }}>{part.slice(midIndex)}</span>
                         </React.Fragment>
                     );
                 }
@@ -197,13 +197,14 @@ useEffect(() => {
   };
 
   return (
-    <div className="highlightable-text-container">
+    <div className="highlightable-text-container" style={{fontWeight: '200'}}>
       {/* Countdown Display */}
       {countdown !== null && (
-                    <div className='modal-content' style={{
-                    fontSize: '100px',
-                    width: '15%',
-                    height: '15%',
+                    <div className='modal-content p-2' style={{
+                    fontSize: '80px',
+                    fontWeight: '300',
+                    // width: '100px',
+                    // height: '100x',
                     color: 'rgb(200, 0, 0)',
                     textAlign: 'center',
                     background: 'rgba(255, 255, 255, 0.9)',
@@ -227,7 +228,7 @@ useEffect(() => {
                     ? isPaused ? "highlighted blur" : "highlighted"
                     : isPaused ? "blur" : "";
                 globalIndex++;
-                return (
+                return ( 
                     <span key={`${pIndex}-${wIndex}`}>
                         <span className={className}>
                             {renderWithHyperBold(wordOrKeyword)}
