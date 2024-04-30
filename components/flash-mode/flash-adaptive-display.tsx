@@ -342,12 +342,13 @@ const Mode2Display = () => {
     };
     // Function to calculate percentageDisplayTimeToIgnore for a chunk
     const calculatePercentageDisplayTimeToIgnore = (displayTimeMs: number): number => {
-        const baseTime = 10 * 60 * 1000; // Base time for 10 minutes in milliseconds (assuming 10 words per chunk -- equivalent to the maximum of 50 characters per chunk)
-        const minScaledDisplayTime = baseTime / minWPM;
-        const maxScaledDisplayTime = baseTime / maxWPM;
-        const normalisedTime = (displayTimeMs - minScaledDisplayTime) / (maxScaledDisplayTime - minScaledDisplayTime);
-        const percentageToIgnore = 0.3 + normalisedTime * (0.70 - 0.3);
-        return Math.max(0.3, Math.min(percentageToIgnore, 0.70));
+        // const baseTime = 10 * 60 * 1000; // Base time for 10 minutes in milliseconds (assuming 10 words per chunk -- equivalent to the maximum of 50 characters per chunk)
+        // const minScaledDisplayTime = baseTime / minWPM;
+        // const maxScaledDisplayTime = baseTime / maxWPM;
+        // const normalisedTime = (displayTimeMs - minScaledDisplayTime) / (maxScaledDisplayTime - minScaledDisplayTime);
+        const normalisedTime = Math.min(1, Math.max(0, (WPM - minWPM)/(maxWPM - minWPM)))
+        const percentageToIgnore = 0.6 + normalisedTime * (0.8 - 0.6);
+        return Math.max(0.6, Math.min(percentageToIgnore, 0.8));
     };
 
     const getGradualSpeedIncrement = (inferredWPM: number, maxWPM: number) => {

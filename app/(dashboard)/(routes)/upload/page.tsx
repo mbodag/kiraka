@@ -30,24 +30,35 @@ const UploadPage: React.FC = () => {
     }
     setLoading(true); // Start loading indicator
     setTimeout(async () => { // Simulate network request
-      const response = await fetch('/api/texts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text_content: text, user_id: userId, title: title })
-      });
-
-      if (response.ok) {
-        // Check if there's history to go back to; if not, navigate to a default route
-        if (window.history.length > 1) {
+      try {
+        const response = await fetch('/api/texts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text_content: text, user_id: userId, title: title })
+        });
+  
+        if (response.ok) {
+          // Check if there's history to go back to; if not, navigate to a default route
+          if (window.history.length > 1) {
+            window.history.back(); // Go back to the previous page after a successful response
+          } else {
+            // Use a fallback URL if no history is available
+            window.location.href = Routes.DEFAULT_MODE;
+          }
+        } else {
+          const data = await response.json();
+          console.error('Upload failed:', data);
+          setLoading(false); // Stop loading indicator if failed
+        }
+      } catch(error) {
+        console.error('Upload failed:', error);
+        setLoading(false); // Stop Loading indicator if failed
+        if (window.history.length > 1){
           window.history.back(); // Go back to the previous page after a successful response
         } else {
           // Use a fallback URL if no history is available
-          window.location.href = Routes.DEFAULT_MODE;
+          window.location.href = Routes.DEFAULT_MODE
         }
-      } else {
-        const data = await response.json();
-        console.error('Upload failed:', data);
-        setLoading(false); // Stop loading indicator if failed
       }
     }, 2000); // Minimum display time for loading indicator
   };
