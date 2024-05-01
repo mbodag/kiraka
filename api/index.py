@@ -193,8 +193,9 @@ def add_text():
             return jsonify({'error': 'User not found'}), 404
         if text_content is None or user_id is None:
             return jsonify({'error': 'Invalid request. Missing text_content or user_id'}), 400
-        if not text_content_is_valid(text_content):
-            return jsonify({'error': 'Invalid text_content'}), 400
+        if user_id != "specific_id":
+            if not text_content_is_valid(text_content):
+                return jsonify({'error': 'Invalid text_content'}), 400
         # if not user_id_is_valid(user_id):
         #     return jsonify({'error': 'Invalid user_id'}), 400
         else:

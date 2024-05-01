@@ -39,6 +39,7 @@ certificates
 
 __pycache__/
 venv/
+kiraka_venv/
 
 my_env/
 

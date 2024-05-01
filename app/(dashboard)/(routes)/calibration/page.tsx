@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useWebGazer } from '@/contexts/WebGazerContext';
 import { SiTarget } from "react-icons/si";
 import Routes from '@/config/routes';
+import { useAuth } from "@clerk/nextjs";
 
 
 // Type definitions for extended window object and calibration points
@@ -28,6 +29,7 @@ export default function WebgazerCalibration() {
 
   // Accessing setWebgazerActive from context
   const { isWebGazerActive, setWebGazerActive } = useWebGazer();
+  const { userId } = useAuth();
 
   // Function to start the calibration process
   const startCalibration = () => {
@@ -142,10 +144,17 @@ export default function WebgazerCalibration() {
 
       if (extendedWindow) {
         // Shows prediction points, hides the video feed, and removes mouse event listeners
+        if (userId === 'user_2eKX4leLKDRjZVsWS6UqNgCked8'){
+        extendedWindow.webgazer
+          .showPredictionPoints(false)
+          .showVideo(true)
+          .removeMouseEventListeners();
+        } else {
         extendedWindow.webgazer
           .showPredictionPoints(false)
           .showVideo(false)
           .removeMouseEventListeners();
+        }
       }
 
       // Resets the calibration points for potential re-calibration
@@ -251,9 +260,11 @@ export default function WebgazerCalibration() {
 
       {/* Link to Dashboard if All Calibrated */}
       {allCalibrated && (
+        <div style={{ position: 'absolute', top: '0', right: '0', padding: '2px' }}>
           <Link href={Routes.DEFAULT_MODE}>
               <button className="GreenButton">Start Speed Reading</button>
           </Link>
+        </div>
       )}
 
       {/* Instructions Overlay */}

@@ -55,7 +55,7 @@ const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
 const startWPM = 300;
 const minWPM = 180;
-const maxWPM = 700;
+const maxWPM = 550;
 const significantLeftNormSpeed = -2/1201*100; // defined experimentally, based on the mac word display width (1201px) at the time of the experiment, and the value of -2px/s for threshold speed. Scaled by 100 (giving percentage)
 const constIncreaseWPM = 30;
 const constDecreaseWPM = 30;
@@ -154,7 +154,7 @@ const Mode2Display = () => {
             const sum = recentWPMs.reduce((acc, curr) => acc + curr, 0);
             const average = Math.round(sum / recentWPMs.length);
     
-            adjustedStartWPM.current = Math.min(Math.max(average, 150), 450);
+            adjustedStartWPM.current = Math.min(Math.max(average, 150), 400);
             setWPM(adjustedStartWPM.current);
             WPMValues.current = [adjustedStartWPM.current]
         }
@@ -822,7 +822,7 @@ const Mode2Display = () => {
                     {
                         showCalibrationPopup && (
                             <>
-                            <div className="modal-backdrop" style={{ zIndex: 500}}></div>
+                            <div className="modal-backdrop" style={{ zIndex: -1}}></div>
                                 <div className="modal-content" style={{ 
                                     width: '600px', 
                                     display: 'flex', 

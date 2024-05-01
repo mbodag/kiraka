@@ -197,7 +197,7 @@ const Sidebar = () => {
           <div className="content-container px-4 flex-grow overflow-auto">
             {/* Kiraka's own texts */}
             <div className="flex text-sm flex-col items-center mt-3"> 
-              <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-3">Kiraka&apos;s Texts</div>
+              <div className="title-container-sidebar rounded-xl py-2 text-center mt-2 mb-3">Table of Content</div>
               {adminTexts.map((text) => (
                 <button
                   key={text.id}
