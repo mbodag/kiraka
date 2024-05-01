@@ -260,7 +260,7 @@ export default function WebgazerCalibration() {
 
       {/* Link to Dashboard if All Calibrated */}
       {allCalibrated && (
-        <div style={{ position: 'absolute', top: '0', right: '0', padding: '2px' }}>
+        <div style={{ position: 'absolute', top: '0', right: '0', padding: '0px' }}>
           <Link href={Routes.DEFAULT_MODE}>
               <button className="GreenButton">Start Speed Reading</button>
           </Link>
