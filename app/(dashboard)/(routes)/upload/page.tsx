@@ -13,9 +13,13 @@ const UploadPage: React.FC = () => {
   const [text, setText] = useState('');
   const { userId } = useAuth();
   const [loading, setLoading] = useState(false);
-  let minCharsText = 1500; // Default for all users
+   // Default for all users
+   let minCharsText;
   if (userId === 'user_2eKX4leLKDRjZVsWS6UqNgCked8'){
-    const minCharsText = 50;
+    minCharsText = 50;
+  }
+  else {
+    minCharsText = 1500;
   }
   const maxCharsText = 6000;
   const minCharsTitle = 2;
