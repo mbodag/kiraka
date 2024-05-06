@@ -232,7 +232,7 @@ const Mode1Display = () => {
       {
           showStartPopup && (
               <>
-              <div className="modal-backdrop" style={{ zIndex: 500}}></div>
+              <div className="modal-backdrop" style={{ zIndex: -1}}></div>
                   <div className="modal-content" style={{ 
                       width: '600px', 
                       display: 'flex', 
