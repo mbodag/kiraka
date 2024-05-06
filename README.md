@@ -16,7 +16,7 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=""
 
 ## Running the project
 
-The project runs with Next.js and a MariaDB database, both of which need to be installed.
+The project runs with Next.js and a MariaDB database, both of which need to be installed. Node and Next.js packages must be installed with `npm update`
 Our backend uses Flask, so we recommend downloading Python 3.10 and creating a virtual environment: 
 ```bash
 python3.10 -m venv <your venv name>
