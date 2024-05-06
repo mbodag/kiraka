@@ -2,7 +2,7 @@ Kiraka is a speed-reading platform designed to adapt to the users' reading speed
 
 Authentication is handled by Clerk, which creates an id for each user. This id is the only piece of user authentication we store.
 
-Add your clerk api keys and instructions after sign-in/sign-up
+Add your clerk api keys and instructions after sign-in/sign-up to .env.local file
 ```
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your public clerk key"
 CLERK_SECRET_KEY="secret key"
