@@ -2,6 +2,18 @@ Kiraka is a speed-reading platform designed to adapt to the users' reading speed
 
 Authentication is handled by Clerk, which creates an id for each user. This id is the only piece of user authentication we store.
 
+Add your clerk api keys and instructions after sign-in/sign-up
+```
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your public clerk key"
+CLERK_SECRET_KEY="secret key"
+
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=""
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=""
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=""
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=""
+
+```
+
 ## Running the project
 
 The project runs with Next.js and a MariaDB database, both of which need to be installed.
