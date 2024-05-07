@@ -55,9 +55,10 @@ const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
 const startWPM = 300;
 const minWPM = 180;
-const maxWPM = 550;
+const maxWPM = 700;
 const significantLeftNormSpeed = -2/1201*100; // defined experimentally, based on the mac word display width (1201px) at the time of the experiment, and the value of -2px/s for threshold speed. Scaled by 100 (giving percentage)
-const constIncreaseWPM = 40;
+const manualConstIncreaseWPM = 20;
+const manualConstDecreaseWPM = 20;
 const constDecreaseWPM = 40;
 const maxConstIncreaseWPM = 60;
 const minConstDecreaseWPM = 15;
@@ -294,10 +295,10 @@ const Mode2Display = () => {
     
             switch (event.key) {
                 case "ArrowRight":
-                    setWPM((prevWPM) => Math.min(prevWPM + constIncreaseWPM, maxWPM));
+                    setWPM((prevWPM) => Math.min(prevWPM + manualConstIncreaseWPM, maxWPM));
                     break;
                 case "ArrowLeft":
-                    setWPM((prevWPM) => Math.max(prevWPM - constDecreaseWPM, minWPM));
+                    setWPM((prevWPM) => Math.max(prevWPM - manualConstDecreaseWPM, minWPM));
                     break;
                 case "R":
                 case "r":
