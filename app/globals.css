@@ -769,6 +769,9 @@ body,
   font-weight: 100; /* Lighter font weight for normal text */
 }
 
+
+
+/* bg + navbar colours */
 :root {
   --gradient-top-color: rgba(10, 105, 35, 0.85);
   --gradient-bottom-color: rgba(10, 105, 35, 0.8);
