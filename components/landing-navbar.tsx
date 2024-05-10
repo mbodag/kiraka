@@ -67,7 +67,7 @@ export const LandingNavbar = () => {
       <Link href={isSignedIn ? "/instructions" : "/sign-in"} passHref>
         <Button
           // variant="outline"
-          style={textStyle} className="text-white bg-gradient-to-r from-green-400 to-green-600 hover:from-green-600 hover:to-green-800 transition-all rounded-full px-6 py-2 cursor-pointer"
+          style={textStyle} className="text-white bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 transition-all rounded-full px-6 py-2 cursor-pointer"
         >
           Sign In
         </Button>
