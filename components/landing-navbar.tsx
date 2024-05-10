@@ -56,7 +56,7 @@ export const LandingNavbar = () => {
       <div className="absolute left-1/2 transform -translate-x-1/2 flex space-x-6">
         {routes.map((route) => (
           <Link key={route.href} href={route.href} passHref>
-            <div style={textStyle} className="px-4 py-2 text-white bg-white/10 hover:bg-white/20 rounded-full transition-all cursor-pointer">
+            <div style={textStyle} className="px-4 py-2 text-white bg-white/20 hover:bg-white/35 rounded-full transition-all cursor-pointer">
               {route.name}
             </div>
           </Link>

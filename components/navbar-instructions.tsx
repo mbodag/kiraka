@@ -8,7 +8,7 @@ const InstructionsNavbar: React.FC = () => {
   return (
     <div className="monospace-jetbrains-mono flex justify-between items-center py-4 px-5 w-full"
       style={{
-        background: 'linear-gradient(to bottom, rgba(7, 107, 52, 0.88), rgba(7, 107, 52, 0.8))',
+        background: 'linear-gradient(to bottom, var(--gradient-top-color), var(--gradient-bottom-color))',
         zIndex: 1000,
         position: 'relative'
       }}>

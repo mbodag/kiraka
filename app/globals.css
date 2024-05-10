@@ -768,3 +768,8 @@ body,
 .highlightable-text-container {
   font-weight: 100; /* Lighter font weight for normal text */
 }
+
+:root {
+  --gradient-top-color: rgba(10, 105, 15, 0.88);
+  --gradient-bottom-color: rgba(10, 105, 15, 0.8);
+}
