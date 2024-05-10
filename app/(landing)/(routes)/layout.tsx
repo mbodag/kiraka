@@ -10,6 +10,7 @@ const LandingLayout = ({ children }: { children: React.ReactNode }) => {
     height: '100%', // ensure it covers the full height of the component
     width: '100%', // ensure it covers the full width of the component
     zIndex: -1,
+    transform: 'scale(-1)',
   };
 
   return (

@@ -770,6 +770,6 @@ body,
 }
 
 :root {
-  --gradient-top-color: rgba(10, 105, 15, 0.88);
+  --gradient-top-color: rgba(10, 105, 15, 0.85);
   --gradient-bottom-color: rgba(10, 105, 15, 0.8);
 }
