@@ -8,7 +8,7 @@ const ContactPage = () => {
         <h1 className="text-white text-7xl font-bold mb-12 typewriter" style={{ color: 'rgb(143, 188, 143)' }}>Contact Us</h1>
         <div className="text-white text-lg max-w-xl mx-auto animate-gradientFadeIn landing-font">
           <p>For more information or if you have any questions, please contact us at:</p>
-          <p><strong>Email:</strong> <a href="mailto:srp.doc.ic.ac.uk@gmail.com" style={{fontStyle: 'italic', fontWeight: 'bold'}} className='text-amber-200'>srp.doc.ic.ac.uk@gmail.com</a></p>
+          <p><strong>Email:</strong> <a href="mailto:srp.doc.ic.ac.uk@gmail.com" style={{fontStyle: 'italic', fontWeight: 'bold'}} className='text-cyan-400'>srp.doc.ic.ac.uk@gmail.com</a></p>
           <div className="space-between"></div> {/* This creates the space */}
           <p>Your inquiries will be addressed by our team members:</p>
           <p>Konstantinos Mitsides (km2120@ic.ac.uk)</p>
