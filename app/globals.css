@@ -756,6 +756,8 @@ body,
 
 .highlightable-text-container {
   font-weight: 100; /* Lighter font weight for normal text */
+  word-break: break-word;
+  /* hyphens: auto; */
 }
 
 

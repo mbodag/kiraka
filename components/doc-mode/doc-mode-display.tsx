@@ -36,7 +36,7 @@ const Mode1Display = () => {
   const [restartText, setRestartText] = useState<boolean>(false);
   const [pointerSize, setPointerSize] = useState(1)
   const [fontSize, setFontSize] = useState("16px");
-  const [fixationDegree, setFixationDegree] = useState(2);
+  const [fixationDegree, setFixationDegree] = useState(3);
   const [pointerColour, setPointerColour] = useState("cyan");
 
   const { practiceId, setPracticeId } = usePracticeID(); // Accessing the setPracticeId method from the global context
@@ -190,6 +190,8 @@ const Mode1Display = () => {
       setFixationDegree(2);
     } else if (event.key === "3") {
       setFixationDegree(3);
+    } else if (event.key === "4") {
+      setFixationDegree(4);
     } else if (event.key === "c" || event.key === "C") {
       setPointerColour("cyan");
     } else if (event.key === "y" || event.key === "Y") {
@@ -360,39 +362,39 @@ const Mode1Display = () => {
                           }}
                       >
                           
-                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px', whiteSpace: 'nowrap' }}>
                               <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                               <TbSquareLetterR style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
                               <p style={{ margin: '0'}}>to Restart Pointer</p>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)' , marginBottom: '5px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)' , marginBottom: '5px', whiteSpace: 'nowrap' }}>
                               <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                               <RiSpace style={{ marginRight: '5px', color: '#606060', fontSize: '26px' }} />
                               <p style={{ margin: '0' }}>to Pause/Play</p>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px', whiteSpace: 'nowrap' }}>
                               <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                               <ArrowLeftSquare color={"rgb(90, 90, 90)"} /><ArrowRightSquare color={"rgb(90, 90, 90)"} />
                               <p style={{ marginLeft: '5px'}}>to Adjust your WPM</p>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px', whiteSpace: 'nowrap' }}>
                               <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                               <TbSquareLetterH style={{ marginRight: '', color: '#606060', fontSize: '24px' }} />
                               <p style={{ margin: '0'}}>/</p>
                               <TbSquareLetterP style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
                               <p style={{ margin: '0'}}>to Use HyperBold/Pointer</p>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px', whiteSpace: 'nowrap' }}>
                               <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                               <TbSquareLetterT style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
                               <p style={{ margin: '0'}}>to Change Text Colour</p>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px', whiteSpace: 'nowrap' }}>
                               <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                               <TbSquareLetterB style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
                               <p style={{ margin: '0'}}>to Change Background Colour</p>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px', whiteSpace: 'nowrap' }}>
                               <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                               <TbSquareLetterM style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
                               <p style={{ margin: '0', marginRight: '5px'}}>for Mode Combined</p>
@@ -515,7 +517,7 @@ const Mode1Display = () => {
                               <div style={{ width: '100%', marginTop: '15px', color: 'rgb(90, 90, 90)', textAlign: 'center' }}>
                                 <p>Fixation Degree</p>
                                 <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-                                  {[1, 2, 3].map(value => (
+                                  {[1, 2, 3, 4].map(value => (
                                     <div
                                       key={value}
                                       onClick={() => setFixationDegree(value)}
@@ -602,7 +604,7 @@ const Mode1Display = () => {
                               <input
                                 type="range"
                                 min="8"
-                                max="30"
+                                max="40"
                                 defaultValue="16"
                                 className="slider"
                                 onChange={(event) => {

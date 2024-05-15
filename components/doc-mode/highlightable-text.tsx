@@ -189,7 +189,7 @@ useEffect(() => {
             {parts.map((part: any, index: any) => {
                 // Apply hyperbold to each part separately
                 if (part !== '-') {
-                    const midIndex = Math.floor(part.length / 2) + (fixationDegree - 1);
+                    const midIndex = Math.floor(part.length / 2) + (fixationDegree - 2);
                     if (isHighlighted && pointer) {
                       return (
                         <React.Fragment key={index}>
