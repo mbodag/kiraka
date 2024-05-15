@@ -58,7 +58,6 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
         );
         return paragraph.match(regex) || [];
       };
-
       return breakIntoWordsAndKeywordsInner(paragraph); // Call the inner function and return its result
     },
     [keywords]
@@ -79,9 +78,7 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
     setReadingTime(0); // Reset the reading time
     setCurrentIndex(0); // Reset the current index
     setCountdown(null); // Reset the countdown
-
-
-};
+  };
 
 useEffect(() => {
     if (restartText){
@@ -154,8 +151,8 @@ useEffect(() => {
             });
             wordCounter += words.length;
           });
-          if (prevIndex === wordCounter - 1) {
-            setCurrentIndex(0);
+          if (prevIndex >= wordCounter - 1) {
+            return prevIndex; // Stay on the last word
           }
           return prevIndex + 1;
         });
@@ -196,7 +193,7 @@ useEffect(() => {
                             <span style={{ fontWeight: 'bold', color: 'black' }}>{part.slice(0, midIndex)}</span>
                             <span style={{ color: 'rgb(120, 120, 120)' }}>{part.slice(midIndex)}</span>
                         </React.Fragment>
-                    );
+                      );
                     } else {
                         if (backgroundClass === "bg-color-black") {
                             if (textColorClass === "text-color-black") {
@@ -290,12 +287,21 @@ useEffect(() => {
                     ? { backgroundColor: colorToRgba(pointerColour, 0.9) } // Adjust the 0.5 to your desired opacity
                     : {};
                 globalIndex++;
+
+                // Check if it is the last word in the highlighted segment
+                const nextIsHighlighted = Math.abs(globalIndex - currentIndex) < pointerSize;
+                const isLastInSegment = isHighlighted && !nextIsHighlighted;
+
                 return ( 
-                    <span key={`${pIndex}-${wIndex}`} className={className} style={style}>
-                        <span>
+                    <span key={`${pIndex}-${wIndex}`} className={className}>
+                        <span style={style}>
                           {renderWithHyperBold(wordOrKeyword, isHighlighted)}
                         </span>
-                        <span className={pointerSize > 1 ? className : ""}> </span>
+                        {(!isLastInSegment || !isHighlighted) && (
+                          <span className={pointerSize > 1 ? className : " "} style={style}> </span>
+                        )}
+                        {/* Ensure a non-highlighted space is added */}
+                        <span className={pointerSize > 1 ? className : " "} style={{}}> </span>
                     </span>
                 ); 
             })}

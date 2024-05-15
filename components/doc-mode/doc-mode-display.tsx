@@ -14,6 +14,8 @@ import { TbSquareLetterB } from 'react-icons/tb';
 import { TbSquareLetterH } from 'react-icons/tb';
 import { TbSquareLetterP } from 'react-icons/tb';
 import { TbSquareLetterM } from 'react-icons/tb';
+import { VscDebugRestart } from "react-icons/vsc";
+import { TbPlayerPause, TbPlayerPlay } from "react-icons/tb";
 import Routes from '@/config/routes';
 
 
@@ -34,10 +36,17 @@ const Mode1Display = () => {
   const [hyperBold, sethyperBold] = useState(false);
   const [pointer, setPointer] = useState<boolean>(true);
   const [restartText, setRestartText] = useState<boolean>(false);
-  const [pointerSize, setPointerSize] = useState(1)
-  const [fontSize, setFontSize] = useState("16px");
+  const initialPointerSize = 5;
+  const [pointerSize, setPointerSize] = useState(initialPointerSize);
+  const initialFontSize = "16px";
+  const [fontSize, setFontSize] = useState(initialFontSize);
   const [fixationDegree, setFixationDegree] = useState(3);
-  const [pointerColour, setPointerColour] = useState("cyan");
+  const [pointerColour, setPointerColour] = useState("yellow");
+
+  const [isPaused, setIsPaused] = useState(true);
+  const [isRestartActive, setIsRestartActive] = useState(false);
+  const [isPausePlayActive, setIsPausePlayActive] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
 
   const { practiceId, setPracticeId } = usePracticeID(); // Accessing the setPracticeId method from the global context
 
@@ -85,7 +94,6 @@ const Mode1Display = () => {
       }
     };
       fetchPastWPM();
-
   }, []);
 
     // Function to handle restart action
@@ -96,7 +104,6 @@ const Mode1Display = () => {
       setReadingTime(0); // Reset the reading time
       setShowFinishPopup(false); // Hide the finish popup
       setRestartText(true);
-
   };
   
   useEffect(() => {
@@ -152,7 +159,6 @@ const Mode1Display = () => {
               const data = await response.json();
               setPracticeId(data.practice_id);
               window.location.href = "/quiz";
-
           } else {
               // Handle non-OK responses
               console.error('Error submitting reading speed');
@@ -220,7 +226,6 @@ const Mode1Display = () => {
     const wpm = Math.round((totalNumWords / totalReadingTime) * 60000);
     setAverageWPM(wpm);
     console.log('Average WPM:', wpm);
-
     // Show the popup
     setShowFinishPopup(true);
   };
@@ -237,6 +242,16 @@ const Mode1Display = () => {
   const handleCloseFinishPopupRestart = () => {
     setShowFinishPopup(false);
     restartAction();
+  };
+
+  const togglePausePlayAction = () => {
+    if (isPaused) {
+        setCountdown(3); // Start a 3-second countdown
+    } else {
+        setIsPaused(true); // Pause immediately without a countdown
+    }
+    setIsPausePlayActive(true); // Set active to true
+    setTimeout(() => setIsPausePlayActive(false), 100); // Reset after 500ms
   };
 
 
@@ -605,7 +620,7 @@ const Mode1Display = () => {
                                 type="range"
                                 min="8"
                                 max="40"
-                                defaultValue="16"
+                                defaultValue={parseInt(initialFontSize)}
                                 className="slider"
                                 onChange={(event) => {
                                   const newValue = event.target.value + "px";
@@ -620,7 +635,7 @@ const Mode1Display = () => {
                                 type="range"
                                 min="1"
                                 max="15"
-                                defaultValue="1"
+                                defaultValue={initialPointerSize}
                                 className="slider"
                                 onChange={(event) => {
                                   const newValue = Number(event.target.value);
@@ -639,7 +654,39 @@ const Mode1Display = () => {
       <div className="flash-mode-display-bg-color rounded-lg shadow-lg px-6 pt-2"
           style={{ minWidth: "", width: ""}}>
         <div className="centerContainer">
-          <CounterDisplay count={wordsPerMinute} fontSize="16px" />
+          {/* <CounterDisplay count={wordsPerMinute} fontSize="16px" /> */}
+          <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              width: '100%', 
+              position: 'relative',
+          }}>
+              {/* Centered Counter Display */}
+              <CounterDisplay count={wordsPerMinute} fontSize="16px"/>
+              {/* <button onClick={downloadGazeData}>Download Gaze Data</button> */}
+              {/* Container for Play/Pause and Restart Icons aligned to the top right */}
+              <div style={{ 
+                  position: 'absolute',
+                  top: 0, 
+                  right: 10,
+                  boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)', 
+                  padding: '10px 10px', 
+                  borderRadius: '10px', 
+                  display: 'flex', 
+                  gap: "10px"  // Space between icons
+              }}>
+                  {/* Play/Pause Icon */}
+                  <button className={`icon-button ${isPausePlayActive ? 'active' : ''}`} onClick={togglePausePlayAction}>
+                      {isPaused ? <TbPlayerPlay size={24} /> : <TbPlayerPause size={24} />}
+                  </button>
+                                                                  
+                  {/* Restart Icon */}
+                  <button className={`icon-button ${isRestartActive ? 'active' : ''}`} onClick={restartAction}>
+                      <VscDebugRestart size={24} />
+                  </button>
+              </div>
+          </div>
           <div className="textAndButtonContainer">
             <div
               className={`${backgroundClass} ${textColorClass}`}
