@@ -15,6 +15,8 @@ interface HighlightableTextProps {
   pointerSize?: number;
   fixationDegree?: number;
   pointerColour?: string;
+  backgroundClass?: string;
+  textColorClass?: string;
 }
 
 const HighlightableText: React.FC<HighlightableTextProps> = ({
@@ -31,6 +33,8 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
   pointerSize = 1,
   fixationDegree = 1,
   pointerColour = "cyan",
+  backgroundClass = "flash-mode-display-bg-color",
+  textColorClass = "text-color-black",
 }) => {
   const paragraphs = text
     .split("\n")
@@ -172,9 +176,9 @@ useEffect(() => {
     paragraphs,
   ]); // Add isPaused to the dependency array
 
-  const renderWithHyperBold = (wordOrKeyword: any) => {
+  const renderWithHyperBold = (wordOrKeyword: any, isHighlighted: boolean) => {
     if (!hyperBold) {
-      return <span>{wordOrKeyword}</span>;
+        return <span>{wordOrKeyword}</span>;
     }
 
     // Split the word by hyphens to handle composite words
@@ -186,25 +190,61 @@ useEffect(() => {
                 // Apply hyperbold to each part separately
                 if (part !== '-') {
                     const midIndex = Math.floor(part.length / 2) + (fixationDegree - 1);
-                    return (
+                    if (isHighlighted && pointer) {
+                      return (
                         <React.Fragment key={index}>
                             <span style={{ fontWeight: 'bold', color: 'black' }}>{part.slice(0, midIndex)}</span>
                             <span style={{ color: 'rgb(120, 120, 120)' }}>{part.slice(midIndex)}</span>
                         </React.Fragment>
                     );
+                    } else {
+                        if (backgroundClass === "bg-color-black") {
+                            if (textColorClass === "text-color-black") {
+                                return (
+                                    <React.Fragment key={index}>
+                                        <span style={{ fontWeight: 'bold', color: 'black' }}>{part.slice(0, midIndex)}</span>
+                                        <span style={{ color: 'black' }}>{part.slice(midIndex)}</span>
+                                    </React.Fragment>
+                                );
+                            } else {
+                                return (
+                                    <React.Fragment key={index}>
+                                        <span style={{ fontWeight: 'bold' }} className="flash-mode-display-text-color">{part.slice(0, midIndex)}</span>
+                                        <span style={{ color: 'rgb(150, 150, 150)' }}>{part.slice(midIndex)}</span>
+                                    </React.Fragment>
+                                );
+                            }
+                        } else {
+                            if (textColorClass === "flash-mode-display-text-color") {
+                                return (
+                                    <React.Fragment key={index}>
+                                        <span style={{ fontWeight: 'bold' }} className="flash-mode-display-text-color">{part.slice(0, midIndex)}</span>
+                                        <span className="flash-mode-display-text-color">{part.slice(midIndex)}</span>
+                                    </React.Fragment>
+                                );
+                            } else {
+                                return (
+                                    <React.Fragment key={index}>
+                                        <span style={{ fontWeight: 'bold', color: 'black' }}>{part.slice(0, midIndex)}</span>
+                                        <span style={{ color: 'rgb(120, 120, 120)' }}>{part.slice(midIndex)}</span>
+                                    </React.Fragment>
+                                );
+                            }
+                        }
+                    }
                 }
                 return <span key={index}>{part}</span>; // Return hyphens as normal
             })}
         </>
     );
-  };
+};
 
   const colorToRgba = (colour:string, opacity:number) => {
     const colours:any = {
-      cyan: '0, 255, 255',
-      yellow: '255, 255, 0',
-      orange: '255, 165, 50',
-      green: '100, 255, 100'
+      cyan: '150, 255, 255',
+      yellow: '255, 255, 120',
+      orange: '255, 185, 120',
+      green: '160, 255, 160'
     };
     return `rgba(${colours[colour] || '0, 0, 0'}, ${opacity})`;
   }
@@ -213,20 +253,18 @@ useEffect(() => {
     <div className="highlightable-text-container" style={{fontWeight: '200'}}>
       {/* Countdown Display */}
       {countdown !== null && (
-                    <div className='modal-content p-2' style={{
-                    fontSize: '80px',
-                    fontWeight: '300',
-                    // width: '100px',
-                    // height: '100x',
-                    color: 'rgb(200, 0, 0)',
-                    textAlign: 'center',
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    padding: '0px 10px',
-                    borderRadius: '10px',
-                    }}>
-                    {countdown > 0 ? countdown : 'Go!'}
-                    </div>
-                )}
+          <div className='modal-content p-2' style={{
+          fontSize: '80px',
+          fontWeight: '300',
+          color: 'rgb(200, 0, 0)',
+          textAlign: 'center',
+          background: 'rgba(255, 255, 255, 0.9)',
+          padding: '0px 10px',
+          borderRadius: '10px',
+          }}>
+            {countdown > 0 ? countdown : 'Go!'}
+          </div>
+      )}
       {paragraphs.map((paragraph, pIndex) => {
         const wordsAndKeywords = breakIntoWordsAndKeywords(paragraph);
         let globalIndex = paragraphs
@@ -237,21 +275,29 @@ useEffect(() => {
           <p key={pIndex} className="monospace-jetbrains-mono" style={{ margin: "5px 0", padding: "0", fontSize: fontSize }}>
             {wordsAndKeywords.map((wordOrKeyword, wIndex) => {
                 const isHighlighted = Math.abs(globalIndex - currentIndex) < pointerSize;
+                // const getTextClassName = (isHighlighted: boolean, pointer: boolean, isPaused: boolean) => {
+                //   if (isHighlighted && pointer) {
+                //     return isPaused ? `${backgroundClass === "bg-color-black" ? "flash-mode-display-text-color" : "text-black"} blur` : `${backgroundClass === "bg-color-black" ? "flash-mode-display-text-color" : "text-black"}`;
+                //   }
+                //   return isPaused ? "blur" : "";
+                // };
+                // const className = getTextClassName(isHighlighted, pointer, isPaused);
+
                 const className = isHighlighted && pointer
-                    ? isPaused ? "blur" : ""
+                    ? isPaused ? "text-black blur" : "text-black"
                     : isPaused ? "blur" : "";
                 const style = isHighlighted && pointer
-                    ? { backgroundColor: colorToRgba(pointerColour, 0.5) } // Adjust the 0.5 to your desired opacity
+                    ? { backgroundColor: colorToRgba(pointerColour, 0.9) } // Adjust the 0.5 to your desired opacity
                     : {};
                 globalIndex++;
                 return ( 
                     <span key={`${pIndex}-${wIndex}`} className={className} style={style}>
                         <span>
-                            {renderWithHyperBold(wordOrKeyword)}
+                          {renderWithHyperBold(wordOrKeyword, isHighlighted)}
                         </span>
                         <span className={pointerSize > 1 ? className : ""}> </span>
                     </span>
-                );
+                ); 
             })}
           </p>
         );

@@ -13,6 +13,7 @@ import { TbSquareLetterT } from 'react-icons/tb';
 import { TbSquareLetterB } from 'react-icons/tb';
 import { TbSquareLetterH } from 'react-icons/tb';
 import { TbSquareLetterP } from 'react-icons/tb';
+import { TbSquareLetterM } from 'react-icons/tb';
 import Routes from '@/config/routes';
 
 
@@ -107,11 +108,11 @@ const Mode1Display = () => {
 
   // Example toggle functions for background and text colors
     const toggleBackgroundColor = () => {
-    setBackgroundClass((prevClass) => (prevClass === "flash-mode-display-bg-color" ? "bg-color-black " : "flash-mode-display-bg-color"));
+    setBackgroundClass((prevClass) => (prevClass === "flash-mode-display-bg-color" ? "bg-color-black" : "flash-mode-display-bg-color"));
   };
 
   const toggleTextColor = () => {
-    setTextColorClass((prevClass) => (prevClass === "text-color-black " ? "flash-mode-display-text-color" : "text-color-black "));
+    setTextColorClass((prevClass) => (prevClass === "text-color-black" ? "flash-mode-display-text-color" : "text-color-black"));
   };
 
   const togglehyperBold = () => {
@@ -174,15 +175,15 @@ const Mode1Display = () => {
       setWordsPerMinute((prevWPM) => Math.max(prevWPM - 50, 50)); // Decrease WPM with lower bound
     } else if (event.key === "p" || event.key === "P") {
       togglePointer();
-    } else if (event.key === "m" || event.key === "M") {
-      toggleTextColor();
-      toggleBackgroundColor();
     } else if (event.key === "h" || event.key === "H") {
       togglehyperBold();
     } else if (event.key === "b" || event.key === "B") {
       toggleBackgroundColor();
     } else if (event.key === "t" || event.key === "T") {
       toggleTextColor();
+    } else if (event.key === "m" || event.key === "M") {
+      toggleTextColor();
+      toggleBackgroundColor();
     } else if (event.key === "1") {
       setFixationDegree(1);
     } else if (event.key === "2") {
@@ -376,10 +377,10 @@ const Mode1Display = () => {
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
                               <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
-                              <TbSquareLetterP style={{ marginRight: '', color: '#606060', fontSize: '24px' }} />
+                              <TbSquareLetterH style={{ marginRight: '', color: '#606060', fontSize: '24px' }} />
                               <p style={{ margin: '0'}}>/</p>
-                              <TbSquareLetterH style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
-                              <p style={{ margin: '0'}}>to Use Pointer/HyperBold</p>
+                              <TbSquareLetterP style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
+                              <p style={{ margin: '0'}}>to Use HyperBold/Pointer</p>
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
                               <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
@@ -390,6 +391,14 @@ const Mode1Display = () => {
                               <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
                               <TbSquareLetterB style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
                               <p style={{ margin: '0'}}>to Change Background Colour</p>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px' }}>
+                              <p style={{ margin: '0', marginRight: '5px' }}>Press</p>
+                              <TbSquareLetterM style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
+                              <p style={{ margin: '0', marginRight: '5px'}}>for Mode Combined</p>
+                              <TbSquareLetterT style={{ marginRight: '', color: '#606060', fontSize: '24px' }} />
+                              <p style={{ marginRight: '3px', marginLeft: '3px'}}>&</p>
+                              <TbSquareLetterB style={{ marginRight: '5px', color: '#606060', fontSize: '24px' }} />
                           </div>
                       </div>
                   </div>
@@ -656,6 +665,8 @@ const Mode1Display = () => {
                 fontSize={fontSize}
                 fixationDegree={fixationDegree} // Pass fixationDegree
                 pointerColour={pointerColour} // Pass pointerColour
+                backgroundClass={backgroundClass} // Pass backgroundClass
+                textColorClass={textColorClass} // Pass textColorClass
                 // className= {showStartPopup||showFinishPopup ? 'blur-effect' : ''}
               />
             </div>
