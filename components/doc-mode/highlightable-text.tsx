@@ -13,7 +13,8 @@ interface HighlightableTextProps {
   pointer? : boolean;
   restartText?: boolean;
   pointerSize?: number;
-
+  fixationDegree?: number;
+  pointerColour?: string;
 }
 
 const HighlightableText: React.FC<HighlightableTextProps> = ({
@@ -28,6 +29,8 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
   pointer = false,
   restartText = false,
   pointerSize = 1,
+  fixationDegree = 1,
+  pointerColour = "cyan",
 }) => {
   const paragraphs = text
     .split("\n")
@@ -102,13 +105,13 @@ useEffect(() => {
         // Set a timer to decrement the countdown every second
         timerId = setTimeout(() => {
             setCountdown(countdown - 1);
-          }, 700);
+          }, 500);
         } else if (countdown === 0) {
             // Display "Go!" for a brief moment before resetting
             timerId = setTimeout(() => {
                 setIsPaused(false);  // Ensure the display starts if it was paused
                 setCountdown(null);  // Reset countdown to not counting down state
-            }, 500);  // Allow 1 second for "Go!" to be visible
+            }, 300);  // Allow 1 second for "Go!" to be visible
               setRestartTime(performance.now());
               onRestartTimeChange(performance.now());
         }
@@ -182,11 +185,11 @@ useEffect(() => {
             {parts.map((part: any, index: any) => {
                 // Apply hyperbold to each part separately
                 if (part !== '-') {
-                    const midIndex = Math.floor(part.length / 2)+1;
+                    const midIndex = Math.floor(part.length / 2) + (fixationDegree - 1);
                     return (
                         <React.Fragment key={index}>
                             <span style={{ fontWeight: 'bold', color: 'black' }}>{part.slice(0, midIndex)}</span>
-                            <span style={{ color: 'rgb(90, 90, 90)' }}>{part.slice(midIndex)}</span>
+                            <span style={{ color: 'rgb(120, 120, 120)' }}>{part.slice(midIndex)}</span>
                         </React.Fragment>
                     );
                 }
@@ -195,6 +198,16 @@ useEffect(() => {
         </>
     );
   };
+
+  const colorToRgba = (colour:string, opacity:number) => {
+    const colours:any = {
+      cyan: '0, 255, 255',
+      yellow: '255, 255, 0',
+      orange: '255, 165, 50',
+      green: '100, 255, 100'
+    };
+    return `rgba(${colours[colour] || '0, 0, 0'}, ${opacity})`;
+  }
 
   return (
     <div className="highlightable-text-container" style={{fontWeight: '200'}}>
@@ -225,19 +238,22 @@ useEffect(() => {
             {wordsAndKeywords.map((wordOrKeyword, wIndex) => {
                 const isHighlighted = Math.abs(globalIndex - currentIndex) < pointerSize;
                 const className = isHighlighted && pointer
-                    ? isPaused ? "highlighted blur" : "highlighted"
+                    ? isPaused ? "blur" : ""
                     : isPaused ? "blur" : "";
+                const style = isHighlighted && pointer
+                    ? { backgroundColor: colorToRgba(pointerColour, 0.5) } // Adjust the 0.5 to your desired opacity
+                    : {};
                 globalIndex++;
                 return ( 
-                    <span key={`${pIndex}-${wIndex}`}>
-                        <span className={className}>
+                    <span key={`${pIndex}-${wIndex}`} className={className} style={style}>
+                        <span>
                             {renderWithHyperBold(wordOrKeyword)}
                         </span>
                         <span className={pointerSize > 1 ? className : ""}> </span>
                     </span>
                 );
             })}
-        </p>
+          </p>
         );
       })}
     </div>

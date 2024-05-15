@@ -19,7 +19,7 @@ import Routes from '@/config/routes';
 const Mode1Display = () => {
   const [wordsPerMinute, setWordsPerMinute] = useState(300);
   const [backgroundClass, setBackgroundClass] = useState("flash-mode-display-bg-color");
-    const [textColorClass, setTextColorClass] = useState("text-color-black");
+  const [textColorClass, setTextColorClass] = useState("text-color-black");
   const [shortStory, setShortStory] = useState("");
   const [summary, setSummary] = useState("");
   const { selectedTextId, setSelectedTextId } = useSelectedText(); // Use the ID from context
@@ -35,6 +35,10 @@ const Mode1Display = () => {
   const [restartText, setRestartText] = useState<boolean>(false);
   const [pointerSize, setPointerSize] = useState(1)
   const [fontSize, setFontSize] = useState("16px");
+  const [fixationDegree, setFixationDegree] = useState(2);
+  const [pointerColour, setPointerColour] = useState("cyan");
+
+  const { practiceId, setPracticeId } = usePracticeID(); // Accessing the setPracticeId method from the global context
 
 
   const handleRestartTimeChange = (newRestartTime: number) => {
@@ -99,12 +103,12 @@ const Mode1Display = () => {
           restartAction();  // Then call the restart action
       }
   }, [selectedTextId]);
+
+
   // Example toggle functions for background and text colors
     const toggleBackgroundColor = () => {
     setBackgroundClass((prevClass) => (prevClass === "flash-mode-display-bg-color" ? "bg-color-black " : "flash-mode-display-bg-color"));
   };
-
-
 
   const toggleTextColor = () => {
     setTextColorClass((prevClass) => (prevClass === "text-color-black " ? "flash-mode-display-text-color" : "text-color-black "));
@@ -112,12 +116,12 @@ const Mode1Display = () => {
 
   const togglehyperBold = () => {
     sethyperBold((prevValue) => !prevValue);
-  }
+  };
+
   const togglePointer = () => {
     setPointer((prevValue) => !prevValue);
-  }
+  };
 
-  const { practiceId, setPracticeId } = usePracticeID(); // Accessing the setPracticeId method from the global context
 
   // This function takes the average WPM and sends it to the backend.
   const submitReadingSpeed = async (averageWpm: number | null) => {
@@ -125,7 +129,6 @@ const Mode1Display = () => {
           console.error('No average WPM available to submit.');
           return; // Optionally show an error to the user
       }
- 
       
       try {
           const response = await fetch("/api/save-reading-speed", {
@@ -165,23 +168,37 @@ const Mode1Display = () => {
         return;
     }
 
-      if (event.key === "ArrowRight") {
-        setWordsPerMinute((prevWPM) => Math.min(prevWPM + 50, 1500)); // Increase WPM with upper bound
-      } else if (event.key === "ArrowLeft") {
-        setWordsPerMinute((prevWPM) => Math.max(prevWPM - 50, 50)); // Decrease WPM with lower bound
-      } else if (event.key === "p" || event.key === "P") {
-        togglePointer();
-      } else if (event.key === "c" || event.key === "C") {
-        toggleTextColor();
-        toggleBackgroundColor();
-      } else if (event.key === "h" || event.key === "H") {
-        togglehyperBold();
-      } else if (event.key === "b" || event.key === "B") {
-        toggleBackgroundColor();
-      } else if (event.key === "t" || event.key === "T") {
-        toggleTextColor();
-      } 
-    };
+    if (event.key === "ArrowRight") {
+      setWordsPerMinute((prevWPM) => Math.min(prevWPM + 50, 1500)); // Increase WPM with upper bound
+    } else if (event.key === "ArrowLeft") {
+      setWordsPerMinute((prevWPM) => Math.max(prevWPM - 50, 50)); // Decrease WPM with lower bound
+    } else if (event.key === "p" || event.key === "P") {
+      togglePointer();
+    } else if (event.key === "m" || event.key === "M") {
+      toggleTextColor();
+      toggleBackgroundColor();
+    } else if (event.key === "h" || event.key === "H") {
+      togglehyperBold();
+    } else if (event.key === "b" || event.key === "B") {
+      toggleBackgroundColor();
+    } else if (event.key === "t" || event.key === "T") {
+      toggleTextColor();
+    } else if (event.key === "1") {
+      setFixationDegree(1);
+    } else if (event.key === "2") {
+      setFixationDegree(2);
+    } else if (event.key === "3") {
+      setFixationDegree(3);
+    } else if (event.key === "c" || event.key === "C") {
+      setPointerColour("cyan");
+    } else if (event.key === "y" || event.key === "Y") {
+      setPointerColour("yellow");
+    } else if (event.key === "o" || event.key === "O") {
+      setPointerColour("orange");
+    } else if (event.key === "g" || event.key === "G") {
+      setPointerColour("green");
+    }
+  };
 
     window.addEventListener("keydown", handleKeyPress);
     return () => {
@@ -192,7 +209,6 @@ const Mode1Display = () => {
 
   // Example handleGetSummary function (adjust as needed)
   const handleFinishText = async () => {
-    
     // Calculate WPM
     const currentTime = performance.now();
     const deltaTime = currentTime - restartTime;
@@ -204,20 +220,21 @@ const Mode1Display = () => {
 
     // Show the popup
     setShowFinishPopup(true);
-    
+  };
 
-  }
   const handleCloseStartPopup = () => {
     setShowStartPopup(false);
-  }
+  };
+
   const handleCloseFinishPopupSendToQuiz = () => {
     submitReadingSpeed(averageWPM);
     window.location.href = Routes.QUIZ;
-    
-  }
+  };
+
   const handleCloseFinishPopupRestart = () => {
     setShowFinishPopup(false);
-    restartAction();}
+    restartAction();
+  };
 
 
   const gapBetweenSize = '8px';
@@ -301,7 +318,7 @@ const Mode1Display = () => {
                       flexDirection: "row",
                       alignItems: "stretch",
                       justifyContent: "space-between", // This will evenly space the children vertically
-                      height: '280px',
+                      // height: '350px',
                       gap: gapBetweenSize2,
                       // margin: gapBetweenSize,
               }}>
@@ -314,7 +331,7 @@ const Mode1Display = () => {
                   flexDirection: 'column', // This will stack children divs on top of each other
                   alignItems: 'center',
                   justifyContent: 'space-evenly', // Adjust spacing between inner divs
-                  width: "350px",
+                  // width: "350px",
                   }}
                   >
                       <div 
@@ -413,7 +430,7 @@ const Mode1Display = () => {
                         </div>
 
                         {/* Second inner div for the text "Average WPM:" centered */}
-                        <div
+                        <div className="mt-1"
                             style={{
                             width: '100%', // Matches the width of the first inner div for consistency
                             display: 'flex',
@@ -457,76 +474,146 @@ const Mode1Display = () => {
                             maxWidth: '800px', // Maximum width of the grid
                             margin: 'auto'
                           }}>
-                            <div style={{ width: '100%' }}> {/* Wrapper to maintain button size */}
-                              <button
-                                onClick={() => sethyperBold(!hyperBold)}
-                                style={{
-                                  backgroundColor: hyperBold ? 'rgb(250, 212, 212)' : 'rgb(245, 245, 245)',
-                                  color: 'rgb(90, 90, 90)',
-                                  padding: '10px 15px',
-                                  borderRadius: '16px',
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                  transition: 'background-color 0.3s, box-shadow 0.3s',
-                                  width: '100%', // Ensures the button fills the container
-                                  textAlign: 'center', // Center text
-                                  minWidth: '170px' // Minimum width to accommodate the largest text
-                                }}
-                                onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgb(250, 205, 212)'}
-                                onMouseOut={e => e.currentTarget.style.backgroundColor = hyperBold ? 'rgb(250, 212, 212)' : 'rgb(245, 245, 245)'}
-                              >
-                                {hyperBold ? 'Disable HyperBold' : 'Enable HyperBold'}
-                              </button>
+                            <div className="rounded-2xl p-2" style={{
+                              boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.5)',
+                              width: '100%', // Adjust width as necessary
+                              textAlign: 'center',
+                            }}>
+                              {/* Wrapper for HyperBold button and fixation degree option */}
+                              <div style={{ width: '100%' }}> {/* Wrapper to maintain button size */}
+                                <button
+                                  className="rounded-xl"
+                                  onClick={() => sethyperBold(!hyperBold)}
+                                  style={{
+                                    backgroundColor: hyperBold ? 'rgb(250, 212, 212)' : 'rgb(245, 245, 245)',
+                                    color: 'rgb(90, 90, 90)',
+                                    padding: '5px 15px',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                                    transition: 'background-color 0.3s, box-shadow 0.3s',
+                                    width: '100%', // Ensures the button fills the container
+                                    textAlign: 'center', // Center text
+                                    minWidth: '170px' // Minimum width to accommodate the largest text
+                                  }}
+                                  onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgb(250, 205, 212)'}
+                                  onMouseOut={e => e.currentTarget.style.backgroundColor = hyperBold ? 'rgb(250, 212, 212)' : 'rgb(245, 245, 245)'}
+                                >
+                                  {hyperBold ? 'Disable HyperBold' : 'Enable HyperBold'}
+                                </button>
+                              </div>
+                              {/* Fixation degree options */}
+                              <div style={{ width: '100%', marginTop: '15px', color: 'rgb(90, 90, 90)', textAlign: 'center' }}>
+                                <p>Fixation Degree</p>
+                                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                                  {[1, 2, 3].map(value => (
+                                    <div
+                                      key={value}
+                                      onClick={() => setFixationDegree(value)}
+                                      style={{
+                                        width: '30px',
+                                        height: '30px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        borderRadius: '8px',
+                                        border: '1px solid rgb(200, 200, 200)',
+                                        backgroundColor: fixationDegree === value ? 'rgb(250, 212, 212)' : 'rgb(245, 245, 245)',
+                                        color: 'rgb(90, 90, 90)',
+                                        cursor: 'pointer',
+                                        transition: 'background-color 0.3s'
+                                      }}
+                                    >
+                                      {value}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
                             </div>
-                            <div style={{ width: '100%' }}> {/* Same wrapper approach for consistency */}
-                              <button
-                                onClick={() => setPointer(!pointer)}
-                                style={{
-                                  backgroundColor: pointer ? 'rgb(250, 212, 212)' : 'rgb(245, 245, 245)',
-                                  color: 'rgb(90, 90, 90)',
-                                  padding: '10px 15px',
-                                  borderRadius: '16px',
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                  transition: 'background-color 0.3s, box-shadow 0.3s',
-                                  width: '100%', // Ensures the button fills the container
-                                  textAlign: 'center', // Center text
-                                  minWidth: '170px' // Minimum width to accommodate the largest text
-                                }}
-                                onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgb(250, 205, 212)'}
-                                onMouseOut={e => e.currentTarget.style.backgroundColor = pointer ? 'rgb(250, 212, 212)' : 'rgb(245, 245, 245)'}
-                              >
-                                {pointer ? 'Hide Pointer' : 'Show Pointer'}
-                              </button>
-                            </div>
-                            <div style={{ width: '100%', color: 'rgb(90, 90, 90)', }}>
-                              <p style={{ textAlign: 'center' }}>Change pointer size</p>
-                              <input
-                                type="range"
-                                min="1"
-                                max="10"
-                                defaultValue="1"
-                                className="slider"
-                                onChange={(event) => {
-                                  const newValue = Number(event.target.value);
-                                  setPointerSize(newValue);
-                                }}
-                                style={{ width: '100%',  accentColor: 'pink' }}
-                              />
+
+                            <div className="rounded-2xl p-2" style={{
+                              boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.5)',
+                              width: '100%', // Adjust width as necessary
+                              textAlign: 'center',
+                            }}>
+                              {/* Wrapper for Pointer button and color options */}
+                              <div style={{ width: '100%' }}> {/* Wrapper to maintain button size */}
+                                <button
+                                  className="rounded-xl"
+                                  onClick={() => setPointer(!pointer)}
+                                  style={{
+                                    backgroundColor: pointer ? 'rgb(250, 212, 212)' : 'rgb(245, 245, 245)',
+                                    color: 'rgb(90, 90, 90)',
+                                    padding: '5px 15px',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                                    transition: 'background-color 0.3s, box-shadow 0.3s',
+                                    width: '100%', // Ensures the button fills the container
+                                    textAlign: 'center', // Center text
+                                    minWidth: '170px' // Minimum width to accommodate the largest text
+                                  }}
+                                  onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgb(250, 205, 212)'}
+                                  onMouseOut={e => e.currentTarget.style.backgroundColor = pointer ? 'rgb(250, 212, 212)' : 'rgb(245, 245, 245)'}
+                                >
+                                  {pointer ? 'Hide Pointer' : 'Show Pointer'}
+                                </button>
+                              </div>
+                              {/* Pointer colour options */}
+                              <div style={{ width: '100%', marginTop: '15px', color: 'rgb(90, 90, 90)', textAlign: 'center' }}>
+                                <p>Pointer Colour</p>
+                                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                                  {['cyan', 'yellow', 'orange', 'green'].map(color => (
+                                    <div
+                                      key={color}
+                                      onClick={() => setPointerColour(color)}
+                                      style={{
+                                        width: '30px',
+                                        height: '30px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        borderRadius: '8px',
+                                        border: '1px solid rgb(200, 200, 200)',
+                                        backgroundColor: pointerColour === color ? color : 'rgb(245, 245, 245)',
+                                        color: pointerColour === color ? (color === 'yellow' ? 'black' : 'white') : color,
+                                        cursor: 'pointer',
+                                        transition: 'background-color 0.3s',
+                                        WebkitTextStroke: color === 'yellow' ? '0.25px black' : 'none',
+                                      }}
+                                    >
+                                      {color.charAt(0).toUpperCase()}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
                             </div>
                             <div style={{ width: '100%', color: 'rgb(90, 90, 90)' }}>
                               <p style={{ textAlign: 'center' }}>Change text size</p>
                               <input
                                 type="range"
                                 min="8"
-                                max="28"
+                                max="30"
                                 defaultValue="16"
                                 className="slider"
                                 onChange={(event) => {
                                   const newValue = event.target.value + "px";
                                   setFontSize(newValue);
+                                }}
+                                style={{ width: '100%',  accentColor: 'pink' }}
+                              />
+                            </div>
+                            <div style={{ width: '100%', color: 'rgb(90, 90, 90)', }}>
+                              <p style={{ textAlign: 'center' }}>Change pointer size</p>
+                              <input
+                                type="range"
+                                min="1"
+                                max="15"
+                                defaultValue="1"
+                                className="slider"
+                                onChange={(event) => {
+                                  const newValue = Number(event.target.value);
+                                  setPointerSize(newValue);
                                 }}
                                 style={{ width: '100%',  accentColor: 'pink' }}
                               />
@@ -546,7 +633,7 @@ const Mode1Display = () => {
             <div
               className={`${backgroundClass} ${textColorClass}`}
               style={{
-                // color: textColor,
+                // color: textColor,r
                 // backgroundColor: backgroundColor,
                 boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
                 padding: "25px",
@@ -558,9 +645,7 @@ const Mode1Display = () => {
               <HighlightableText
                 text={shortStory}
                 highlightInterval={60000 / wordsPerMinute}
-                onFinish={() => {
-
-                }}
+                onFinish={() => {}}
                 onRestartTimeChange={handleRestartTimeChange} 
                 onReadingTimeChange={handleReadingTimeChange}
                 hyperBold={hyperBold}
@@ -569,6 +654,8 @@ const Mode1Display = () => {
                 restartText={restartText}
                 pointerSize={pointerSize}
                 fontSize={fontSize}
+                fixationDegree={fixationDegree} // Pass fixationDegree
+                pointerColour={pointerColour} // Pass pointerColour
                 // className= {showStartPopup||showFinishPopup ? 'blur-effect' : ''}
               />
             </div>
