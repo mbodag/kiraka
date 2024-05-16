@@ -23,6 +23,7 @@ import Routes from '@/config/routes';
 const Mode1Display = () => {
   const startWPM = 300;
   const [WPM, setWPM] = useState(startWPM);
+  const maxAdmissibleWPM = 30000
   const [pastAvgWPMs, setPastAvgWPMs] = useState<number[]>([startWPM]);
   const adjustedStartWPM = useRef<number>(startWPM); 
   const [backgroundClass, setBackgroundClass] = useState("flash-mode-display-bg-color");
@@ -151,7 +152,7 @@ const Mode1Display = () => {
 
   // This function takes the average WPM and sends it to the backend.
   const submitReadingSpeed = async (averageWpm: number | null) => {
-      if (averageWpm === null || isNaN(averageWpm) || !isFinite(averageWpm) || averageWpm > 50000) {
+      if (averageWpm === null || isNaN(averageWpm) || !isFinite(averageWpm) || averageWpm > maxAdmissibleWPM) {
           console.error('No average WPM available to submit.');
           return; // Optionally show an error to the user
       }
@@ -400,12 +401,23 @@ const Mode1Display = () => {
                             {averageWPM !== null ? averageWPM : <span style={{ fontStyle: 'italic' }}>Pending</span>}
                         </span>
                     </p>
+                    {averageWPM === Infinity ? (
+                        <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px', color: 'rgb(150, 50, 50)', fontStyle: 'italic' }}>
+                            WPM calculation is infinite.<br></br>Please try reading the text again.
+                        </p>
+                    ) : (averageWPM !== null && averageWPM > maxAdmissibleWPM) ? (
+                        <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px', color: 'rgb(150, 50, 50)', fontStyle: 'italic' }}>
+                            WPM is unusually high, likely an error.<br></br>Please try reading the text again.
+                        </p>
+                    ):null}
                     <button className="GreenButton" onClick={handleCloseFinishPopupRestart}>
                         Reread the text
                     </button>
-                    <button className="GreenButton" onClick={handleCloseFinishPopupSendToQuiz}>
-                        Save and continue to quiz
-                    </button>
+                    {averageWPM !== null && isFinite(averageWPM) && averageWPM <= maxAdmissibleWPM && (
+                        <button className="GreenButton" onClick={handleCloseFinishPopupSendToQuiz}>
+                            Save and continue to quiz
+                        </button>
+                    )}
                     
                 </div>
             </>
