@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSelectedText } from "../../contexts/SelectedTextContext"; // Adjust path if necessary
 import HighlightableText from "./highlightable-text";
 import CounterDisplay from "./counter-display";
@@ -15,24 +15,25 @@ import { TbSquareLetterH } from 'react-icons/tb';
 import { TbSquareLetterP } from 'react-icons/tb';
 import { TbSquareLetterM } from 'react-icons/tb';
 import { VscDebugRestart } from "react-icons/vsc";
-import { TbPlayerPause, TbPlayerPlay } from "react-icons/tb";
+import { PiPauseBold, PiPlayBold } from "react-icons/pi";
+import { PiTimerBold } from "react-icons/pi";
 import Routes from '@/config/routes';
 
 
 const Mode1Display = () => {
-  const [wordsPerMinute, setWordsPerMinute] = useState(300);
+  const startWPM = 300;
+  const [WPM, setWPM] = useState(startWPM);
+  const [pastAvgWPMs, setPastAvgWPMs] = useState<number[]>([startWPM]);
+  const adjustedStartWPM = useRef<number>(startWPM); 
   const [backgroundClass, setBackgroundClass] = useState("flash-mode-display-bg-color");
   const [textColorClass, setTextColorClass] = useState("text-color-black");
   const [shortStory, setShortStory] = useState("");
   const [summary, setSummary] = useState("");
   const { selectedTextId, setSelectedTextId } = useSelectedText(); // Use the ID from context
   const { userId } = useAuth();
-  const [pastWPM, setPastWPM] = useState<number[]>([300]);
   const [averageWPM, setAverageWPM] = useState<number | null>(null);
   const [showStartPopup, setShowStartPopup] = useState(true);
   const [showFinishPopup, setShowFinishPopup] = useState(false);
-  const [restartTime, setRestartTime] = useState<number>(0);
-  const [readingTime, setReadingTime] = useState<number>(0);
   const [hyperBold, sethyperBold] = useState(false);
   const [pointer, setPointer] = useState<boolean>(true);
   const [restartText, setRestartText] = useState<boolean>(false);
@@ -43,24 +44,24 @@ const Mode1Display = () => {
   const [fixationDegree, setFixationDegree] = useState(3);
   const [pointerColour, setPointerColour] = useState("yellow");
 
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(true);
-  const [isRestartActive, setIsRestartActive] = useState(false);
   const [isPausePlayActive, setIsPausePlayActive] = useState(false);
+  const [isRestartActive, setIsRestartActive] = useState(false);
+  
   const [countdown, setCountdown] = useState<number | null>(null);
+  const startTimeRef = useRef<number>(0);
+  const accumulatedTimeRef = useRef<number>(0);
 
   const { practiceId, setPracticeId } = usePracticeID(); // Accessing the setPracticeId method from the global context
 
 
-  const handleRestartTimeChange = (newRestartTime: number) => {
-    setRestartTime(newRestartTime);
+  const handleStartTimeChange = (newRestartTime: number) => {
+    startTimeRef.current = newRestartTime;
     setRestartText(false);
     console.log('Restart time:', newRestartTime)
   };
-  const handleReadingTimeChange = (newRestartTime: number) => {
-    setReadingTime(newRestartTime);
-    console.log('Reading time:', newRestartTime)
-  }; 
-  
+
   useEffect(() => {
     const fetchTextById = async (textId: number) => {
       try {
@@ -88,7 +89,7 @@ const Mode1Display = () => {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        setPastWPM(data.avgWPMs);
+        setPastAvgWPMs(data.avgWPMs);
       } catch (error) {
         console.error('Error fetching text:', error);
       }
@@ -96,14 +97,31 @@ const Mode1Display = () => {
       fetchPastWPM();
   }, []);
 
-    // Function to handle restart action
-    const restartAction = () => {
-      setAverageWPM(null); // Reset the averageWPM value
-      setWordsPerMinute(300); // Reset the WPM value
-      setRestartTime(0); // Reset the restart time
-      setReadingTime(0); // Reset the reading time
-      setShowFinishPopup(false); // Hide the finish popup
-      setRestartText(true);
+  useEffect(() => {
+    if (pastAvgWPMs.length > 0) {
+        // Consider only the last 10 entries for averaging
+        const recentWPMs = pastAvgWPMs.slice(-10);
+        const sum = recentWPMs.reduce((acc, curr) => acc + curr, 0);
+        const average = Math.round(sum / recentWPMs.length);
+
+        adjustedStartWPM.current = Math.min(Math.max(average, 150), 500);
+        setWPM(adjustedStartWPM.current);
+    }
+  }, [pastAvgWPMs]);
+
+  // Function to handle restart action
+  const restartAction = () => {
+    setAverageWPM(null); // Reset the averageWPM value
+    setWPM(adjustedStartWPM.current); // Reset the WPM value
+    startTimeRef.current = 0;
+    accumulatedTimeRef.current = 0;
+    setShowFinishPopup(false); // Hide the finish popup
+    setRestartText(true);
+    setIsPaused(true); // Pause the display
+    setCurrentIndex(0); // Reset the current index
+    setCountdown(null); // Reset the countdown
+    setIsRestartActive(true); // Set active to true
+    setTimeout(() => setIsRestartActive(false), 100); // Reset after 500ms
   };
   
   useEffect(() => {
@@ -133,7 +151,7 @@ const Mode1Display = () => {
 
   // This function takes the average WPM and sends it to the backend.
   const submitReadingSpeed = async (averageWpm: number | null) => {
-      if (averageWpm === null) {
+      if (averageWpm === null || isNaN(averageWpm) || !isFinite(averageWpm) || averageWpm > 50000) {
           console.error('No average WPM available to submit.');
           return; // Optionally show an error to the user
       }
@@ -176,9 +194,9 @@ const Mode1Display = () => {
     }
 
     if (event.key === "ArrowRight") {
-      setWordsPerMinute((prevWPM) => Math.min(prevWPM + 50, 1500)); // Increase WPM with upper bound
+      setWPM((prevWPM) => Math.min(prevWPM + 50, 1500)); // Increase WPM with upper bound
     } else if (event.key === "ArrowLeft") {
-      setWordsPerMinute((prevWPM) => Math.max(prevWPM - 50, 50)); // Decrease WPM with lower bound
+      setWPM((prevWPM) => Math.max(prevWPM - 50, 50)); // Decrease WPM with lower bound
     } else if (event.key === "p" || event.key === "P") {
       togglePointer();
     } else if (event.key === "h" || event.key === "H") {
@@ -200,12 +218,18 @@ const Mode1Display = () => {
       setFixationDegree(4);
     } else if (event.key === "c" || event.key === "C") {
       setPointerColour("cyan");
-    } else if (event.key === "y" || event.key === "Y") {
+    } else if (event.key === "y" || event.key === "Y") { 
       setPointerColour("yellow");
     } else if (event.key === "o" || event.key === "O") {
       setPointerColour("orange");
     } else if (event.key === "g" || event.key === "G") {
       setPointerColour("green");
+    } else if (event.key === "R" || event.key === "r") {
+      restartAction();
+    } else if (event.key === " ") {
+      // Listen for the spacebar
+      event.preventDefault(); // Prevent the default spacebar action (e.g., page scrolling)
+      togglePausePlayAction(); // Call the toggle function
     }
   };
 
@@ -213,20 +237,23 @@ const Mode1Display = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [showStartPopup, showFinishPopup]);
+  }, [showStartPopup, showFinishPopup, isPaused]);
 
 
-  // Example handleGetSummary function (adjust as needed)
+  // Handle finishing text reading
   const handleFinishText = async () => {
-    // Calculate WPM
     const currentTime = performance.now();
-    const deltaTime = currentTime - restartTime;
-    const totalReadingTime = readingTime + deltaTime;
+    if (!isPaused) {
+      const deltaTime = currentTime - startTimeRef.current;
+      accumulatedTimeRef.current += deltaTime;
+      setIsPaused(true);
+    }
+  
+    const totalReadingTime = accumulatedTimeRef.current;
+    console.log('totalReadingTime:', totalReadingTime);
     const totalNumWords = shortStory.split(' ').length;
     const wpm = Math.round((totalNumWords / totalReadingTime) * 60000);
     setAverageWPM(wpm);
-    console.log('Average WPM:', wpm);
-    // Show the popup
     setShowFinishPopup(true);
   };
 
@@ -248,11 +275,60 @@ const Mode1Display = () => {
     if (isPaused) {
         setCountdown(3); // Start a 3-second countdown
     } else {
-        setIsPaused(true); // Pause immediately without a countdown
+        // Pause the timer
+        setIsPaused(true);
+        const currentTime = performance.now();
+        const deltaTime = currentTime - startTimeRef.current;
+        accumulatedTimeRef.current += deltaTime;
+        console.log('Updated Reading Time:', accumulatedTimeRef.current);
     }
     setIsPausePlayActive(true); // Set active to true
-    setTimeout(() => setIsPausePlayActive(false), 100); // Reset after 500ms
+    setTimeout(() => setIsPausePlayActive(false), 100); // Reset after 100ms
   };
+
+  useEffect(() => {
+    let interval = null;
+    if (!isPaused) {
+      interval = setInterval(() => {
+        // This will force a re-render and update the timer on the UI
+        setCurrentIndex((prev) => prev);
+      }, 1000); // Update every second
+    }
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isPaused]); // Only re-run if pause state changes
+  
+
+  const getFormattedTime = (totalMilliseconds: number) => {
+    const totalSeconds = Math.floor(totalMilliseconds / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+  
+    if (hours > 0) {
+      return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+    return `${minutes}:${String(seconds).padStart(2, '0')}`;
+  };
+
+  const [formattedTime, setFormattedTime] = useState(getFormattedTime(0));
+
+  useEffect(() => {
+    let animationFrameId: number; 
+  
+    const updateTimer = () => {
+      const currentTimer = isPaused ? accumulatedTimeRef.current : accumulatedTimeRef.current + (performance.now() - startTimeRef.current);
+      setFormattedTime(getFormattedTime(currentTimer));
+      animationFrameId = requestAnimationFrame(updateTimer);
+    };
+  
+    animationFrameId = requestAnimationFrame(updateTimer);
+  
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [isPaused]);
 
 
   const gapBetweenSize = '8px';
@@ -284,7 +360,7 @@ const Mode1Display = () => {
                     <br></br>
                     <p>Features include:</p>
                     <div className='mx-4 mt-2 bg-red-50 shadow-lg rounded-xl p-4 w-full'>
-                      <p><strong style={{ fontStyle: 'italic'}} className="text-pink-800">Pointer:</strong> Highlighting words karaoke-style. Width and pace adjustable.</p>
+                      <p><strong style={{ fontStyle: 'italic'}} className="text-pink-800">Pointer:</strong> Highlighting words karaoke-style. Width, colour, and pace adjustable.</p>
                     </div>
                     <div className='mx-4 my-2 bg-red-50 shadow-lg rounded-xl p-4 w-full'>
                       <p><strong style={{ fontStyle: 'italic'}} className="text-pink-800">Font Size:</strong> Adjusted via slider.</p>
@@ -318,6 +394,11 @@ const Mode1Display = () => {
                     
                     <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
                         <p>Congrats on finishing the text!</p>
+                        <br></br>
+                        <p style={{ fontSize: '18px' }}>Average WPM:</p>
+                        <span style={{ color: 'rgb(150, 150, 150)' }}>
+                            {averageWPM !== null ? averageWPM : <span style={{ fontStyle: 'italic' }}>Pending</span>}
+                        </span>
                     </p>
                     <button className="GreenButton" onClick={handleCloseFinishPopupRestart}>
                         Reread the text
@@ -328,7 +409,7 @@ const Mode1Display = () => {
                     
                 </div>
             </>
-        )
+          )
         }
       <div className="justify-center items-start rounded-xl bg-pink-900" style={{padding: gapBetweenSize}}>
         <div className="" style={{
@@ -460,14 +541,31 @@ const Mode1Display = () => {
                             style={{
                             width: '100%', // Matches the width of the first inner div for consistency
                             display: 'flex',
+                            flexDirection: 'row',
                             alignItems: 'center', // Center-align the text vertically
-                            justifyContent: 'center',
+                            justifyContent: 'space-evenly', // Space between each item
                             flex: 1, // Take up remaining space
+                            color: 'rgb(90, 90, 90)', // Set the color for all text
                             }}
                         >
-                            <p style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }}>
-                            Average WPM: {averageWPM !== null ? averageWPM : <span style={{ fontStyle: 'italic', color: 'rgb(150, 150, 150)' }}>Pending</span>}
-                            </p>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <p>Reading Time:</p>
+                                <span style={{ fontStyle: '', color: 'rgb(150, 150, 150)' }}>
+                                  {formattedTime}
+                                </span>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <p>Total Words:</p>
+                                <span style={{ fontStyle: '', color: 'rgb(150, 150, 150)' }}>
+                                    {shortStory.split(' ').length}
+                                </span>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <p style={{ fontSize: '15px' }}>Average WPM:</p>
+                                <span style={{ color: 'rgb(150, 150, 150)' }}>
+                                    {averageWPM !== null ? averageWPM : <span style={{ fontStyle: 'italic' }}>Pending</span>}
+                                </span>
+                            </div>
                         </div>
                       </div>
                     <div
@@ -634,7 +732,7 @@ const Mode1Display = () => {
                               <input
                                 type="range"
                                 min="1"
-                                max="15"
+                                max="16"
                                 defaultValue={initialPointerSize}
                                 className="slider"
                                 onChange={(event) => {
@@ -662,9 +760,30 @@ const Mode1Display = () => {
               width: '100%', 
               position: 'relative',
           }}>
+              {/* Timer Display */}
+              <div style={{ 
+                  position: 'absolute',
+                  top: 0, 
+                  left: 10,
+                  boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)', 
+                  padding: '10px 10px', 
+                  borderRadius: '10px', 
+                  display: 'flex',
+                  // height: '45px',
+              }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <PiTimerBold size={24} style={{ marginRight: '10px' }} className="icon-button" />
+                      <p>
+                          <span style={{ fontStyle: '', color: 'rgb(150, 150, 150)' }}>
+                            {formattedTime}
+                          </span>
+                      </p>
+                  </div>
+              </div>
+
               {/* Centered Counter Display */}
-              <CounterDisplay count={wordsPerMinute} fontSize="16px"/>
-              {/* <button onClick={downloadGazeData}>Download Gaze Data</button> */}
+              <CounterDisplay count={WPM} fontSize="16px"/>
+              
               {/* Container for Play/Pause and Restart Icons aligned to the top right */}
               <div style={{ 
                   position: 'absolute',
@@ -675,10 +794,11 @@ const Mode1Display = () => {
                   borderRadius: '10px', 
                   display: 'flex', 
                   gap: "10px"  // Space between icons
+                  // height: '45px',
               }}>
                   {/* Play/Pause Icon */}
                   <button className={`icon-button ${isPausePlayActive ? 'active' : ''}`} onClick={togglePausePlayAction}>
-                      {isPaused ? <TbPlayerPlay size={24} /> : <TbPlayerPause size={24} />}
+                      {isPaused ? <PiPlayBold size={22} /> : <PiPauseBold size={22} />}
                   </button>
                                                                   
                   {/* Restart Icon */}
@@ -702,10 +822,8 @@ const Mode1Display = () => {
             >
               <HighlightableText
                 text={shortStory}
-                highlightInterval={60000 / wordsPerMinute}
-                onFinish={() => {}}
-                onRestartTimeChange={handleRestartTimeChange} 
-                onReadingTimeChange={handleReadingTimeChange}
+                highlightInterval={60000 / WPM}
+                onStartTimeChange={handleStartTimeChange} 
                 hyperBold={hyperBold}
                 fontFamily = "monospace-jetbrains-mono"
                 pointer={pointer}
@@ -716,6 +834,13 @@ const Mode1Display = () => {
                 pointerColour={pointerColour} // Pass pointerColour
                 backgroundClass={backgroundClass} // Pass backgroundClass
                 textColorClass={textColorClass} // Pass textColorClass
+                currentIndex={currentIndex}
+                setCurrentIndex={setCurrentIndex}
+                isPaused={isPaused}
+                setIsPaused={setIsPaused}
+                countdown={countdown}
+                setCountdown={setCountdown}
+                restartAction={restartAction}
                 // className= {showStartPopup||showFinishPopup ? 'blur-effect' : ''}
               />
             </div>

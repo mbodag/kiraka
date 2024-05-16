@@ -11,7 +11,7 @@ import { ArrowLeftSquare, ArrowRightSquare } from 'lucide-react';
 import  { usePracticeID } from '@/contexts/PracticeIDContext';
 import { useAuth } from "@clerk/nextjs";
 import { VscDebugRestart } from "react-icons/vsc";
-import { TbPlayerPause, TbPlayerPlay } from "react-icons/tb";
+import { PiPauseBold, PiPlayBold } from "react-icons/pi";
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { useRouter } from 'next/navigation';
@@ -512,7 +512,7 @@ const Mode1Display = () => {
                         }}>
                             {/* Play/Pause Icon */}
                             <button className={`icon-button ${isPausePlayActive ? 'active' : ''}`} onClick={togglePausePlayAction} disabled={showCompletionPopup}>
-                                {isPaused ? <TbPlayerPlay size={24} /> : <TbPlayerPause size={24} />}
+                                {isPaused ? <PiPlayBold size={22} /> : <PiPauseBold size={22} />}
                             </button>
                                                                             
                             {/* Restart Icon */}
