@@ -54,8 +54,6 @@ interface GazeDataToSend {
 const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
 const startWPM = 300;
-const minWPM = 180;
-const maxWPM = 700;
 const significantLeftNormSpeed = -2/1201*100; // defined experimentally, based on the mac word display width (1201px) at the time of the experiment, and the value of -2px/s for threshold speed. Scaled by 100 (giving percentage)
 const manualConstIncreaseWPM = 20;
 const manualConstDecreaseWPM = 20;
@@ -110,6 +108,36 @@ const Mode2Display = () => {
 
     // Added features
     const [integrateComplexity, setIntegrateComplexity] = useState(false);
+
+    // Added Difficulty Levels
+    const [difficultyLevel, setDifficultyLevel] = useState("beginner"); 
+
+    // Dynamic parameters to update based on difficulty
+    const [minWPM, setMinWPM] = useState(180); // Default for beginner
+    const [maxWPM, setMaxWPM] = useState(700); // Default for beginner
+
+    // Update parameters based on difficulty level
+    useEffect(() => {
+        switch (difficultyLevel) {
+            case "beginner":
+                setMinWPM(180);
+                setMaxWPM(450);
+                break;
+            case "intermediate":
+                setMinWPM(220);
+                setMaxWPM(650);
+                break;
+            case "expert":
+                setMinWPM(300);
+                setMaxWPM(900);
+                break;
+            default:
+                setMinWPM(180);
+                setMaxWPM(500);
+                break;
+        }
+    }, [difficultyLevel]);
+
 
     useEffect(() => {
         // Check if the session is new -- if yes, ensure webgazer is set to inactive as camera will be off
@@ -323,7 +351,7 @@ const Mode2Display = () => {
             setShowCompletionPopup(false);  // Hide the popup if it's visible
         }
         restartAction();
-    }, [integrateComplexity]);
+    }, [integrateComplexity, difficultyLevel]);
     
     
     // Function to calculate display time from WPM for a chunk
@@ -1046,7 +1074,7 @@ const Mode2Display = () => {
 
                 {/* div 1 */}
                 <div
-                    className="flash-mode-display-bg-color rounded-lg shadow-lg px-6 pt-1.5 mt-2 pb-5"
+                    className="flash-mode-display-bg-color rounded-lg shadow-lg px-6 pt-1.5 mt-2 pb-3"
                     style={{
                     width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
                     display: 'flex',
@@ -1072,7 +1100,7 @@ const Mode2Display = () => {
                         <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Stats</h3>
                     </div>
                     {/* Checkbox for toggling complexity adjustment */}
-                    <div className="mt-3"
+                    <div className="mt-1.5"
                         style={{
                         width: '100%', // Matches the width of the first inner div for consistency
                         display: 'flex',
@@ -1089,7 +1117,7 @@ const Mode2Display = () => {
 
                 {/* div 2 */}
                 <div
-                    className="flash-mode-display-bg-color rounded-lg shadow-lg p-6 pt-1.5 mb-2"
+                    className="flash-mode-display-bg-color rounded-lg shadow-lg px-6 pt-1.5 mb-2"
                     style={{
                     width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
                     display: 'flex',
@@ -1119,11 +1147,28 @@ const Mode2Display = () => {
                         style={{
                         width: '100%', // Matches the width of the first inner div for consistency
                         display: 'flex',
+                        flexDirection: 'column',
                         alignItems: 'center', // Center-align the text vertically
-                        justifyContent: 'center',
+                        justifyContent: 'space-evenly',
                         flex: 1, // Take up remaining space
                         }}
                     >
+                        <div style={{ display: 'flex', alignItems: 'center'}} className={showCalibrationPopup ? 'blur-effect' : ''}>
+                            <label style={{ fontSize: '15px', color: 'rgb(90, 90, 90)', marginRight: '10px' }}>
+                                Level:
+                            </label>
+                            <select
+                                value={difficultyLevel}
+                                onChange={(e) => setDifficultyLevel(e.target.value)}
+                                style={{ fontSize: '15px', padding: '5px 10px', color: 'rgb(50, 50, 50)', outline: 'none' }}
+                                disabled={showCompletionPopup}
+                                className="bg-orange-100 rounded-xl shadow"
+                            >
+                                <option value="beginner">Beginner</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="expert">Expert</option>
+                            </select>
+                        </div>
                         <div>
                             <label style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }} className={showCalibrationPopup ? 'blur-effect' : ''}>
                                 <input
@@ -1135,7 +1180,7 @@ const Mode2Display = () => {
                                             }}
                                     disabled={showCompletionPopup}
                                 />
-                                Further adjust WPM based on the complexity of each text chunk
+                                Add smarter WPM adjustment based on lexical complexity
                             </label>
                         </div>
                     </div>

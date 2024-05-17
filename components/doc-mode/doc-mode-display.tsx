@@ -218,6 +218,10 @@ const Mode1Display = () => {
     } else if (event.key === "4") {
       setFixationDegree(4);
     } else if (event.key === "c" || event.key === "C") {
+      if (event.ctrlKey || event.metaKey) {
+        // Do not set pointer colour if CTRL (Windows/Linux) or CMD (Mac) is pressed
+        return;
+      }
       setPointerColour("cyan");
     } else if (event.key === "y" || event.key === "Y") { 
       setPointerColour("yellow");

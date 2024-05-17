@@ -622,7 +622,7 @@ const Mode1Display = () => {
 
                 {/* div 1 */}
                 <div
-                    className="flash-mode-display-bg-color rounded-lg shadow-lg px-6 pt-1.5 mt-2 pb-5"
+                    className="flash-mode-display-bg-color rounded-lg shadow-lg px-6 pt-1.5 mt-2 pb-3"
                     style={{
                     width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
                     display: 'flex',
@@ -647,7 +647,7 @@ const Mode1Display = () => {
                     </div>
 
                     {/* Second inner div for the text "Average WPM:" centered */}
-                    <div className="mt-3"
+                    <div className="mt-1.5"
                         style={{
                         width: '100%', // Matches the width of the first inner div for consistency
                         display: 'flex',
