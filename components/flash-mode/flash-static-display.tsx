@@ -147,13 +147,13 @@ const Mode1Display = () => {
           // Set a timer to decrement the countdown every second
           timerId = setTimeout(() => {
             setCountdown(countdown - 1);
-          }, 1000);
+          }, 800);
         } else if (countdown === 0) {
             // Display "Go!" for a brief moment before resetting
             timerId = setTimeout(() => {
                 setIsPaused(false);  // Ensure the display starts if it was paused
                 setCountdown(null);  // Reset countdown to not counting down state
-            }, 500);  // Allow 1 second for "Go!" to be visible
+            }, 400);  // Allow 1 second for "Go!" to be visible
         }
 
         return () => {
@@ -664,7 +664,7 @@ const Mode1Display = () => {
 
                 {/* div 2 */}
                 <div
-                    className="flash-mode-display-bg-color rounded-lg shadow-lg p-6 pt-1.5 mb-2"
+                    className="flash-mode-display-bg-color rounded-lg shadow-lg px-6 py-1.5 mb-2"
                     style={{
                     width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
                     display: 'flex',
@@ -675,8 +675,7 @@ const Mode1Display = () => {
                     }}
                 >
                 {/* First inner div for the title "Stats" and a gray horizontal line */}
-                    <div className="flash-mode-display-bg-color"
-                        style={{
+                    <div style={{
                         boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
                         padding: '1px',
                         borderRadius: '10px',
@@ -688,19 +687,26 @@ const Mode1Display = () => {
                         <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Features</h3>
                     </div>
 
-                    {/* Second inner div for the text "Average WPM:" centered */}
                     <div
                         style={{
                         width: '100%', // Matches the width of the first inner div for consistency
                         display: 'flex',
+                        flexDirection: 'column',
                         alignItems: 'center', // Center-align the text vertically
-                        justifyContent: 'center',
+                        justifyContent: 'space-evenly',
                         flex: 1, // Take up remaining space
                         }}
                     >
-                        <p style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }}>
-                        <span style={{ fontStyle: 'italic', color: 'rgb(150, 150, 150)' }}>Coming Soon...</span>
-                        </p>
+                        <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px', whiteSpace: 'nowrap' }}>
+                            <p style={{ margin: '0', marginRight: '3px' }}>Press</p>
+                                <ArrowLeftSquare color={"rgb(90, 90, 90)"} /><ArrowRightSquare color={"rgb(90, 90, 90)"} />
+                            <p style={{ marginLeft: '3px'}}>to Adjust WPM</p>
+                        </div>
+                        <div>
+                            <p style={{ fontSize: '15px', color: 'rgb(90, 90, 90)', textAlign: 'center' }}>
+                                No eye-tracking technology or lexical complexity are used for WPM adjustments here.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
