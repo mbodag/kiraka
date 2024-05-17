@@ -40,7 +40,7 @@ const QuizDisplay: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [score, setScore] = useState<number>(0);
   const [quizCompleted, setQuizCompleted] = useState<boolean>(false);
-  let { selectedTextId, setSelectedTextId } = useSelectedText(); // Use the ID from context
+  const { selectedTextId, setSelectedTextId } = useSelectedText(); // Use the ID from context
   const { userId } = useAuth()
   const { practiceId, setPracticeId } = usePracticeID();
 

@@ -106,17 +106,6 @@ body,
   }
 }
 
-
-.highlighted {
-  background-color: rgb(165, 249, 232);
-  color: black
-}
-
-/* .keyword-highlighted {
-  background-color: rgb(200, 0, 0);
-  color: white; /* Optional: Change text color if needed */
-/* } */
-
 .keyword-highlighted {
   color: rgb(200, 0, 0);
   font-weight: bold;
@@ -669,7 +658,7 @@ body,
 }
 
 .animated-gradient-button {
-  background: linear-gradient(45deg, rgb(0, 125, 0), rgb(0, 225, 225));
+  background: linear-gradient(45deg, rgb(0, 125, 0), rgb(0, 250, 105));
   background-size: 150% 150%;
   animation: gradientAnimation 2s ease infinite;
   color: white;
@@ -767,4 +756,14 @@ body,
 
 .highlightable-text-container {
   font-weight: 100; /* Lighter font weight for normal text */
+  word-break: break-word;
+  /* hyphens: auto; */
+}
+
+
+
+/* bg + navbar colours */
+:root {
+  --gradient-top-color: rgba(10, 105, 35, 0.85);
+  --gradient-bottom-color: rgba(10, 105, 35, 0.8);
 }

@@ -27,12 +27,6 @@ const Sidebar = () => {
   const router = useRouter();
   const shouldDisplayTexts = !(pathname === '/quiz' || pathname === '/upload');
 
-  // Array of texts with their IDs
-  const texts = Array.from({ length: 5 }, (_, index) => ({
-    id: index + 1,
-    title: ["1. Bioluminescence", "2. Aurora Borealis", "3. Tungsten", "4. NASA Mars Rover", "5. Health & Longevity"][index],
-  }));
-
   const { user } = useUser();
   const { userId } = useAuth();
 

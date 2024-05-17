@@ -46,7 +46,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, navbarType 
     <WebGazerProvider>
       <div className="h-full relative">
         {sidebarPresence && (
-          <div className="hidden h-full md:flex md:flex-col md:fixed md:inset-y-0 bg-gray-900" style={{width: 'var(--sidebar-width)'}}>
+          <div className="hidden h-full md:flex md:flex-col md:fixed md:inset-y-0 z-[1000] bg-gray-900" style={{width: 'var(--sidebar-width)'}}>
             {sidebar}
           </div>
         )}
