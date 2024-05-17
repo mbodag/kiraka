@@ -2,7 +2,7 @@
 
 Welcome to Kiraka.ai! Inspired by the Arabic word for reading, *[qirā'ah]*, our platform is dedicated to enhancing your reading experience through innovative, technology-driven solutions. Initiated as a university project at Imperial College London, Kiraka.ai's main feature—***FlashMode Adaptive***—leverages eye-tracking technology and lexical analysis to tailor the reading experience to your pace and comprehension needs.
 
-Here's the link to our website: https://srp.doc.ic.ac.uk
+Kiraka.ai is currently hosted at: https://srp.doc.ic.ac.uk
 
 ## Table of Contents
 
@@ -33,14 +33,13 @@ Kiraka.ai is designed to explore the potential of speed reading and its impact o
 - **FlashMode**: Read text in chunks, displayed sequentially to improve focus and speed, with optional real-time eye tracking to adapt to your reading speed. 
 - **Real-Time Adjustments**: Uses WebGazer's eye-tracking technology (https://webgazer.cs.brown.edu/) to adjust the WPM (Words Per Minute) dynamically in FlashMode.
 
-
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js (version 14 or above)
 - npm or yarn
-- Python 3.8+
+- Python 3.10+
 - See `requirements.txt` for a full list of required dependencies.
 
 ### Installation
@@ -49,7 +48,9 @@ Kiraka.ai is designed to explore the potential of speed reading and its impact o
     ```bash
     git clone https://gitlab.doc.ic.ac.uk/g237007906/kiraka.git
     ```
-2. Install the required Python libraries on your (activated) virtual environment:
+2. Our backend uses Flask, so we recommend downloading Python 3.10 and creating a virtual environment.
+
+    Then, install the required Python libraries on your (activated) virtual environment:
     ```bash
     pip install -r requirements.txt
     ```
@@ -59,19 +60,48 @@ Kiraka.ai is designed to explore the potential of speed reading and its impact o
     # or
     yarn install
     ```
+4. Authentication is handled by *Clerk*, which creates an ID for each user. This ID is the only piece of user authentication we store. 
+
+    Add your Clerk API keys and instructions after sign-in/sign-up to an `.env.local` file in your root directory:
+
+    ```bash
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="{replace by your public clerk key}"
+    CLERK_SECRET_KEY="{replace by your secret key}"
+
+    NEXT_PUBLIC_CLERK_SIGN_IN_URL=""
+    NEXT_PUBLIC_CLERK_SIGN_UP_URL=""
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=""
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=""
+    ```
 
 ## Running the Application 
 
-1. First, run the development server:
+1. To run the *development* server:
 
     ```bash
     npm run dev
     # or
     yarn dev
     ```
-2. Open http://localhost:3000 in your browser to see the result; or if the latter is already taken, check your terminal for info about which localhost to open.
+    Alternatively, to prepare and run the *production* server:
 
-    **Note:** LLMs (Large Language Models) will be downloaded when you run the software. They are about 5GB in size and might take a while to download before the project starts running.
+    ```bash
+    npm run build
+    npm run start
+    # or
+    yarn build
+    yarn start
+    ```
+
+2. Additional Setup:
+    - Create a database in MariaDB.
+    - In the `/api` directory, create a file named `config.py` containing your DATABASE_URI (e.g., *mariadb+mariadbconnector://{username}:{password}@localhost/database_name)* and your ADMIN_ID (e.g., *1* or your *clerk_id*).
+
+3. Open http://localhost:3000 in your browser to see the result; or if the latter is already taken, check your terminal for info about which localhost to open. 
+
+    Our website is deployed in a similar fashion on one of Imperial's virtual machines, where both the frontend and the backend are hosted.
+
+    >**Note:** LLMs (Large Language Models) will be downloaded when you run the software. They are about 5GB in size and might take a while to download before the project starts running.
 
 
 ## Reading Modes
@@ -95,10 +125,10 @@ Explore two configurations: **Static** and **Adaptive**.
 
 - **Adaptive (Recommended)**: Integrates WebGazer's eye-tracking to automatically adjust your WPM, encouraging faster reading. Manual WPM adjustments are still available.
 
-#### Adaptive Complexity Adjustment
+#### > Adaptive Complexity Adjustment
 FlashMode Adaptive not only adapts to your reading speed through your gaze but also adjusts based on the lexical complexity of each text chunk. Leveraging a pre-trained Large Language Model (LLM), each chunk is scored for complexity. This score is then used to adjust the WPM for subsequent chunks, ensuring that the reading challenge is optimised for your comprehension and speed. This dynamic adjustment process happens after each chunk is displayed, allowing for a seamless reading experience.
 
-#### Difficulty Levels
+#### > Difficulty Levels
 FlashMode Adaptive offers three levels of difficulty, each designed to cater to different user proficiencies:
 - **`Beginner`**: Ideal for those new to speed reading.
 - **`Intermediate`**: For readers with some experience in dynamic reading environments.
