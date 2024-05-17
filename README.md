@@ -15,8 +15,6 @@ Kiraka.ai is currently hosted at: https://srp.doc.ic.ac.uk
 - [Reading Modes](#reading-modes)
   - [Doc Mode](#docmode)
   - [Flash Mode](#flashmode)
-    - [Adaptive Complexity Adjustment](#adaptive-complexity-adjustment)
-    - [Difficulty Levels](#difficulty-levels)
   - [AI Quiz Generation](#ai-quiz-generation)
   - [User Analytics](#user-analytics)
 - [Contact Us](#contact-us)
@@ -39,6 +37,7 @@ Kiraka.ai is designed to explore the potential of speed reading and its impact o
 
 - Node.js (version 14 or above)
 - npm or yarn
+- MariaDB
 - Python 3.10+
 - See `requirements.txt` for a full list of required dependencies.
 
