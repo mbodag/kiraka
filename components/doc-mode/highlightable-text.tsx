@@ -4,30 +4,46 @@ interface HighlightableTextProps {
   text: string;
   highlightInterval?: number;
   fontSize?: string;
-  onFinish?: () => void;
   className?: string;
-  onRestartTimeChange: (newRestartTime: number) => void;
-  onReadingTimeChange: (newReadingTime: number) => void;
+  onStartTimeChange: (newRestartTime: number) => void;
   fontFamily?: string;
   hyperBold?: boolean;
   pointer? : boolean;
   restartText?: boolean;
   pointerSize?: number;
-
+  fixationDegree?: number;
+  pointerColour?: string;
+  backgroundClass?: string;
+  textColorClass?: string;
+  currentIndex: number;
+  setCurrentIndex: (index: number | ((prevIndex: number) => number)) => void;
+  isPaused: boolean;
+  setIsPaused: (paused: boolean) => void;
+  countdown: number | null;
+  setCountdown: (countdown: number | null) => void;
+  restartAction: () => void;
 }
 
 const HighlightableText: React.FC<HighlightableTextProps> = ({
   text,
   highlightInterval = 1000,
   fontSize = "16px",
-  onFinish = () => {},
-  className = "",
-  onRestartTimeChange,
-  onReadingTimeChange,
+  onStartTimeChange,
   hyperBold = false,
   pointer = false,
   restartText = false,
   pointerSize = 1,
+  fixationDegree = 1,
+  pointerColour = "cyan",
+  backgroundClass = "flash-mode-display-bg-color",
+  textColorClass = "text-color-black",
+  currentIndex,
+  setCurrentIndex,
+  isPaused,
+  setIsPaused,
+  countdown,
+  setCountdown,
+  restartAction,
 }) => {
   const paragraphs = text
     .split("\n")
@@ -51,93 +67,48 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
         );
         return paragraph.match(regex) || [];
       };
-
       return breakIntoWordsAndKeywordsInner(paragraph); // Call the inner function and return its result
     },
     [keywords]
   );
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(true); // Highlighting deactivated by default
-  const [isPausePlayActive, setIsPausePlayActive] = useState(false);
-
   const [submittedWPM, setSubmittedWPM] = useState<boolean>(false);
-  const [countdown, setCountdown] = useState<number | null>(null);
-  const [readingTime, setReadingTime] = useState<number>(0);
-  const [restartTime, setRestartTime] = useState<number>(0);
-
-  const restartAction = () => {
-    setIsPaused(true); // Pause the display
-    setRestartTime(0); // Reset the restart time
-    setReadingTime(0); // Reset the reading time
-    setCurrentIndex(0); // Reset the current index
-    setCountdown(null); // Reset the countdown
 
 
-};
-
-useEffect(() => {
+  useEffect(() => {
     if (restartText){
         restartAction();
         console.log('RESTARTING HERE')}  // Then call the restart action
   }, [text, restartText]);
 
-  const togglePausePlayAction = () => {
-    if (isPaused) {
-        setCountdown(3); // Start a 3-second countdown
-    } else {
-        setIsPaused(true);
-        const currentTime = performance.now();
-        const deltaTime = currentTime - restartTime;
-        setReadingTime(readingTime + deltaTime);
-        onReadingTimeChange(readingTime + deltaTime);
-         // Pause immediately without a countdown
-    }
-    setIsPausePlayActive(true); // Set active to true
-    setTimeout(() => setIsPausePlayActive(false), 100); // Reset after 100ms
-};
   useEffect(() => {
     let timerId: NodeJS.Timeout;
-      if (countdown !== null && countdown > 0) {
-        // Set a timer to decrement the countdown every second
-        timerId = setTimeout(() => {
-            setCountdown(countdown - 1);
-          }, 700);
-        } else if (countdown === 0) {
-            // Display "Go!" for a brief moment before resetting
-            timerId = setTimeout(() => {
-                setIsPaused(false);  // Ensure the display starts if it was paused
-                setCountdown(null);  // Reset countdown to not counting down state
-            }, 500);  // Allow 1 second for "Go!" to be visible
-              setRestartTime(performance.now());
-              onRestartTimeChange(performance.now());
-        }
+    if (countdown !== null && countdown > 0) {
+      // Set a timer to decrement the countdown every second
+      timerId = setTimeout(() => {
+          setCountdown(countdown - 1);
+        }, 500);
+      } else if (countdown === 0) {
+          // Display "Go!" for a brief moment before resetting
+          timerId = setTimeout(() => {
+              setIsPaused(false);  // Ensure the display starts if it was paused
+              setCountdown(null);  // Reset countdown to not counting down state
+          }, 300);  // Allow 1 second for "Go!" to be visible
+          onStartTimeChange(performance.now());
+      }
 
-        return () => {
-          clearTimeout(timerId); // Clean up the timer
-        };
-      }, [countdown]);
+    return () => {
+      clearTimeout(timerId); // Clean up the timer
+    };
+  }, [countdown]);
 
   
   useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.key === "R" || event.key === "r") {
-        setCurrentIndex(0);
-      } else if (event.key === " ") {
-        // Listen for the spacebar
-        if (countdown !== null) {}
-        event.preventDefault(); // Prevent the default spacebar action (e.g., page scrolling)
-        togglePausePlayAction(); // Call the toggle function
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyPress);
-
     let intervalId: NodeJS.Timeout | null = null;
 
     if (!isPaused) {
       intervalId = setInterval(() => {
-        setCurrentIndex((prevIndex) => {
+        setCurrentIndex((prevIndex: number) => {
           let wordCounter = 0;
           paragraphs.forEach((paragraph) => {
             const words = breakIntoWordsAndKeywords(paragraph);
@@ -147,8 +118,10 @@ useEffect(() => {
             });
             wordCounter += words.length;
           });
-          if (prevIndex === wordCounter - 1) {
-            setCurrentIndex(0);
+          // Ensure the index keeps updating
+          if (prevIndex >= wordCounter - 1) {
+            console.log('Reached the end of text');
+            return prevIndex; // Stay on the last word
           }
           return prevIndex + 1;
         });
@@ -159,7 +132,6 @@ useEffect(() => {
 
     return () => {
       if (intervalId) clearInterval(intervalId);
-      window.removeEventListener("keydown", handleKeyPress);
     };
   }, [
     highlightInterval,
@@ -169,9 +141,9 @@ useEffect(() => {
     paragraphs,
   ]); // Add isPaused to the dependency array
 
-  const renderWithHyperBold = (wordOrKeyword: any) => {
+  const renderWithHyperBold = (wordOrKeyword: any, isHighlighted: boolean) => {
     if (!hyperBold) {
-      return <span>{wordOrKeyword}</span>;
+        return <span>{wordOrKeyword}</span>;
     }
 
     // Split the word by hyphens to handle composite words
@@ -182,38 +154,82 @@ useEffect(() => {
             {parts.map((part: any, index: any) => {
                 // Apply hyperbold to each part separately
                 if (part !== '-') {
-                    const midIndex = Math.floor(part.length / 2)+1;
-                    return (
+                    const midIndex = Math.floor(part.length / 2) + (fixationDegree - 2);
+                    if (isHighlighted && pointer) {
+                      return (
                         <React.Fragment key={index}>
                             <span style={{ fontWeight: 'bold', color: 'black' }}>{part.slice(0, midIndex)}</span>
-                            <span style={{ color: 'rgb(90, 90, 90)' }}>{part.slice(midIndex)}</span>
+                            <span style={{ color: 'rgb(120, 120, 120)' }}>{part.slice(midIndex)}</span>
                         </React.Fragment>
-                    );
+                      );
+                    } else {
+                        if (backgroundClass === "bg-color-black") {
+                            if (textColorClass === "text-color-black") {
+                                return (
+                                    <React.Fragment key={index}>
+                                        <span style={{ fontWeight: 'bold', color: 'black' }}>{part.slice(0, midIndex)}</span>
+                                        <span style={{ color: 'black' }}>{part.slice(midIndex)}</span>
+                                    </React.Fragment>
+                                );
+                            } else {
+                                return (
+                                    <React.Fragment key={index}>
+                                        <span style={{ fontWeight: 'bold' }} className="flash-mode-display-text-color">{part.slice(0, midIndex)}</span>
+                                        <span style={{ color: 'rgb(150, 150, 150)' }}>{part.slice(midIndex)}</span>
+                                    </React.Fragment>
+                                );
+                            }
+                        } else {
+                            if (textColorClass === "flash-mode-display-text-color") {
+                                return (
+                                    <React.Fragment key={index}>
+                                        <span style={{ fontWeight: 'bold' }} className="flash-mode-display-text-color">{part.slice(0, midIndex)}</span>
+                                        <span className="flash-mode-display-text-color">{part.slice(midIndex)}</span>
+                                    </React.Fragment>
+                                );
+                            } else {
+                                return (
+                                    <React.Fragment key={index}>
+                                        <span style={{ fontWeight: 'bold', color: 'black' }}>{part.slice(0, midIndex)}</span>
+                                        <span style={{ color: 'rgb(120, 120, 120)' }}>{part.slice(midIndex)}</span>
+                                    </React.Fragment>
+                                );
+                            }
+                        }
+                    }
                 }
                 return <span key={index}>{part}</span>; // Return hyphens as normal
             })}
         </>
     );
-  };
+};
+
+  const colorToRgba = (colour:string, opacity:number) => {
+    const colours:any = {
+      cyan: '150, 255, 255',
+      yellow: '255, 255, 120',
+      orange: '255, 185, 120',
+      green: '160, 255, 160'
+    };
+    return `rgba(${colours[colour] || '0, 0, 0'}, ${opacity})`;
+  }
 
   return (
     <div className="highlightable-text-container" style={{fontWeight: '200'}}>
       {/* Countdown Display */}
       {countdown !== null && (
-                    <div className='modal-content p-2' style={{
-                    fontSize: '80px',
-                    fontWeight: '300',
-                    // width: '100px',
-                    // height: '100x',
-                    color: 'rgb(200, 0, 0)',
-                    textAlign: 'center',
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    padding: '0px 10px',
-                    borderRadius: '10px',
-                    }}>
-                    {countdown > 0 ? countdown : 'Go!'}
-                    </div>
-                )}
+          <div className='modal-content p-2' style={{
+          fontSize: '80px',
+          fontWeight: '300',
+          color: 'rgb(200, 0, 0)',
+          textAlign: 'center',
+          background: 'rgba(255, 255, 255, 0.9)',
+          padding: '0px 10px',
+          borderRadius: '10px',
+          }}>
+            {countdown > 0 ? countdown : 'Go!'}
+          </div>
+      )}
       {paragraphs.map((paragraph, pIndex) => {
         const wordsAndKeywords = breakIntoWordsAndKeywords(paragraph);
         let globalIndex = paragraphs
@@ -224,20 +240,40 @@ useEffect(() => {
           <p key={pIndex} className="monospace-jetbrains-mono" style={{ margin: "5px 0", padding: "0", fontSize: fontSize }}>
             {wordsAndKeywords.map((wordOrKeyword, wIndex) => {
                 const isHighlighted = Math.abs(globalIndex - currentIndex) < pointerSize;
+                // const getTextClassName = (isHighlighted: boolean, pointer: boolean, isPaused: boolean) => {
+                //   if (isHighlighted && pointer) {
+                //     return isPaused ? `${backgroundClass === "bg-color-black" ? "flash-mode-display-text-color" : "text-black"} blur` : `${backgroundClass === "bg-color-black" ? "flash-mode-display-text-color" : "text-black"}`;
+                //   }
+                //   return isPaused ? "blur" : "";
+                // };
+                // const className = getTextClassName(isHighlighted, pointer, isPaused);
+
                 const className = isHighlighted && pointer
-                    ? isPaused ? "highlighted blur" : "highlighted"
+                    ? isPaused ? "text-black blur" : "text-black"
                     : isPaused ? "blur" : "";
+                const style = isHighlighted && pointer
+                    ? { backgroundColor: colorToRgba(pointerColour, 0.9) } // Adjust the 0.5 to your desired opacity
+                    : {};
                 globalIndex++;
+
+                // Check if it is the last word in the highlighted segment
+                const nextIsHighlighted = Math.abs(globalIndex - currentIndex) < pointerSize;
+                const isLastInSegment = isHighlighted && !nextIsHighlighted;
+
                 return ( 
-                    <span key={`${pIndex}-${wIndex}`}>
-                        <span className={className}>
-                            {renderWithHyperBold(wordOrKeyword)}
+                    <span key={`${pIndex}-${wIndex}`} className={className}>
+                        <span style={style}>
+                          {renderWithHyperBold(wordOrKeyword, isHighlighted)}
                         </span>
-                        <span className={pointerSize > 1 ? className : ""}> </span>
+                        {(!isLastInSegment || !isHighlighted) && (
+                          <span className={pointerSize > 1 ? className : " "} style={style}> </span>
+                        )}
+                        {/* Ensure a non-highlighted space is added */}
+                        <span className={pointerSize > 1 ? className : " "} style={{}}> </span>
                     </span>
-                );
+                ); 
             })}
-        </p>
+          </p>
         );
       })}
     </div>

@@ -13,7 +13,7 @@ import { ArrowLeftSquare, ArrowRightSquare } from 'lucide-react';
 import  { usePracticeID } from '@/contexts/PracticeIDContext';
 import { useAuth } from "@clerk/nextjs";
 import { VscDebugRestart } from "react-icons/vsc";
-import { TbPlayerPause, TbPlayerPlay } from "react-icons/tb";
+import { PiPauseBold, PiPlayBold } from "react-icons/pi";
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 
@@ -54,17 +54,11 @@ interface GazeDataToSend {
 const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
 const startWPM = 300;
-const minWPM = 180;
-const maxWPM = 550;
-const significantLeftNormSpeed = -2/1201*100; // defined experimentally, based on the mac word display width (1201px) at the time of the experiment, and the value of -2px/s for threshold speed. Scaled by 100 (giving percentage)
-const constIncreaseWPM = 40;
-const constDecreaseWPM = 40;
-const maxConstIncreaseWPM = 60;
-const minConstDecreaseWPM = 15;
-const cumulativeIncreaseThreshold = maxConstIncreaseWPM * 1.5;
-const dampenedIncreaseWPM = 5;
-const decreaseAdjustmentStep = 2;
-const percentageDisplayTimeToIgnoreExperimental = 0.6; // chosen experimentally
+const significantLeftNormSpeed = -2/1201*100; // determined experimentally, based on the mac word display width (1201px) at the time of the experiment, and the value of -2px/s for threshold speed. Scaled by 100 (giving percentage)
+// const yBlinkingUpperThreshold = 2; // determined experimentally
+// const yBlinkingLowerThreshold = -2.6; // determined experimentally
+const manualConstIncreaseWPM = 20;
+const manualConstDecreaseWPM = 20;
 const consecutiveWPMIncreaseThreshold = 2;
 const consecutiveWPMDecreaseThreshold = 7;
 const maxCutOffTime = 1500;
@@ -110,6 +104,87 @@ const Mode2Display = () => {
     // Added features
     const [integrateComplexity, setIntegrateComplexity] = useState(false);
 
+    // Added Difficulty Levels
+    const [difficultyLevel, setDifficultyLevel] = useState("beginner"); 
+
+    // Dynamic parameters to update based on difficulty
+    const [minWPM, setMinWPM] = useState(180);
+    const [maxWPM, setMaxWPM] = useState(700);
+    const [constDecreaseWPM, setConstDecreaseWPM] = useState(60);
+    const [percentageDisplayTimeUpper, setPercentageDisplayTimeUpper] = useState(0.8);
+    const [percentageDisplayTimeLower, setPercentageDisplayTimeLower] = useState(0.6);
+    const percentageDisplayTimeToIgnoreExperimental = 0.6; // chosen experimentally
+    const [maxConstIncreaseWPM, setMaxConstIncreaseWPM] = useState(40);
+    const [minConstDecreaseWPM, setMinConstDecreaseWPM] = useState(20);
+    const [cumulativeIncreaseThreshold1, setCumulativeIncreaseThreshold1] = useState(maxConstIncreaseWPM * 1.5);
+    const [cumulativeIncreaseThreshold2, setCumulativeIncreaseThreshold2] = useState(maxConstIncreaseWPM * 2);
+    const [dampenedIncreaseWPM, setDampenedIncreaseWPM] = useState(0);
+    const [dampenedDecreaseWPM, setDampenedDecreaseWPM] = useState(0);
+    const [decreaseAdjustmentStep, setDecreaseAdjustmentStep] = useState(1);
+
+    // Update parameters based on difficulty level
+    useEffect(() => {
+        switch (difficultyLevel) {
+            case "beginner":
+                setMinWPM(100);
+                setMaxWPM(450);
+                setConstDecreaseWPM(60);
+                setPercentageDisplayTimeUpper(0.8);
+                setPercentageDisplayTimeLower(0.6);
+                setMaxConstIncreaseWPM(40);
+                setMinConstDecreaseWPM(20);
+                setCumulativeIncreaseThreshold1(40 * 1.5);
+                setCumulativeIncreaseThreshold2(40 * 2);
+                setDampenedIncreaseWPM(0);
+                setDampenedDecreaseWPM(-5);
+                setDecreaseAdjustmentStep(1);
+                break;
+            case "intermediate":
+                setMinWPM(200);
+                setMaxWPM(700);
+                setConstDecreaseWPM(50);
+                setPercentageDisplayTimeUpper(0.82);
+                setPercentageDisplayTimeLower(0.57);
+                setMaxConstIncreaseWPM(50);
+                setMinConstDecreaseWPM(17);
+                setCumulativeIncreaseThreshold1(50 * 1.5);
+                setCumulativeIncreaseThreshold2(50 * 2);
+                setDampenedIncreaseWPM(2);
+                setDampenedDecreaseWPM(-10);
+                setDecreaseAdjustmentStep(1);
+                break;
+            case "expert":
+                setMinWPM(300);
+                setMaxWPM(1000);
+                setConstDecreaseWPM(40);
+                setPercentageDisplayTimeUpper(0.85);
+                setPercentageDisplayTimeLower(0.55);
+                setMaxConstIncreaseWPM(60);
+                setMinConstDecreaseWPM(15);
+                setCumulativeIncreaseThreshold1(60 * 1.5);
+                setCumulativeIncreaseThreshold2(60 * 2);
+                setDampenedIncreaseWPM(5);
+                setDampenedDecreaseWPM(-15);
+                setDecreaseAdjustmentStep(2);
+                break;
+            default:
+                setMinWPM(180);
+                setMaxWPM(500);
+                setConstDecreaseWPM(60);
+                setPercentageDisplayTimeUpper(0.8);
+                setPercentageDisplayTimeLower(0.6);
+                setMaxConstIncreaseWPM(40);
+                setMinConstDecreaseWPM(20);
+                setCumulativeIncreaseThreshold1(40 * 1.5);
+                setCumulativeIncreaseThreshold2(40 * 2);
+                setDampenedIncreaseWPM(0);
+                setDampenedDecreaseWPM(0);
+                setDecreaseAdjustmentStep(1);
+                break;
+        }
+    }, [difficultyLevel]);
+
+
     useEffect(() => {
         // Check if the session is new -- if yes, ensure webgazer is set to inactive as camera will be off
         const isExistingSession = sessionStorage.getItem('isExistingSession');
@@ -154,11 +229,16 @@ const Mode2Display = () => {
             const sum = recentWPMs.reduce((acc, curr) => acc + curr, 0);
             const average = Math.round(sum / recentWPMs.length);
     
-            adjustedStartWPM.current = Math.min(Math.max(average, 150), 400);
+            // Adjust starting WPM based on difficulty level
+            // Ensure it's within [minWPM, minWPM + 200] and never exceeds 450
+            const maxAllowedWPM = Math.min(minWPM + 200, 450);
+            const adjustedWPM = Math.min(Math.max(average, minWPM), maxAllowedWPM);
+            adjustedStartWPM.current = adjustedWPM;
+
             setWPM(adjustedStartWPM.current);
             WPMValues.current = [adjustedStartWPM.current]
         }
-    }, [pastAvgWPMs]);
+    }, [pastAvgWPMs, minWPM]);
 
 
     useEffect(() => {
@@ -237,13 +317,13 @@ const Mode2Display = () => {
           // Set a timer to decrement the countdown every second
           timerId = setTimeout(() => {
             setCountdown(countdown - 1);
-          }, 1000);
+          }, 800);
         } else if (countdown === 0) {
             // Display "Go!" for a brief moment before resetting
             timerId = setTimeout(() => {
                 setIsPaused(false);  // Ensure the display starts if it was paused
                 setCountdown(null);  // Reset countdown to not counting down state
-            }, 500);  // Allow 1 second for "Go!" to be visible
+            }, 400);  // Allow 1 second for "Go!" to be visible
         }
 
         return () => {
@@ -294,10 +374,10 @@ const Mode2Display = () => {
     
             switch (event.key) {
                 case "ArrowRight":
-                    setWPM((prevWPM) => Math.min(prevWPM + constIncreaseWPM, maxWPM));
+                    setWPM((prevWPM) => Math.min(prevWPM + manualConstIncreaseWPM, maxWPM));
                     break;
                 case "ArrowLeft":
-                    setWPM((prevWPM) => Math.max(prevWPM - constDecreaseWPM, minWPM));
+                    setWPM((prevWPM) => Math.max(prevWPM - manualConstDecreaseWPM, minWPM));
                     break;
                 case "R":
                 case "r":
@@ -322,7 +402,7 @@ const Mode2Display = () => {
             setShowCompletionPopup(false);  // Hide the popup if it's visible
         }
         restartAction();
-    }, [integrateComplexity]);
+    }, [integrateComplexity, difficultyLevel]);
     
     
     // Function to calculate display time from WPM for a chunk
@@ -347,8 +427,8 @@ const Mode2Display = () => {
         // const maxScaledDisplayTime = baseTime / maxWPM;
         // const normalisedTime = (displayTimeMs - minScaledDisplayTime) / (maxScaledDisplayTime - minScaledDisplayTime);
         const normalisedTime = Math.min(1, Math.max(0, (WPM - minWPM)/(maxWPM - minWPM)))
-        const percentageToIgnore = 0.6 + normalisedTime * (0.8 - 0.6);
-        return Math.max(0.6, Math.min(percentageToIgnore, 0.8));
+        const percentageToIgnore = percentageDisplayTimeLower + normalisedTime * (percentageDisplayTimeUpper - percentageDisplayTimeLower);
+        return Math.max(percentageDisplayTimeLower, Math.min(percentageToIgnore, percentageDisplayTimeUpper));
     };
 
     const getGradualSpeedIncrement = (inferredWPM: number, maxWPM: number) => {
@@ -414,9 +494,10 @@ const Mode2Display = () => {
                     const deltaY = gazeDataRef.current.length > 0 ? data.y - gazeDataRef.current[gazeDataRef.current.length - 1].y : 0;
                     const deltaT = gazeDataRef.current.length > 0 ? elapsedTime - gazeDataRef.current[gazeDataRef.current.length - 1].elapsedTime : 0;
                     const speedX = deltaT > 0 ? deltaX/deltaT : 0;
+                    const speedY = deltaT > 0 ? deltaY/deltaT : 0;
                     const normScaledSpeedX = deltaT > 0 ? normScaledDeltaX/deltaT : 0;
                     console.log('x:', data.x, '|', 'normScaledX:', normScaledX, '|', 'y:', data.y, '|', 'elapsedTime:', elapsedTime, '|', 'deltaX:', deltaX, '|', 
-                    'normScaledDeltaX:', normScaledDeltaX, '|', 'deltaY:', deltaY, '|', 'deltaT:', deltaT, '|', 'speedX:', speedX, '|', 'normScaledSpeedX:', normScaledSpeedX);
+                    'normScaledDeltaX:', normScaledDeltaX, '|', 'deltaY:', deltaY, '|', 'deltaT:', deltaT, '|', 'speedX:', speedX, '|', 'speedY:', speedY, '|', 'normScaledSpeedX:', normScaledSpeedX);
                 
                     if (normScaledSpeedX < significantLeftNormSpeed) {
                         consecutiveLeftMovements.current += 1;
@@ -506,22 +587,44 @@ const Mode2Display = () => {
                             console.log('Resetting consecutive increases because new WPM is not greater than old WPM');
                         }
                         
-                         // Check for uncontrolled increase
+                        // Check for uncontrolled increase after at least {consecutiveWPMIncreaseThreshold} consecutive increases
                         if (consecutiveWPMIncrease.current >= consecutiveWPMIncreaseThreshold) {
                             console.log('Checking for uncontrolled increase:', consecutiveWPMIncrease.current, 'Threshold:', consecutiveWPMIncreaseThreshold);
                             const prevWPMIncrease = WPMValues.current[WPMValues.current.length - 1] - WPMValues.current[WPMValues.current.length - 2];
                             const currentWPMIncrease = increasedWPM - WPMValues.current[WPMValues.current.length - 1];
                             console.log('Previous and Current WPM Increases:', prevWPMIncrease, currentWPMIncrease);
-                            // if (currentWPMIncrease >= prevWPMIncrease * 0.5) {
-                            if (currentWPMIncrease + prevWPMIncrease > cumulativeIncreaseThreshold) {
-                                // Apply damping
+
+                            if (consecutiveWPMIncrease.current >= (consecutiveWPMIncreaseThreshold + 1)) {
+                                if (WPMValues.current.length >= (consecutiveWPMIncreaseThreshold + 1)) {
+                                    const totalIncrease = WPMValues.current.slice(-3).reduce((acc, val, index, array) => {
+                                        if (index === 0) return acc;
+                                        return acc + (array[index] - array[index - 1]);
+                                    }, 0);
+                            
+                                    console.log('Total increase over three increments:', totalIncrease);
+                            
+                                    if (totalIncrease > cumulativeIncreaseThreshold2) {
+                                        // Apply damping using dampenedDecreaseWPM
+                                        const dampenedWPM = WPM + dampenedDecreaseWPM;
+                                        console.log('Applying heavier dampening with dampenedDecreaseWPM', dampenedWPM);
+                                        const adjustedDampenedWPM = Math.max(minWPM, Math.min(maxWPM, dampenedWPM + complexityAdjustment));
+                                        setWPM(adjustedDampenedWPM);
+                                        WPMValues.current = [...WPMValues.current, adjustedDampenedWPM];
+                                        consecutiveWPMIncrease.current = 0;
+                                        return;
+                                    }
+                                }
+                            }
+
+                            if (currentWPMIncrease + prevWPMIncrease > cumulativeIncreaseThreshold1) {
+                                // Apply standard damping
                                 const dampenedWPM = WPM + dampenedIncreaseWPM; // Example damping: Smaller increment
-                                console.log('NEW dampenedWPM', dampenedWPM)
+                                console.log('Applying normal dampening with dampenedIncreaseWPM', dampenedWPM);
                                 const adjustedDampenedWPM = Math.max(minWPM, Math.min(maxWPM, dampenedWPM + complexityAdjustment));
                                 console.log('NEW adjustedDampenedWPM', adjustedDampenedWPM)
                                 setWPM(adjustedDampenedWPM);
                                 WPMValues.current = [...WPMValues.current, adjustedDampenedWPM];
-                                consecutiveWPMIncrease.current = 0;
+                                // consecutiveWPMIncrease.current = 0; // Do not reset here to allow for three consecutive checks
                                 console.log('DAMPED increase of WPM', dampenedWPM, 'for WPM:', WPM)
                             } else {
                                 const adjustedIncreasedWPM = Math.max(minWPM, Math.min(maxWPM, increasedWPM + complexityAdjustment));
@@ -530,6 +633,7 @@ const Mode2Display = () => {
                                 WPMValues.current = [...WPMValues.current, adjustedIncreasedWPM];
                                 console.log('NORMAL increase of WPM', increasedWPM, 'for WPM:', WPM)
                             }
+
                         } else {
                             const adjustedIncreasedWPM = Math.max(minWPM, Math.min(maxWPM, increasedWPM + complexityAdjustment));
                             console.log('NEW adjustedIncreasedWPM 2', adjustedIncreasedWPM)
@@ -545,6 +649,7 @@ const Mode2Display = () => {
                         console.log('TOO SLOW - LEFT DETECTED')
                         console.log('WPM', WPM)
                         console.log('currentChunkIndex', currentChunkIndex)
+
 
                     } else if (deltaTime >= chunkDisplayTime) {
                         // No leftward movement detected by the end of the chunk display time,
@@ -935,7 +1040,7 @@ const Mode2Display = () => {
                         }} className={showCalibrationPopup ? 'blur-effect' : ''}>
                             {/* Play/Pause Icon */}
                             <button className={`icon-button ${isPausePlayActive ? 'active' : ''}`} onClick={togglePausePlayAction} disabled={showCompletionPopup}>
-                                {isPaused ? <TbPlayerPlay size={24} /> : <TbPlayerPause size={24} />}
+                                {isPaused ? <PiPlayBold size={22} /> : <PiPauseBold size={22} />}
                             </button>
                                                                             
                             {/* Restart Icon */}
@@ -1045,7 +1150,7 @@ const Mode2Display = () => {
 
                 {/* div 1 */}
                 <div
-                    className="flash-mode-display-bg-color rounded-lg shadow-lg px-6 pt-1.5 mt-2 pb-5"
+                    className="flash-mode-display-bg-color rounded-lg shadow-lg px-6 pt-1.5 mt-2 pb-3"
                     style={{
                     width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
                     display: 'flex',
@@ -1071,7 +1176,7 @@ const Mode2Display = () => {
                         <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Stats</h3>
                     </div>
                     {/* Checkbox for toggling complexity adjustment */}
-                    <div className="mt-3"
+                    <div className="mt-1.5"
                         style={{
                         width: '100%', // Matches the width of the first inner div for consistency
                         display: 'flex',
@@ -1088,7 +1193,7 @@ const Mode2Display = () => {
 
                 {/* div 2 */}
                 <div
-                    className="flash-mode-display-bg-color rounded-lg shadow-lg p-6 pt-1.5 mb-2"
+                    className="flash-mode-display-bg-color rounded-lg shadow-lg px-6 pt-1.5 mb-2"
                     style={{
                     width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
                     display: 'flex',
@@ -1113,28 +1218,45 @@ const Mode2Display = () => {
                         <h3 className="text-lg font-semibold" style={{ fontSize: '16px', fontWeight: 'bold', color: 'rgb(90, 90, 90)' }}>Features</h3>
                     </div>
 
-                    {/* Second inner div for the text "Average WPM:" centered */}
+                    {/* Second inner div */}
                     <div
                         style={{
                         width: '100%', // Matches the width of the first inner div for consistency
                         display: 'flex',
+                        flexDirection: 'column',
                         alignItems: 'center', // Center-align the text vertically
-                        justifyContent: 'center',
+                        justifyContent: 'space-evenly',
                         flex: 1, // Take up remaining space
                         }}
                     >
+                        <div style={{ display: 'flex', alignItems: 'center'}} className={showCalibrationPopup ? 'blur-effect' : ''}>
+                            <label style={{ fontSize: '15px', color: 'rgb(90, 90, 90)', marginRight: '10px' }}>
+                                Level:
+                            </label>
+                            <select
+                                value={difficultyLevel}
+                                onChange={(e) => setDifficultyLevel(e.target.value)}
+                                style={{ fontSize: '15px', padding: '5px 10px', color: 'rgb(50, 50, 50)', outline: 'none' }}
+                                disabled={showCompletionPopup}
+                                className="bg-orange-100 rounded-xl shadow"
+                            >
+                                <option value="beginner">Beginner</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="expert">Expert</option>
+                            </select>
+                        </div>
                         <div>
                             <label style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }} className={showCalibrationPopup ? 'blur-effect' : ''}>
                                 <input
                                     type="checkbox"
                                     checked={integrateComplexity}
                                     onChange={e => setIntegrateComplexity(e.target.checked)}
-                                    style={{ marginRight: '10px',
-                                             accentColor: integrateComplexity ? 'orange' : 'initial'  
+                                    style={{ marginRight: '10px', outline: 'none',
+                                             accentColor: integrateComplexity ? 'orange' : 'initial' 
                                             }}
                                     disabled={showCompletionPopup}
                                 />
-                                Further adjust WPM based on the complexity of each text chunk
+                                Add smarter WPM adjustments based on lexical complexity
                             </label>
                         </div>
                     </div>

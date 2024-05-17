@@ -13,14 +13,7 @@ const UploadPage: React.FC = () => {
   const [text, setText] = useState('');
   const { userId } = useAuth();
   const [loading, setLoading] = useState(false);
-   // Default for all users
-   let minCharsText;
-  if (userId === 'user_2eKX4leLKDRjZVsWS6UqNgCked8'){
-    minCharsText = 50;
-  }
-  else {
-    minCharsText = 1500;
-  }
+  const minCharsText = 1500; // Default for all users
   const maxCharsText = 6000;
   const minCharsTitle = 2;
   const maxCharsTitle = 10;
@@ -69,6 +62,7 @@ const UploadPage: React.FC = () => {
       }
     }, 2000); // Minimum display time for loading indicator
   };
+
 
   return (
     <SelectedTextProvider>
