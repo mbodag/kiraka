@@ -29,7 +29,7 @@ Kiraka.ai is designed to explore the potential of speed reading and its impact o
 
 - **DocMode**: See the full text, add a pointer to follow the pace you set, or bold the beginning of words to help you focus.
 - **FlashMode**: Read text in chunks, displayed sequentially to improve focus and speed, with optional real-time eye tracking to adapt to your reading speed. 
-- **Real-Time Adjustments**: Uses WebGazer's eye-tracking technology (https://webgazer.cs.brown.edu/) to adjust the WPM (Words Per Minute) dynamically in FlashMode.
+- **Real-Time Adjustments**: Uses [WebGazer](https://webgazer.cs.brown.edu/)'s eye-tracking technology to adjust the WPM (Words Per Minute) dynamically in FlashMode.
 
 ## Getting Started
 
