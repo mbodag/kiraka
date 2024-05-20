@@ -21,7 +21,7 @@ interface ProcessedQuizQuestion extends Omit<QuizQuestion, 'multiple_choices'> {
 }
 
 
-// Define your quiz questions and answers
+// Define the quiz questions and answers
 const sendQuizResults = async (quizQuestions: ProcessedQuizQuestion[], userId: string | null | undefined, practiceId: number | null, textId: number | null) => {
   await fetch("/api/save-quiz-results", {
     method: "POST",

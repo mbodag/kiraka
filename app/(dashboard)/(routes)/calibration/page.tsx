@@ -155,7 +155,7 @@ export default function WebgazerCalibration() {
     }
   };
 
-  // // State hook to track if the component has mounted
+  // State hook to track if the component has mounted
   const [isMounted, setIsMounted] = useState(false);
 
   // Effect hook to set isMounted to true after the component has mounted

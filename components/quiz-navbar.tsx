@@ -7,7 +7,6 @@ const QuizNavbar: React.FC = () => {
     if (window.history.length > 1) {
       window.history.back();
     } else {
-      // Programmatically navigate using Next.js router since window.history is not feasible
       window.location.href = Routes.DEFAULT_MODE;
     }
   };

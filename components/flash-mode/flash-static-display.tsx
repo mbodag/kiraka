@@ -20,8 +20,6 @@ import { useRouter } from 'next/navigation';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 
-// Assuming you want a specific number of words per chunk, 
-// and estimating the average character count per word
 const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
 const startWPM = 300;
@@ -32,9 +30,7 @@ const constDecreaseWPM = 25;
 
 
 const Mode1Display = () => {
-    // Predefined text same as from Mode1Display component
-    // const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. `;
-
+ 
     const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
     const [pastAvgWPMs, setPastAvgWPMs] = useState<number[]>([startWPM]);
     const [WPM, setWPM] = useState(startWPM);
@@ -42,7 +38,7 @@ const Mode1Display = () => {
     const adjustedStartWPM = useRef<number>(startWPM); 
     const [averageWPM, setAverageWPM] = useState<number | null>(null);
 
-    const [isPaused, setIsPaused] = useState(true); // Add a state to track whether the flashing is paused
+    const [isPaused, setIsPaused] = useState(true); // Added a state to track whether the flashing is paused
     const [isRestartActive, setIsRestartActive] = useState(false);
     const [isPausePlayActive, setIsPausePlayActive] = useState(false);
 
@@ -118,8 +114,8 @@ const Mode1Display = () => {
     const handleContinueToQuiz = async () => {
         setShowCompletionPopup(false);
         setRedirectingToQuiz(true);
-        await submitReadingSpeed(averageWPM); // Ensure this is an async function if it makes server requests
-        window.location.href = '/quiz'; // Directly change the window location to navigate
+        await submitReadingSpeed(averageWPM);
+        window.location.href = '/quiz';
         // router.push('/quiz')
     };
 
@@ -144,7 +140,7 @@ const Mode1Display = () => {
         let timerId: NodeJS.Timeout;
       
         if (countdown !== null && countdown > 0) {
-          // Set a timer to decrement the countdown every second
+          // Set a timer to decrement the countdown every 800ms
           timerId = setTimeout(() => {
             setCountdown(countdown - 1);
           }, 800);
@@ -153,7 +149,7 @@ const Mode1Display = () => {
             timerId = setTimeout(() => {
                 setIsPaused(false);  // Ensure the display starts if it was paused
                 setCountdown(null);  // Reset countdown to not counting down state
-            }, 400);  // Allow 1 second for "Go!" to be visible
+            }, 400);  // Allow 400ms for "Go!" to be visible
         }
 
         return () => {
@@ -169,7 +165,7 @@ const Mode1Display = () => {
         setWPM(adjustedStartWPM.current); // Reset the WPM value
         setAverageWPM(null); // Reset the averageWPM value
         setIsRestartActive(true); // Set active to true
-        setTimeout(() => setIsRestartActive(false), 100); // Reset after 500ms
+        setTimeout(() => setIsRestartActive(false), 100); // Reset after 100ms
     };
     
     useEffect(() => {
@@ -184,12 +180,12 @@ const Mode1Display = () => {
     // Function to toggle pause/play action
     const togglePausePlayAction = () => {
         if (isPaused) {
-            setCountdown(3); // Start a 3-second countdown
+            setCountdown(3); // Start the countdown
         } else {
             setIsPaused(true); // Pause immediately without a countdown
         }
         setIsPausePlayActive(true); // Set active to true
-        setTimeout(() => setIsPausePlayActive(false), 100); // Reset after 500ms
+        setTimeout(() => setIsPausePlayActive(false), 100); // Reset after 100ms
     };
 
     useEffect(() => {
@@ -241,13 +237,12 @@ const Mode1Display = () => {
             const startTime = performance.now();
             // console.log('monitorAndAdjust')
     
-            // Function to analyze gaze data and decide whether to adjust WPM or move to the next chunk
+            // Function to analyse gaze data and decide whether to adjust WPM or move to the next chunk
             const analyzeAndAdjust = () => {
                 const currentTime = performance.now();
                 const deltaTime = currentTime - startTime;
                 const chunkDisplayTime = calculateDisplayTimeFromWPM(wordChunks[currentChunkIndex]);
 
-                // Ensure we're analyzing only after at least 60% of the expected chunk display time has passed
                 if (deltaTime >= chunkDisplayTime) {
                     setWPM(WPM);
                     WPMValues.current = [...WPMValues.current, WPM];
@@ -405,7 +400,7 @@ const Mode1Display = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "space-between", // This will evenly space the children vertically
+                justifyContent: "space-between",
                 height: mainDivHeight,
             }}>
 
@@ -447,7 +442,7 @@ const Mode1Display = () => {
                                 top: `-${gapBetweenSize}`, // Center it vertically
                                 left: '50%', // Center it horizontally
                                 transform: 'translate(-50%, -105%)', // Adjust the positioning to truly center the modal
-                                width: '50vw', // Adjust the width as needed, or use a fixed width
+                                width: '50vw',
                                 display: 'flex',
                                 borderRadius: '20px',
                                 flexDirection: 'column',
@@ -616,7 +611,7 @@ const Mode1Display = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "space-between", // This will evenly space the children vertically
+                justifyContent: "space-between",
                 height: mainDivHeight,
             }}>
 
@@ -628,7 +623,7 @@ const Mode1Display = () => {
                     display: 'flex',
                     flexDirection: 'column', // This will stack children divs on top of each other
                     alignItems: 'center',
-                    justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                    justifyContent: 'space-evenly',
                     marginBottom: `${gapBetweenSize}`,
                     }}
                 >
@@ -639,7 +634,7 @@ const Mode1Display = () => {
                         padding: '1px',
                         borderRadius: '10px',
                         margin: '5px',
-                        width: '100%', // Adjust width as necessary
+                        width: '100%', 
                         textAlign: 'center',
                         }}
                     >
@@ -649,11 +644,11 @@ const Mode1Display = () => {
                     {/* Second inner div for the text "Average WPM:" centered */}
                     <div className="mt-1.5"
                         style={{
-                        width: '100%', // Matches the width of the first inner div for consistency
+                        width: '100%',
                         display: 'flex',
-                        alignItems: 'center', // Center-align the text vertically
+                        alignItems: 'center',
                         justifyContent: 'center',
-                        flex: 1, // Take up remaining space
+                        flex: 1,
                         }}
                     >
                         <p style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }}>
@@ -668,9 +663,9 @@ const Mode1Display = () => {
                     style={{
                     width: `calc(var(--sidebar-width) - ${gapBetweenSize})`, // Use template literals to include the gapSize
                     display: 'flex',
-                    flexDirection: 'column', // This will stack children divs on top of each other
+                    flexDirection: 'column', 
                     alignItems: 'center',
-                    justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                    justifyContent: 'space-evenly',
                     flexGrow: 1, 
                     }}
                 >
@@ -680,7 +675,7 @@ const Mode1Display = () => {
                         padding: '1px',
                         borderRadius: '10px',
                         margin: '5px',
-                        width: '100%', // Adjust width as necessary
+                        width: '100%', 
                         textAlign: 'center',
                         }}
                     >
@@ -689,12 +684,12 @@ const Mode1Display = () => {
 
                     <div
                         style={{
-                        width: '100%', // Matches the width of the first inner div for consistency
+                        width: '100%', 
                         display: 'flex',
                         flexDirection: 'column',
-                        alignItems: 'center', // Center-align the text vertically
+                        alignItems: 'center', 
                         justifyContent: 'space-evenly',
-                        flex: 1, // Take up remaining space
+                        flex: 1, 
                         }}
                     >
                         <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', color: 'rgb(90, 90, 90)', marginBottom: '5px', marginTop: '5px', whiteSpace: 'nowrap' }}>
@@ -720,7 +715,7 @@ const Mode1Display = () => {
         >
             {showCompletionPopup && WPMValues.current.length > 0 && (
                 <div className="bg-white rounded-lg shadow-lg mx-2 h-full" style={{
-                    width: `calc(100% - ${gapEdgeSize})`, // Ensure full width
+                    width: `calc(100% - ${gapEdgeSize})`,
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',

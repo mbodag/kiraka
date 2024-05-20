@@ -353,10 +353,10 @@ const Mode1Display = () => {
                       width: '600px', 
                       display: 'flex', 
                       borderRadius: '20px' ,
-                      flexDirection: 'column', // Stack children vertically
-                      alignItems: 'center', // Center children horizontally
-                      justifyContent: 'center', // Center children vertically
-                      textAlign: 'center', // Ensures that text inside children elements is centered, if needed
+                      flexDirection: 'column',
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      textAlign: 'center', 
                   }}>
                     <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
                         Welcome to <strong>DocMode!</strong>
@@ -391,10 +391,10 @@ const Mode1Display = () => {
                     width: '600px', 
                     display: 'flex', 
                     borderRadius: '20px' ,
-                    flexDirection: 'column', // Stack children vertically
-                    alignItems: 'center', // Center children horizontally
-                    justifyContent: 'center', // Center children vertically
-                    textAlign: 'center', // Ensures that text inside children elements is centered, if needed
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    textAlign: 'center',
                 }}> 
                     
                     <p style={{ fontSize: '18px', textAlign: 'center', marginBottom: '20px' }}>
@@ -432,7 +432,7 @@ const Mode1Display = () => {
                       display: "flex",
                       flexDirection: "row",
                       alignItems: "stretch",
-                      justifyContent: "space-between", // This will evenly space the children vertically
+                      justifyContent: "space-between",
                       // height: '350px',
                       gap: gapBetweenSize2,
                       // margin: gapBetweenSize,
@@ -443,9 +443,9 @@ const Mode1Display = () => {
                   className="flash-mode-display-bg-color rounded-lg shadow-lg p-6 pt-2"
                   style={{
                   display: 'flex',
-                  flexDirection: 'column', // This will stack children divs on top of each other
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                  justifyContent: 'space-evenly',
                   // width: "350px",
                   }}
                   >
@@ -455,7 +455,7 @@ const Mode1Display = () => {
                           padding: '1px',
                           borderRadius: '10px',
                           margin: '5px',
-                          width: '100%', // Adjust width as necessary
+                          width: '100%',
                           textAlign: 'center',
                           marginBottom: '15px'
                           }}
@@ -465,12 +465,12 @@ const Mode1Display = () => {
 
                       <div
                           style={{
-                          width: '100%', // Matches the width of the first inner div for consistency
+                          width: '100%',
                           display: 'flex',
-                          justifyContent: 'center', // Center-align the text horizontally
+                          justifyContent: 'center',
                           alignItems: 'center',
                           flexDirection: 'column',
-                          flex: 1, // Take up remaining space
+                          flex: 1,
                           }}
                       >
                           
@@ -522,9 +522,9 @@ const Mode1Display = () => {
                   className="rounded-lg shadow-lg"
                   style={{
                     display: 'flex',
-                    flexDirection: 'column', // This will stack children divs on top of each other
+                    flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                    justifyContent: 'space-evenly',
                     flexGrow: 1, 
                   }}
                   >
@@ -532,9 +532,9 @@ const Mode1Display = () => {
                       className="flash-mode-display-bg-color rounded-lg w-full shadow-lg px-6 py-2"
                       style={{
                         display: 'flex',
-                        flexDirection: 'column', // This will stack children divs on top of each other
+                        flexDirection: 'column',
                         alignItems: 'center',
-                        justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                        justifyContent: 'space-evenly', 
                         flexGrow: 1, 
                         marginBottom: gapBetweenSize2,
                       }}
@@ -545,7 +545,7 @@ const Mode1Display = () => {
                             boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
                             borderRadius: '10px',
                             margin: '5px',
-                            width: '100%', // Adjust width as necessary
+                            width: '100%',
                             textAlign: 'center',
                             }}
                         >
@@ -555,12 +555,12 @@ const Mode1Display = () => {
                         {/* Second inner div for the text "Average WPM:" centered */}
                         <div className="mt-1"
                             style={{
-                            width: '100%', // Matches the width of the first inner div for consistency
+                            width: '100%', 
                             display: 'flex',
                             flexDirection: 'row',
-                            alignItems: 'center', // Center-align the text vertically
-                            justifyContent: 'space-evenly', // Space between each item
-                            flex: 1, // Take up remaining space
+                            alignItems: 'center', 
+                            justifyContent: 'space-evenly', 
+                            flex: 1, 
                             color: 'rgb(90, 90, 90)', // Set the color for all text
                             }}
                         >
@@ -588,9 +588,9 @@ const Mode1Display = () => {
                       className="flash-mode-display-bg-color rounded-lg w-full px-6 py-2"
                       style={{
                         display: 'flex',
-                        flexDirection: 'column', // This will stack children divs on top of each other
+                        flexDirection: 'column', 
                         alignItems: 'center',
-                        justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                        justifyContent: 'space-evenly',
                         flexGrow: 1, 
                       }}
                       >
@@ -600,7 +600,7 @@ const Mode1Display = () => {
                             boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
                             padding: '1px',
                             borderRadius: '10px',
-                            width: '100%', // Adjust width as necessary
+                            width: '100%', 
                             textAlign: 'center',
                             }}
                         >
@@ -616,7 +616,7 @@ const Mode1Display = () => {
                           }}>
                             <div className="rounded-2xl p-2" style={{
                               boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.5)',
-                              width: '100%', // Adjust width as necessary
+                              width: '100%',
                               textAlign: 'center',
                             }}>
                               {/* Wrapper for HyperBold button and fixation degree option */}

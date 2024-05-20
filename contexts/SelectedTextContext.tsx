@@ -2,7 +2,7 @@
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 
-// Define the type for the context state
+// Defined the type for the context state
 interface SelectedTextContextType {
   selectedText: string;
   setSelectedText: React.Dispatch<React.SetStateAction<string>>;
@@ -10,7 +10,7 @@ interface SelectedTextContextType {
   setSelectedTextId: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-// Create the context with an initial undefined value but specify the correct type
+// Created the context with an initial undefined value but specified the correct type
 const SelectedTextContext = createContext<SelectedTextContextType | undefined>(undefined);
 
 // Custom hook to use the context
@@ -22,14 +22,14 @@ export const useSelectedText = () => {
   return context;
 };
 
-// Define the type for the props of the provider component
+// Defined the type for the props of the provider component
 interface SelectedTextProviderProps {
   children: ReactNode;
 }
 
 // Function component with TypeScript: Use React.FC for functional components
 export const SelectedTextProvider: React.FC<SelectedTextProviderProps> = ({ children }) => {
-  // State initialization with function to load from localStorage
+  // State initialisation with function to load from localStorage
   const [selectedText, setSelectedText] = useState<string>(() => {
     // Ensure localStorage is accessed only on the client-side
     if (typeof window !== 'undefined') {
