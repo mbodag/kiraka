@@ -91,7 +91,7 @@ Kiraka.ai is designed to explore the potential of speed reading and its impact o
         DATABASE_NAME = '<replace_with_your_database_name>'
         DATABASE_URI = f'mariadb+mariadbconnector://{USERNAME}:{PASSWORD}@localhost/{DATABASE_NAME}'
         PORT = 8000
-        ADMIN_ID = '<replace_with_1 or replace_with_your_clerk_id>'
+        ADMIN_ID = '<1 or replace_with_your_clerk_id>'
         ```
         For assistance with database setup or any related issues, please contact us at srp.doc.ic.ac.uk@gmail.com.
 
