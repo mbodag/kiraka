@@ -29,7 +29,7 @@ Kiraka.ai is designed to explore the potential of speed reading and its impact o
 
 - **DocMode**: See the full text, add a pointer to follow the pace you set, or bold the beginning of words to help you focus.
 - **FlashMode**: Read text in chunks, displayed sequentially to improve focus and speed, with optional real-time eye tracking to adapt to your reading speed. 
-- **Real-Time Adjustments**: Uses WebGazer's eye-tracking technology (https://webgazer.cs.brown.edu/) to adjust the WPM (Words Per Minute) dynamically in FlashMode.
+- **Real-Time Adjustments**: Uses [WebGazer](https://webgazer.cs.brown.edu/)'s eye-tracking technology to adjust the WPM (Words Per Minute) dynamically in FlashMode.
 
 ## Getting Started
 
@@ -53,7 +53,7 @@ Kiraka.ai is designed to explore the potential of speed reading and its impact o
     ```bash
     pip install -r requirements.txt
     ```
-3. Install the required dependencies:
+3. Install the required Next.js dependencies:
     ```bash
     npm install
     # or
@@ -64,43 +64,61 @@ Kiraka.ai is designed to explore the potential of speed reading and its impact o
     Add your Clerk API keys and instructions after sign-in/sign-up to an `.env.local` file in your root directory:
 
     ```bash
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="{replace by your public clerk key}"
-    CLERK_SECRET_KEY="{replace by your secret key}"
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="<replace_with_your_public_Clerk_key>"
+    CLERK_SECRET_KEY="<replace_with_your_secret_Clerk_key>"
 
-    NEXT_PUBLIC_CLERK_SIGN_IN_URL=""
-    NEXT_PUBLIC_CLERK_SIGN_UP_URL=""
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=""
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=""
+    WEBHOOK_SECRET="<replace_with_your_Clerk_webhook_secret>"
+
+    NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
+    NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/instructions"
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/instructions"
     ```
+    For assistance with API keys or setup, please contact us at srp.doc.ic.ac.uk@gmail.com.
 
 ## Running the Application 
 
-1. To run the *development* server:
+1. Prepare the Database:
+    - Ensure MariaDB is installed and actively running on your system (in the background). Visit [MariaDB's official site](https://mariadb.org/) for installation guides and more information.
 
-    ```bash
-    npm run dev
-    # or
-    yarn dev
-    ```
-    Alternatively, to prepare and run the *production* server:
+2. Configure the API:
+    - In the `/api` directory, create a file named `config.py`.
+    - Add your database details and administrative credentials to `config.py`:
 
-    ```bash
-    npm run build
-    npm run start
-    # or
-    yarn build
-    yarn start
-    ```
+        ```bash
+        USERNAME = 'root'
+        PASSWORD = '<replace_with_your_database_password>'
+        DATABASE_NAME = '<replace_with_your_database_name>'
+        DATABASE_URI = f'mariadb+mariadbconnector://{USERNAME}:{PASSWORD}@localhost/{DATABASE_NAME}'
+        PORT = 8000
+        ADMIN_ID = '<1 or replace_with_your_clerk_id>'
+        ```
+        For assistance with database setup or any related issues, please contact us at srp.doc.ic.ac.uk@gmail.com.
 
-2. Additional Setup:
-    - Create a database in MariaDB.
-    - In the `/api` directory, create a file named `config.py` containing your DATABASE_URI (e.g., *mariadb+mariadbconnector://{username}:{password}@localhost/database_name)* and your ADMIN_ID (e.g., *1* or your *clerk_id*).
+3. Run the server:
+    - To run the *development* server:
 
-3. Open http://localhost:3000 in your browser to see the result; or if the latter is already taken, check your terminal for info about which localhost to open. 
+        ```bash
+        npm run dev
+        # or
+        yarn dev
+        ```
+    - Alternatively, to prepare and run the *production* server:
 
-    Our website is deployed in a similar fashion on one of Imperial's virtual machines, where both the frontend and the backend are hosted.
+        ```bash
+        npm run build
+        npm run start
+        # or
+        yarn build
+        yarn start
+        ```
 
-    >**Note:** LLMs (Large Language Models) will be downloaded when you run the software. They are about 5GB in size and might take a while to download before the project starts running.
+4. Access the Application:
+    - Open http://localhost:3000 in your browser to see the result; or if the latter is already in use, check your terminal for info about which localhost to open. 
+
+    - Our website is deployed in a similar fashion on one of Imperial's virtual machines, where both the frontend and the backend are hosted.
+
+         >**Note:** LLMs (Large Language Models) will be downloaded when you first run the software. They are about 5GB in size and might take a while to download before the project starts running.
 
 
 ## Reading Modes
@@ -109,12 +127,12 @@ Kiraka.ai is designed to explore the potential of speed reading and its impact o
 In DocMode, you have the freedom to see the whole text and read it at your own pace. We also have some extra features you may find useful. These are controlled via the control panel above the text.
 
 Features include:
-- `Pointer`: Enhance your reading with a karaoke-style pointer. Customise the pointer by adjusting its length and colour for optimal tracking, and set its speed to match your preferred reading pace in Words Per Minute (WPM).
-- `HyperBold`: Bold the beginning of words to create artificial fixation points with varying degrees. This feature helps in improving reading speed by guiding your visual focus.
-- `Others`:
-    - *Dark Mode*: Switch to Dark Mode for a reading experience in low-light conditions.
-    - *Focused Reading*: Choose to only display the pointer, hiding the rest of the text. This helps minimise regression (unnecessary re-reading), enhancing concentration.
-    - *Font Customisation*: Freely adjust the font size to suit your visual preference, ensuring comfort and readability.
+- $\color{blue}{Pointer}$: Enhance your reading with a karaoke-style pointer. Customise the pointer by adjusting its length and colour for optimal tracking, and set its speed to match your preferred reading pace in Words Per Minute (WPM).
+- $\color{blue}{HyperBold}$: Bold the beginning of words to create artificial fixation points with varying degrees. This feature helps in improving reading speed by guiding your visual focus.
+- $\color{blue}{Others}$:
+    - $\color{darkblue}{Dark\ Mode}$: Switch to Dark Mode for a reading experience in low-light conditions.
+    - $\color{darkblue}{Focused\ Reading}$: Choose to only display the pointer, hiding the rest of the text. This helps minimise regression (unnecessary re-reading), enhancing concentration.
+    - $\color{darkblue}{Font\ Customisation}$: Freely adjust the font size to suit your visual preference, ensuring comfort and readability.
 
 
 ### FlashMode
@@ -124,14 +142,18 @@ Explore two configurations: **Static** and **Adaptive**.
 
 - **Adaptive (Recommended)**: Integrates WebGazer's eye-tracking to automatically adjust your WPM, encouraging faster reading. Manual WPM adjustments are still available.
 
-#### > Adaptive Complexity Adjustment
+\
+$\color{red}{Adaptive\ Complexity\ Adjustment}$:
+\
 FlashMode Adaptive not only adapts to your reading speed through your gaze but also adjusts based on the lexical complexity of each text chunk. Leveraging a pre-trained Large Language Model (LLM), each chunk is scored for complexity. This score is then used to adjust the WPM for subsequent chunks, ensuring that the reading challenge is optimised for your comprehension and speed. This dynamic adjustment process happens after each chunk is displayed, allowing for a seamless reading experience.
 
-#### > Difficulty Levels
+\
+$\color{red}{Difficulty\ Levels}$:
+\
 FlashMode Adaptive offers three levels of difficulty, each designed to cater to different user proficiencies:
-- **`Beginner`**: Ideal for those new to speed reading.
-- **`Intermediate`**: For readers with some experience in dynamic reading environments.
-- **`Expert`**: For those who seek to challenge their reading capabilities to the limit.
+- $\color{darkred}{Beginner}$: Ideal for those new to speed reading.
+- $\color{darkred}{Intermediate}$: For readers with some experience in dynamic reading environments.
+- $\color{darkred}{Expert}$: For those who seek to challenge their reading capabilities to the limit.
 
 ### AI Quiz Generation
 After your reading sessions, AI-generated quizzes designed to test comprehension will be presented. These quizzes are crucial for addressing the trade-offs between speed and comprehension commonly seen with traditional speed reading techniques. Currently being refined for improved question generation, this feature also accommodates ***user-uploaded texts***, reinforcing our commitment to user-centric learning experiences.
