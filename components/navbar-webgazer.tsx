@@ -65,7 +65,7 @@ const NavbarWebGazer: React.FC = () => {
         style={{
             background: 'linear-gradient(to bottom, var(--gradient-top-color), var(--gradient-bottom-color))',
             zIndex: 1000, // High z-index to ensure it's above other content
-            position: 'relative', // Add this if the z-index doesn't work by itself'
+            position: 'relative',
             height: '70px'
         }}>
             <div className="inline-flex text-white items-center justify-center cursor-pointer mr-8">

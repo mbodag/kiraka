@@ -78,13 +78,13 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
   useEffect(() => {
     if (restartText){
         restartAction();
-        console.log('RESTARTING HERE')}  // Then call the restart action
+        console.log('RESTARTING HERE')}
   }, [text, restartText]);
 
   useEffect(() => {
     let timerId: NodeJS.Timeout;
     if (countdown !== null && countdown > 0) {
-      // Set a timer to decrement the countdown every second
+      // Set a timer to decrement the countdown every 500ms
       timerId = setTimeout(() => {
           setCountdown(countdown - 1);
         }, 500);
@@ -93,7 +93,7 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
           timerId = setTimeout(() => {
               setIsPaused(false);  // Ensure the display starts if it was paused
               setCountdown(null);  // Reset countdown to not counting down state
-          }, 300);  // Allow 1 second for "Go!" to be visible
+          }, 300);  // Allow 300ms for "Go!" to be visible
           onStartTimeChange(performance.now());
       }
 

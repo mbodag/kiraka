@@ -1,6 +1,5 @@
 .termsBg {
     min-height: 100vh;
-    /* Increase the alpha value to make the gradient more opaque, e.g., 0.8 */
     background: linear-gradient(to right, rgba(186, 237, 255, 0.825), rgba(180, 250, 228, 0.6));
   }
   

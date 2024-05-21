@@ -27,9 +27,9 @@ const routes = [
 ];
 
 const textStyle = {
-  fontSize: '1rem', // Adjust this value as needed
-  fontWeight: '450', // Set the font weight here
-  padding: '8px 16px', // Example padding
+  fontSize: '1rem',
+  fontWeight: '450',
+  padding: '8px 16px',
 };
 
 export const LandingNavbar = () => {

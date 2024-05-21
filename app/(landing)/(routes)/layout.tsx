@@ -3,14 +3,14 @@ import React from "react";
 
 const LandingLayout = ({ children }: { children: React.ReactNode }) => {
   const backgroundStyle = {
-    backgroundImage: `url('/Wavy_GreenTurquoise_bg.svg')`, // Adjust the path if your public folder is configured differently
+    backgroundImage: `url('/Wavy_GreenTurquoise_bg.svg')`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     height: '100%', // ensure it covers the full height of the component
     width: '100%', // ensure it covers the full width of the component
     zIndex: -1,
-    transform: 'scale(-1)',
+    transform: 'scale(-1)', // Mirror/Reflect the backgroundImage in both x and y directions
   };
 
   return (
