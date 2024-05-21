@@ -126,7 +126,7 @@ const Mode2Display = () => {
                 setMaxWPM(450);
                 setConstDecreaseWPM(60);
                 setPercentageDisplayTimeUpper(0.8);
-                setPercentageDisplayTimeLower(0.6);
+                setPercentageDisplayTimeLower(0.5);
                 setMaxConstIncreaseWPM(40);
                 setMinConstDecreaseWPM(20);
                 setCumulativeIncreaseThreshold1(40 * 1.5);
@@ -140,7 +140,7 @@ const Mode2Display = () => {
                 setMaxWPM(700);
                 setConstDecreaseWPM(50);
                 setPercentageDisplayTimeUpper(0.82);
-                setPercentageDisplayTimeLower(0.57);
+                setPercentageDisplayTimeLower(0.52);
                 setMaxConstIncreaseWPM(50);
                 setMinConstDecreaseWPM(17);
                 setCumulativeIncreaseThreshold1(50 * 1.5);
