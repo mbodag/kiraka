@@ -211,17 +211,17 @@ body,
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* Align items to the top */
-  min-height: 100vh; /* Full height of the viewport */
-  padding: 20px; /* Add some padding */
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 20px;
 }
 
 .textAndButtonContainer {
-  width: 100%; /* Take up full width */
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px; /* Space between counter and text */
+  margin-top: 20px;
 }
 
 .navbar-dashboard-font {
@@ -234,7 +234,7 @@ body,
   border-radius: 25px;
   padding: 25px;
   text-align: center;
-  max-width: 30vw; /* Adjust as needed */
+  max-width: 30vw;
   margin: 20px auto;
 }
 
@@ -409,7 +409,7 @@ body,
 }
 
 .OrangeButton {
-  background-color: #cb7206; /* Green */
+  background-color: #cb7206; /* Orange */
   border: none;
   color: white;
   padding: 10px 15px;
@@ -544,9 +544,9 @@ body,
 .title-container-sidebar {
   color: var(--off-white); /* Custom off-white color for text */
   background: linear-gradient(to top, rgb(30, 30, 30), black);
-  text-align: center; /* Centers text horizontally */
-  padding: 10px 0; /* Vertical padding, no horizontal padding to allow full width utilization */
-  width: 95%; /* Makes the div take the full width of its parent */
+  text-align: center;
+  padding: 10px 0; 
+  width: 95%;
   box-shadow: 0 2px 12px rgba(184, 185, 184, 0.5); /* Subtle white shadow for visibility */
   font-size: 15px;
 }
@@ -584,7 +584,6 @@ body,
 }
 
 .content-container {
-  /* This will expand to fill the available space */
   flex-grow: 1;
   overflow: auto; /* Enables scrolling */
 }
@@ -702,7 +701,7 @@ body,
   border-radius: 20px;
   padding: 5px;
   position: relative;
-  width: 200px; /* Adjust width as necessary */
+  width: 200px;
 }
 
 .toggle-switch-input {
@@ -739,15 +738,15 @@ body,
 }
 
 .flash-mode-display-bg-color {
-  background-color: #FFFAF0; /* Light grey background on hover */
+  background-color: #FFFAF0;
 }
 
 .bg-color-black {
-  background-color: black; /* Light grey background on hover */
+  background-color: black;
 }
 
 .flash-mode-display-text-color {
-  color: #FFFAF0; /* Light grey background on hover */
+  color: #FFFAF0;
 }
 
 .text-color-black {
@@ -755,7 +754,7 @@ body,
 }
 
 .highlightable-text-container {
-  font-weight: 100; /* Lighter font weight for normal text */
+  font-weight: 100;
   word-break: break-word;
   /* hyphens: auto; */
 }

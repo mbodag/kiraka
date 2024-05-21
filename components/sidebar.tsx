@@ -97,10 +97,31 @@ const Sidebar = () => {
         win.opener = null;
     }
   };
-  const navigateAndClearWebGazer = (path: string) => {
-    localStorage.setItem('webGazerActive', 'false'); // Clear the webGazerActive flag
-    router.push(path); // Navigate to the specified path
+  
+
+  useEffect(() => {
+    // Check if there's a pending navigation path after reload
+    const pendingPath = localStorage.getItem('pendingPath');
+    if (pendingPath) {
+      router.push(pendingPath);
+      localStorage.removeItem('pendingPath'); // Clear the pending path after navigating
+    }
+  }, []);
+  
+  const navigateAndClearWebGazer = (path: any) => {
+    const webGazerActive = localStorage.getItem('webGazerActive') === 'true';
+    localStorage.setItem('webGazerActive', 'false'); // Always clear WebGazer flag
+  
+    if (webGazerActive) {
+      // Store the path to navigate to after reload
+      localStorage.setItem('pendingPath', path);
+      window.location.reload();
+    } else {
+      // Normal navigation
+      router.push(path);
+    }
   };
+
 
   const handleTextClick = (textId: any) => {
     setSelectedTextId(textId);  // Set the selected text ID
@@ -132,19 +153,17 @@ const Sidebar = () => {
     <div className="sidebar-container flex flex-col h-full bg-gradient-to-l from-black via-black to-black text-white border-t border-r border-black">
       {/* Logo, company name, and horizontal line */}
         <div className="header-container px-4 pt-4">
-          <Link href="/">
-            <div className="inline-flex items-center justify-center cursor-pointer mr-8">
-              <div className="relative w-8 h-8 mr-4 inline-block">
-                <Image
-                  src="/Kiraka_Logo.png"
-                  alt="Kiraka Logo"
-                  layout="fill"
-                  objectFit="contain"
-                />
-              </div>
-              <span className="monospace-jetbrains-mono text-2xl font-bold">Kiraka.ai</span>
+          <div className="inline-flex items-center justify-center cursor-pointer mr-8" onClick={() => navigateAndClearWebGazer('/')}>
+            <div className="relative w-8 h-8 mr-4 inline-block">
+              <Image
+                src="/Kiraka_Logo.png"
+                alt="Kiraka Logo"
+                layout="fill"
+                objectFit="contain"
+              />
             </div>
-          </Link>
+            <span className="monospace-jetbrains-mono text-2xl font-bold">Kiraka.ai</span>
+          </div>
           <hr className="border-t border-gray-700 mt-2 mx-auto" style={{ width: '100%' }} />
           {/* Horizontal line */}
           {/* Link buttons with icons */}

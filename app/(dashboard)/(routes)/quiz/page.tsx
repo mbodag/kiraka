@@ -1,4 +1,3 @@
-// pages/quiz.tsx or similar file
 import React from 'react';
 import DashboardLayout from '../layout';
 import QuizDisplay from "@/components/quiz-display";

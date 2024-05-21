@@ -267,7 +267,7 @@ def get_chunks_by_text_id(text_id):
     '''
     Fetches a specific text from the database by text_id and returns it as JSON
     '''
-    #Get the user_id for authorisation
+    # Get the user_id for authorisation
     user_id = request.args.get('user_id')
     if not user_id:
         return jsonify({'error': 'User ID is required'}), 400
@@ -564,7 +564,7 @@ def submit_quiz_results():
         if not isinstance(score, (int, float)) or not (0 <= score <= 1):
             return jsonify({'error': 'Invalid score, must be between 0 and 1 inclusive'}), 400
 
-        #Create a new PracticeSession if it doesn't exist
+        # Create a new PracticeSession if it doesn't exist
         if practice_id == None:
             new_practice_session = PracticeResults(
                 user_id = user_id,

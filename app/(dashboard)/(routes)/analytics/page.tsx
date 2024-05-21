@@ -51,7 +51,6 @@ const goBack = () => {
   if (window.history.length > 1) {
     window.history.back();
   } else {
-    // Programmatically navigate using Next.js router since window.history is not feasible
     window.location.href = Routes.DEFAULT_MODE;
   }
 };
@@ -79,7 +78,7 @@ const AnalyticsPage: React.FC = () => {
       }
         };
     fetchAnalyticsData();
-  }, [userId]); // Empty dependency array means this effect runs once on mount and not on updates
+  }, [userId]);
 
   const scrollUsers = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {

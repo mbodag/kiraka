@@ -24,9 +24,6 @@ const ModeToggle = () => {
       <Button onClick={handleFlashModeClick} className="bg-green-200/30 hover:bg-green-200/50 text-white navbar-dashboard-font">
         FlashMode
       </Button>
-      {/* <Button className="bg-green-200/30 hover:bg-green-200/50 text-white navbar-dashboard-font">
-        Mode 3
-      </Button> */}
     </div>
   );
 };

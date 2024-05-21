@@ -123,11 +123,13 @@ Kiraka.ai is designed to explore the potential of speed reading and its impact o
 
 ## Reading Modes
 
+*It is worth noting that each reading mode described below dynamically adjusts the starting reading speed, expressed in Words Per Minute (WPM), based on the user's previous performance within that specific mode.*
+
 ### DocMode
 In DocMode, you have the freedom to see the whole text and read it at your own pace. We also have some extra features you may find useful. These are controlled via the control panel above the text.
 
 Features include:
-- $\color{blue}{Pointer}$: Enhance your reading with a karaoke-style pointer. Customise the pointer by adjusting its length and colour for optimal tracking, and set its speed to match your preferred reading pace in Words Per Minute (WPM).
+- $\color{blue}{Pointer}$: Enhance your reading with a karaoke-style pointer. Customise the pointer by adjusting its length and colour for optimal tracking, and set its speed to match your preferred reading pace WPM.
 - $\color{blue}{HyperBold}$: Bold the beginning of words to create artificial fixation points with varying degrees. This feature helps in improving reading speed by guiding your visual focus.
 - $\color{blue}{Others}$:
     - $\color{darkblue}{Dark\ Mode}$: Switch to Dark Mode for a reading experience in low-light conditions.

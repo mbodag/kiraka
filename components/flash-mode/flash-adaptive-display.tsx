@@ -49,8 +49,6 @@ interface GazeDataToSend {
 }
 
 
-// Assuming you want a specific number of words per chunk, 
-// and estimating the average character count per word
 const wordsPerChunk = 10;
 const avgCharCountPerWord = 5; // This is an approximation (~4.7 for English language)
 const startWPM = 300;
@@ -64,8 +62,6 @@ const consecutiveWPMDecreaseThreshold = 7;
 const maxCutOffTime = 1500;
 
 const Mode2Display = () => {
-    // Predefined text same as from Mode1Display component
-    // const shortStory = `In today's fast-paced world, striking a healthy work-life balance is not just desirable, but essential for personal well-being and professional success. `;
 
     const pathname = usePathname();
 
@@ -82,7 +78,7 @@ const Mode2Display = () => {
     const consecutiveWPMIncrease = useRef<number>(0);
     const [isUserTired, setIsUserTired] = useState(false);
 
-    const [isPaused, setIsPaused] = useState(true); // Add a state to track whether the flashing is paused
+    const [isPaused, setIsPaused] = useState(true); // Added a state to track whether the flashing is paused
     const [isRestartActive, setIsRestartActive] = useState(false);
     const [isPausePlayActive, setIsPausePlayActive] = useState(false);
 
@@ -130,7 +126,7 @@ const Mode2Display = () => {
                 setMaxWPM(450);
                 setConstDecreaseWPM(60);
                 setPercentageDisplayTimeUpper(0.8);
-                setPercentageDisplayTimeLower(0.6);
+                setPercentageDisplayTimeLower(0.5);
                 setMaxConstIncreaseWPM(40);
                 setMinConstDecreaseWPM(20);
                 setCumulativeIncreaseThreshold1(40 * 1.5);
@@ -144,7 +140,7 @@ const Mode2Display = () => {
                 setMaxWPM(700);
                 setConstDecreaseWPM(50);
                 setPercentageDisplayTimeUpper(0.82);
-                setPercentageDisplayTimeLower(0.57);
+                setPercentageDisplayTimeLower(0.52);
                 setMaxConstIncreaseWPM(50);
                 setMinConstDecreaseWPM(17);
                 setCumulativeIncreaseThreshold1(50 * 1.5);
@@ -267,14 +263,9 @@ const Mode2Display = () => {
 
 
     useEffect(() => {
-        // Directly check if WebGazer is not active to prompt for calibration.
         if (!isWebGazerActive && !redirectingToQuiz) {
-            // sessionStorage.setItem('isCalibrated', 'false');
             setShowCalibrationPopup(true);
         } else {
-            // Assume WebGazer being active means calibration is done
-            // const isCalibrated = sessionStorage.getItem('isCalibrated');
-            // setShowCalibrationPopup(isCalibrated !== 'true');
             setShowCalibrationPopup(false);
         }
     }, [isWebGazerActive, redirectingToQuiz]);
@@ -288,9 +279,9 @@ const Mode2Display = () => {
     const handleContinueToQuiz = async () => {
         setShowCompletionPopup(false);
         setRedirectingToQuiz(true);
-        await submitReadingSpeed(averageWPM); // Ensure this is an async function if it makes server requests
+        await submitReadingSpeed(averageWPM);
         setWebGazerActive(false)
-        window.location.href = '/quiz'; // Directly change the window location to navigate
+        window.location.href = '/quiz';
     };
 
       
@@ -314,7 +305,7 @@ const Mode2Display = () => {
         let timerId: NodeJS.Timeout;
       
         if (countdown !== null && countdown > 0) {
-          // Set a timer to decrement the countdown every second
+          // Set a timer to decrement the countdown every 800ms
           timerId = setTimeout(() => {
             setCountdown(countdown - 1);
           }, 800);
@@ -323,7 +314,7 @@ const Mode2Display = () => {
             timerId = setTimeout(() => {
                 setIsPaused(false);  // Ensure the display starts if it was paused
                 setCountdown(null);  // Reset countdown to not counting down state
-            }, 400);  // Allow 1 second for "Go!" to be visible
+            }, 400);  // Allow 400ms second for "Go!" to be visible
         }
 
         return () => {
@@ -343,7 +334,7 @@ const Mode2Display = () => {
         setWPM(adjustedStartWPM.current); // Reset the WPM value
         setAverageWPM(null); // Reset the averageWPM value
         setIsRestartActive(true); // Set active to true
-        setTimeout(() => setIsRestartActive(false), 100); // Reset after 500ms
+        setTimeout(() => setIsRestartActive(false), 100); // Reset after 100ms
     };
     
     useEffect(() => {
@@ -358,12 +349,12 @@ const Mode2Display = () => {
     // Function to toggle pause/play action
     const togglePausePlayAction = () => {
         if (isPaused) {
-            setCountdown(3); // Start a 3-second countdown
+            setCountdown(3); // Start the countdown
         } else {
             setIsPaused(true); // Pause immediately without a countdown
         }
         setIsPausePlayActive(true); // Set active to true
-        setTimeout(() => setIsPausePlayActive(false), 100); // Reset after 500ms
+        setTimeout(() => setIsPausePlayActive(false), 100); // Reset after 100ms
     };
 
     useEffect(() => {
@@ -477,7 +468,7 @@ const Mode2Display = () => {
     }
     
     
-    // Hook to set up and manage the gaze listener based on WebGazer's activity and pause state
+    // Hook to set up and manage the gaze listener:
     useEffect(() => {
         // Only proceed if WebGazer is active, the component is not paused, and we're in a browser environment
         if (isWebGazerActive && !isPaused && typeof window !== "undefined") {
@@ -525,7 +516,7 @@ const Mode2Display = () => {
             // Cleanup function to clear the gaze listener when the component unmounts or dependencies change
             return () => extendedWindow.webgazer?.clearGazeListener();
         }
-    }, [isWebGazerActive, isPaused, currentChunkIndex]); // Depend on WebGazer's activity and pause state
+    }, [isWebGazerActive, isPaused, currentChunkIndex]); // Depend on WebGazer's activity, pause state, and current chunk index
     
 
 
@@ -539,7 +530,7 @@ const Mode2Display = () => {
             const startTime = performance.now();
             console.log('monitorAndAdjust')
     
-            // Function to analyze gaze data and decide whether to adjust WPM or move to the next chunk
+            // Function to analyse gaze data and decide whether to adjust WPM or move to the next chunk
             const analyzeAndAdjust = () => {
                 const currentTime = performance.now();
                 const deltaTime = currentTime - startTime;
@@ -556,7 +547,7 @@ const Mode2Display = () => {
                 console.log('displayTimeToIgnore', displayTimeToIgnore)
                 console.log('deltaTime', deltaTime)
 
-                // Ensure we're analyzing only after at least 60% of the expected chunk display time has passed
+                // Ensure we're analysing only after at least displayTimeToIgnore has passed
                 if (deltaTime > Math.min(displayTimeToIgnore, maxCutOffTime)) {
                     console.log('entered 0.6T')
 
@@ -891,7 +882,7 @@ const Mode2Display = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "space-between", // This will evenly space the children vertically
+                justifyContent: "space-between", 
                 height: mainDivHeight,
             }}>
 
@@ -932,10 +923,10 @@ const Mode2Display = () => {
                                     width: '600px', 
                                     display: 'flex', 
                                     borderRadius: '20px' ,
-                                    flexDirection: 'column', // Stack children vertically
-                                    alignItems: 'center', // Center children horizontally
-                                    justifyContent: 'center', // Center children vertically
-                                    textAlign: 'center', // Ensures that text inside children elements is centered, if needed
+                                    flexDirection: 'column', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'center',
+                                    textAlign: 'center',
                                     }}> 
                                     {!redirectingToCalibration ? (
                                     <>
@@ -975,7 +966,7 @@ const Mode2Display = () => {
                                 top: `-${gapBetweenSize}`, // Center it vertically
                                 left: '50%', // Center it horizontally
                                 transform: 'translate(-50%, -105%)', // Adjust the positioning to truly center the modal
-                                width: '50vw', // Adjust the width as needed, or use a fixed width
+                                width: '50vw',
                                 display: 'flex',
                                 borderRadius: '20px',
                                 flexDirection: 'column',
@@ -1144,7 +1135,7 @@ const Mode2Display = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "space-between", // This will evenly space the children vertically
+                justifyContent: "space-between",
                 height: mainDivHeight,
             }}>
 
@@ -1156,7 +1147,7 @@ const Mode2Display = () => {
                     display: 'flex',
                     flexDirection: 'column', // This will stack children divs on top of each other
                     alignItems: 'center',
-                    justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                    justifyContent: 'space-evenly',
                     marginBottom: `${gapBetweenSize}`,
                     }}
                 >
@@ -1168,7 +1159,7 @@ const Mode2Display = () => {
                             padding: '1px',
                             borderRadius: '10px',
                             margin: '5px',
-                            width: '100%', // Adjust width as necessary
+                            width: '100%', 
                             textAlign: 'center',
                             }}
                         >
@@ -1178,11 +1169,11 @@ const Mode2Display = () => {
                     {/* Checkbox for toggling complexity adjustment */}
                     <div className="mt-1.5"
                         style={{
-                        width: '100%', // Matches the width of the first inner div for consistency
+                        width: '100%',
                         display: 'flex',
-                        alignItems: 'center', // Center-align the text vertically
+                        alignItems: 'center', 
                         justifyContent: 'center',
-                        flex: 1, // Take up remaining space
+                        flex: 1, 
                         }}
                     >
                         <p className={showCalibrationPopup ? 'blur-effect' : ''} style={{ fontSize: '15px', color: 'rgb(90, 90, 90)' }}>
@@ -1199,7 +1190,7 @@ const Mode2Display = () => {
                     display: 'flex',
                     flexDirection: 'column', // This will stack children divs on top of each other
                     alignItems: 'center',
-                    justifyContent: 'space-evenly', // Adjust spacing between inner divs
+                    justifyContent: 'space-evenly',
                     flexGrow: 1, 
                     }}
                 >
@@ -1211,7 +1202,7 @@ const Mode2Display = () => {
                         padding: '1px',
                         borderRadius: '10px',
                         margin: '5px',
-                        width: '100%', // Adjust width as necessary
+                        width: '100%', 
                         textAlign: 'center',
                         }}
                     >
@@ -1221,12 +1212,12 @@ const Mode2Display = () => {
                     {/* Second inner div */}
                     <div
                         style={{
-                        width: '100%', // Matches the width of the first inner div for consistency
+                        width: '100%',
                         display: 'flex',
                         flexDirection: 'column',
-                        alignItems: 'center', // Center-align the text vertically
+                        alignItems: 'center',
                         justifyContent: 'space-evenly',
-                        flex: 1, // Take up remaining space
+                        flex: 1, 
                         }}
                     >
                         <div style={{ display: 'flex', alignItems: 'center'}} className={showCalibrationPopup ? 'blur-effect' : ''}>
