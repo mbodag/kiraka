@@ -288,13 +288,24 @@ const Mode2Display = () => {
     useEffect(() => {
         // Function to adjust font size based on the window width
         const adjustFontSize = () => {
-            const div = document.querySelector('.wordDisplayDiv');
-            if (div) {
-                const divWidth = div.clientWidth;
-                const newFontSize = Math.max(1, (1.1 * divWidth) / (maxCharsPerChunk * 0.6));
-                setFontSize(newFontSize);
-            }
+            // Get screen width
+            const screenWidth = window.innerWidth;
+    
+            // Retrieve the CSS variable --sidebar-width and convert it to pixels
+            const root = document.documentElement;
+            const sidebarWidthRem = getComputedStyle(root).getPropertyValue('--sidebar-width');
+            const sidebarWidthPixels = parseFloat(sidebarWidthRem) * parseFloat(getComputedStyle(root).fontSize);
+    
+            // Calculate the width based on the formula: screen width - 2 * (sidebar width + 24px)
+            const calculatedWidth = screenWidth - 2 * (sidebarWidthPixels + 24);
+
+            // Calculate the new font size based on the calculated width
+            const newFontSize = Math.max(1, (1.1 * calculatedWidth) / (maxCharsPerChunk * 0.6));
+                
+            // Set the font size
+            setFontSize(newFontSize);
         };
+    
         adjustFontSize();
         window.addEventListener('resize', adjustFontSize);
         return () => window.removeEventListener('resize', adjustFontSize);
@@ -448,7 +459,10 @@ const Mode2Display = () => {
     const adjustWPMForComplexity = (chunkIndex: number, integrateComplexity: boolean): number => {
         if (!integrateComplexity) return 0;  // No adjustment if integration is disabled
 
-        const complexity = complexityChunks[chunkIndex];
+        let complexity = 0.74;  // Default value for complexity that triggerd no adjustments (in case there is an error on the returned complexity list)
+        if (chunkIndex >= 0 && chunkIndex < complexityChunks.length) {
+            complexity = complexityChunks[chunkIndex];
+        }
         const Kmin = 5;
         const Kmax = complexity <= 0.7 ? 15 : 30;
 
@@ -858,7 +872,6 @@ const Mode2Display = () => {
     
 
       const gapBetweenSize = '10px';
-      const gapEdgeSize = '17px';
       const displayHeight = '250px';
       const mainDivHeight = '320px';
       const plotHeight = '350px';
@@ -1050,7 +1063,11 @@ const Mode2Display = () => {
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                     }}>
-                        {wordChunks[currentChunkIndex]}
+                        {wordChunks.length > 0 ? (
+                            wordChunks[currentChunkIndex]
+                        ) : (
+                            <p style={{ color: 'gray', fontStyle: 'italic' }}>Please select a text from the sidebar on the left.</p>
+                        )}
                     </div>
                     
                     {/* Progress Bar */}
@@ -1263,7 +1280,7 @@ const Mode2Display = () => {
         >
             {showCompletionPopup && WPMValues.current.length > 0 && (
                 <div className="bg-white rounded-lg shadow-lg mx-2 h-full" style={{
-                    width: `calc(100% - ${gapEdgeSize})`, // Ensure full width
+                    width: '100%',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
