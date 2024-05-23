@@ -42,7 +42,6 @@ const Mode1Display = () => {
     const [isRestartActive, setIsRestartActive] = useState(false);
     const [isPausePlayActive, setIsPausePlayActive] = useState(false);
 
-    // const [fontSize, setFontSize] = useState(44); // Start with a default font size
     const maxCharsPerChunk = wordsPerChunk * avgCharCountPerWord
     const { selectedTextId } = useSelectedText(); // Use the ID from context
     const { userId } = useAuth();
@@ -119,7 +118,7 @@ const Mode1Display = () => {
         // router.push('/quiz')
     };
 
-    
+
     const calculateFontSize = () => {
         // Get screen width
         const screenWidth = window.innerWidth;
