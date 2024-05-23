@@ -42,7 +42,7 @@ const Mode1Display = () => {
     const [isRestartActive, setIsRestartActive] = useState(false);
     const [isPausePlayActive, setIsPausePlayActive] = useState(false);
 
-    const [fontSize, setFontSize] = useState(44); // Start with a default font size
+    // const [fontSize, setFontSize] = useState(44); // Start with a default font size
     const maxCharsPerChunk = wordsPerChunk * avgCharCountPerWord
     const { selectedTextId } = useSelectedText(); // Use the ID from context
     const { userId } = useAuth();
@@ -119,28 +119,33 @@ const Mode1Display = () => {
         // router.push('/quiz')
     };
 
-      
-    useEffect(() => {
-        // Function to adjust font size based on the window width
-        const adjustFontSize = () => {
-            // Get screen width
-            const screenWidth = window.innerWidth;
     
-            // Retrieve the CSS variable --sidebar-width and convert it to pixels
-            const root = document.documentElement;
-            const sidebarWidthRem = getComputedStyle(root).getPropertyValue('--sidebar-width');
-            const sidebarWidthPixels = parseFloat(sidebarWidthRem) * parseFloat(getComputedStyle(root).fontSize);
-    
-            // Calculate the width based on the formula: screen width - 2 * (sidebar width + 24px)
-            const calculatedWidth = screenWidth - 2 * (sidebarWidthPixels + 24);
+    const calculateFontSize = () => {
+        // Get screen width
+        const screenWidth = window.innerWidth;
 
-            // Calculate the new font size based on the calculated width
-            const newFontSize = Math.max(1, (1.1 * calculatedWidth) / (maxCharsPerChunk * 0.6));
-                
-            // Set the font size
+        // Retrieve the CSS variable --sidebar-width and convert it to pixels
+        const root = document.documentElement;
+        const sidebarWidthRem = getComputedStyle(root).getPropertyValue('--sidebar-width').trim();
+        const sidebarWidthPixels = parseFloat(sidebarWidthRem) * parseFloat(getComputedStyle(root).fontSize);
+
+        // Calculate the width based on the formula: screen width - 2 * (sidebar width + 24px)
+        const calculatedWidth = screenWidth - 2 * (sidebarWidthPixels + 24);
+
+        // Calculate the new font size based on the calculated width
+        const w1 = 1
+        const w2 = 0.65 // w1 and w2 defined per fopnt basis, visually to fit within the div
+        return Math.max(1, (w1 * calculatedWidth) / (maxCharsPerChunk * w2));
+    };
+
+    const [fontSize, setFontSize] = useState(calculateFontSize);
+
+    useEffect(() => {
+        const adjustFontSize = () => {
+            const newFontSize = calculateFontSize();
             setFontSize(newFontSize);
         };
-    
+
         adjustFontSize();
         window.addEventListener('resize', adjustFontSize);
         return () => window.removeEventListener('resize', adjustFontSize);
